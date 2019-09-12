@@ -1,0 +1,19 @@
+{
+    "name": "ts-node-template",
+    "version": "1.0.0",
+    "description": "NodeJS with typescript support template",
+    "main": "dist/app.js",
+    "repository": "https://github.com/Elyspio/ts-node-template",
+    "author": "Jonathan Guichard",
+    "license": "MIT",
+    "private": false,
+    "devDependencies": {
+        "@types/node": "^12.7.5",
+        "tslint": "^5.20.0",
+        "typescript": "^3.6.3",
+        "prettier": "^1.18.2"
+    },
+    "scripts": {
+        "start": "tsc && node dist/app.js"
+    }
+}
