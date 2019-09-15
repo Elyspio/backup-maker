@@ -4,10 +4,15 @@
     "target": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "esModuleInterop": true
   },
   "compileOnSave": true,
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "dist",
+    "prettier.config.js"
   ]
 }

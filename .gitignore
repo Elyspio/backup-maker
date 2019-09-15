@@ -10,6 +10,9 @@ yarn-error.log*
 .idea
 dist
 
+# Secret
+config/ssh.json
+
 # Runtime data
 pids
 *.pid
