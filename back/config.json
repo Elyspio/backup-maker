@@ -1,0 +1,21 @@
+{
+    "local": [
+        {
+            "type": "local",
+            "folders": [
+                "/"
+            ],
+            "work": "list",
+            "save": {
+                "type": "local",
+                "path": "/dump.json"
+            },
+            "id": 0,
+            "repeat": {
+                "interval": 1000,
+                "state": "running"
+            }
+        }
+    ],
+    "ssh": []
+}
