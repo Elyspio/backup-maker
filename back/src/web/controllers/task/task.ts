@@ -1,8 +1,8 @@
 import {BodyParams, Controller, Get, PathParams, Post} from "@tsed/common";
-import {Description, Returns} from "@tsed/schema";
+import {Description, Required, Returns} from "@tsed/schema";
 import {Log} from "../../../core/utils/decorators/logger";
 import {getLogger} from "../../../core/utils/logger";
-import {LocalBackupConfig, ServiceConfig, SshBackupConfig} from "./task.model";
+import {AddTask, ServiceConfig} from "./task.model";
 import {Services} from "../../../core/services";
 import {constants} from "http2";
 
@@ -19,20 +19,13 @@ export class Task {
 		return Services.task.config
 	}
 
-	@Post("/config/ssh")
-	@Description("Add a ssh config")
-	@Returns(constants.HTTP_STATUS_NO_CONTENT)
-	@Log(Task.log)
-	async addSshConfig(@BodyParams() config: SshBackupConfig) {
-		return Services.task.addSshConfig(config);
-	}
 
-	@Post("/config/local")
+	@Post("/add")
 	@Returns(constants.HTTP_STATUS_NO_CONTENT)
 	@Description("Add a local config")
 	@Log(Task.log)
-	async addLocalConfig(@BodyParams() config: LocalBackupConfig) {
-		return Services.task.addLocalConfig(config);
+	async createTask(@BodyParams() @Required() config: AddTask) {
+		return Services.task.addTask(config);
 	}
 
 

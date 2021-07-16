@@ -1,5 +1,6 @@
-import {Description, Enum, Example, Property, Required} from "@tsed/schema";
-
+import {CollectionOf, Description, Enum, Example, Min, Property, Required} from "@tsed/schema";
+import {AddTaskParam} from "../../../core/services/task/task";
+import {ITask, ITaskOnLocal, ITaskOnSsh, ITaskWorkList, TaskState, TaskType, TaskWorkType} from "../../../core/services/task/task.type";
 
 class ConnectOptions {
 	@Required()
@@ -26,9 +27,10 @@ class ConnectOptions {
 
 class Save {
 	@Enum("ssh", "local")
+	@Required()
 	type: "ssh" | "local"
 
-	@Property()
+	@Property(ConnectOptions)
 	connectionInfo: ConnectOptions
 
 	@Property()
@@ -36,69 +38,86 @@ class Save {
 	path: string
 }
 
-class Repeat {
+
+class ScheduleLight {
 	@Property()
 	@Required()
+	@Min(1)
 	interval: number
-
-	@Enum("running", "paused", "waiting")
-	@Description("State of the task")
-	@Example("paused")
-	@Required()
-	state: "running" | "paused" | "waiting"
 }
 
 
-class BackupConfig {
+class Schedule extends ScheduleLight {
+	@Enum(TaskState)
+	@Description("State of the task")
+	@Example(TaskState.stopped)
+	@Required()
+	state: TaskState
+
 	@Property()
-	id: number
+	lastRun: Date
+}
 
-	@Enum("local", "ssh")
-	@Required()
-	type: "local" | "ssh"
+
+class TaskOn implements ITaskOnLocal, ITaskOnSsh {
+
+	@Property()
+	connectionInfo: ConnectOptions;
 
 	@Property()
 	@Required()
-	folders: string[]
+	folder: "/";
 
-	@Enum("list")
+	@Enum(TaskType)
 	@Required()
-	work: "list"
+	type: TaskType.local & TaskType.ssh;
+
+}
+
+class TaskWorkList implements ITaskWorkList {
+	@Enum(TaskWorkType)
+	@Required()
+	type: TaskWorkType.list
+
+	@Property(TaskOn)
+	@Required()
+	on: TaskOn
 
 	@Property(Save)
 	@Required()
-	save: Save
-
-	@Property(Repeat)
-	@Required()
-	repeat: Repeat
+	save: ITaskWorkList["save"]
 }
 
 
-export class SshBackupConfig extends BackupConfig {
+export class Task implements ITask {
+	@Property()
 	@Required()
-	@Enum("ssh")
-	override type: "ssh"
+	id: number;
 
+	@Property(Schedule)
 	@Required()
-	@Property(ConnectOptions)
-	connectionInfo: ConnectOptions
+	schedule: Schedule;
+
+	@Property(TaskWorkList)
+	@Required()
+	work: TaskWorkList;
+
 }
-
-
-export class LocalBackupConfig extends BackupConfig {
-	@Required()
-	@Enum("local")
-	override type: "local"
-}
-
 
 export class ServiceConfig {
 	@Required()
-	@Property(LocalBackupConfig)
-	local: LocalBackupConfig[]
+	@CollectionOf(Task)
+	tasks: Task[]
+}
 
+
+export class AddTask implements AddTaskParam {
+	@Property(ScheduleLight)
 	@Required()
-	@Property(SshBackupConfig)
-	ssh: SshBackupConfig[]
+	schedule: ScheduleLight;
+
+	@Property(TaskWorkList)
+	@Required()
+	work: TaskWorkList;
+
 }

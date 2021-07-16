@@ -1,0 +1,20 @@
+.Task {
+	padding: 2rem;
+	position: relative;
+
+	.task-title {
+		width: 6.4rem;
+		min-width: 6.4rem;
+	}
+
+	.task-actions {
+		display: none;
+		position: absolute;
+		top: 1rem;
+		right: 1rem;
+	}
+
+	&:hover .task-actions {
+		display: block;
+	}
+}

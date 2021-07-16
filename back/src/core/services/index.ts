@@ -1,8 +1,8 @@
 import {AuthenticationService} from "./authentication";
 import {Storage} from "./storage";
 import {SshService} from "./ssh";
-import {TaskService} from "./task";
-import {BackupService} from "./backup";
+import {TaskService} from "./task/task";
+import {BackupService} from "./task/process";
 
 export const Services = {
 	authentication: new AuthenticationService(),

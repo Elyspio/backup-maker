@@ -1,0 +1,8 @@
+.CreateTask {
+
+	min-width: 34rem;
+
+	&.MuiDialogContent-root {
+		overflow-y: unset !important;
+	}
+}

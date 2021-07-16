@@ -17,8 +17,8 @@ export const Log = (logger: Logger, logOnly: number[] = []) => (target: any, pro
 
 	descriptor.value = function (...args: any[]) {
 		const argsStr = argsName.reduce((previousValue, currentValue, currentIndex) => {
-			if(logOnly.length > 0 ) {
-				if(!logOnly.includes(currentIndex)) return previousValue;
+			if (logOnly.length > 0) {
+				if (!logOnly.includes(currentIndex)) return previousValue;
 			}
 			return `${previousValue} ${currentValue}=${JSON.stringify(args[currentIndex])}`
 		}, "");
