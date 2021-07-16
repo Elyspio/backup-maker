@@ -1,8 +1,7 @@
 import {createAction as _createAction, createAsyncThunk} from "@reduxjs/toolkit";
 import {Services} from "../../../core/services";
 import {RootState} from "../../index";
-import {AddTask} from "../../../core/apis/backend";
-import {ITask} from "../../../../../back/src/core/services/task/task.type";
+import {AddTask, Task} from "../../../core/apis/backend";
 
 const createAction = <T>(name: string) => _createAction<T>(`task/${name}`);
 
@@ -20,12 +19,12 @@ export const createTask = createAsyncThunk("task/getConfig", async (arg, {dispat
 	])
 })
 
-export const stopTask = createAsyncThunk("task/stopTask", async (id: ITask["id"], {dispatch}) => {
+export const stopTask = createAsyncThunk("task/stopTask", async (id: Task["id"], {dispatch}) => {
 	await Services.task.stopTask(id);
 	dispatch(getConfig());
 })
 
-export const startTask = createAsyncThunk("task/startTask", async (id: ITask["id"], {dispatch}) => {
+export const startTask = createAsyncThunk("task/startTask", async (id: Task["id"], {dispatch}) => {
 	await Services.task.startTask(id);
 	dispatch(getConfig());
 })

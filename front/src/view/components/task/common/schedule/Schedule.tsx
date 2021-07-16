@@ -25,7 +25,7 @@ function Schedule({data: {state, lastRun, interval}}: ScheduleProps) {
 			lastRunStr: dayjs(lastRun).from(dayjs(), true),
 			nextRunStr: nextRun.from(dayjs(), true)
 		}
-	}, [lastRun])
+	}, [lastRun, interval])
 
 	return (
 		<Grid container spacing={4} alignItems={"center"}>
