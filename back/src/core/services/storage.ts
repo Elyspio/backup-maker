@@ -7,7 +7,7 @@ import {getLogger} from "../utils/logger";
 const {writeFile, readFile} = promises
 
 export const files = {
-	configFile: "./config.json"
+	configFile: process.env.CONFIG_PATH ?? "./config.json"
 }
 
 export class Storage {

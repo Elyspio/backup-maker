@@ -36,7 +36,7 @@ function Interval(props: IntervalProps) {
 
 	return (
 		props.readonly
-			? <TextHeader header="Repeat after" text={getKey(unitsVals, val) ?? ""}/>
+			? <TextHeader header="Repeat every" text={getKey(unitsVals, val) ?? ""}/>
 			: <FormControl fullWidth>
 				<InputLabel id="demo-simple-select-label">Repeat every</InputLabel>
 				<Select

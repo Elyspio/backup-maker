@@ -1,0 +1,15 @@
+version: "3"
+services:
+    backuper:
+        image: elyspio/backup-maker
+        ports:
+            - "4009:4000"
+        volumes:
+            - backup-maker:/back/
+            - ./conf.js:/front/conf.js
+        environment:
+            CONFIG_PATH: /back/config.json
+
+volumes:
+    backup-maker:
+        driver: local

@@ -1,21 +1,29 @@
 {
-    "local": [
-        {
-            "type": "local",
-            "folders": [
-                "/"
-            ],
-            "work": "list",
-            "save": {
-                "type": "local",
-                "path": "/dump.json"
-            },
-            "id": 0,
-            "repeat": {
-                "interval": 1000,
-                "state": "running"
-            }
-        }
-    ],
-    "ssh": []
+	"tasks": [
+		{
+			"work": {
+				"type": "list",
+				"on": {
+					"connectionInfo": {
+						"host": "192.168.0.59",
+						"port": 22,
+						"username": "elyspio",
+						"password": "es1415926535"
+					},
+					"folder": "/apps",
+					"type": "ssh"
+				},
+				"save": {
+					"type": "local",
+					"path": "./serv.app.json"
+				}
+			},
+			"id": 0,
+			"schedule": {
+				"state": "stopped",
+				"interval": 60000,
+				"lastRun": "2021-07-21T22:24:07.560Z"
+			}
+		}
+	]
 }

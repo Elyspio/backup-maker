@@ -4,6 +4,7 @@ import {Services} from "../index";
 import {getLogger} from "../../utils/logger";
 import {Log} from "../../utils/decorators/logger";
 import {ITask, TaskState} from "./task.type";
+import {EventEmitter} from "events";
 
 
 export interface ServiceConfig {
@@ -12,40 +13,60 @@ export interface ServiceConfig {
 
 export type AddTaskParam = Omit<ITask, "schedule" | "id"> & { schedule: Omit<ITask["schedule"], "state" | "lastRun"> }
 
-export class TaskService {
+export declare interface TaskService {
+	on(e: "update", callback: (config: ServiceConfig) => void)
+
+	emit(e: "update", config: ServiceConfig)
+}
+
+export class TaskService extends EventEmitter {
 
 	private static logger = getLogger.service(TaskService);
 	private static lastId = 0;
-	public config: ServiceConfig
+	private readonly config: ServiceConfig
 	private intervals: Record<ITask["id"], NodeJS.Timer> = {};
 
 	public constructor() {
-		if (existsSync(files.configFile)) {
-			const str = readFileSync(files.configFile).toString();
-			this.config = JSON.parse(str);
-			this.config.tasks.forEach(task => task.schedule.state = TaskState.stopped);
-			TaskService.lastId = this.config.tasks.reduce((acc, current) => acc < current.id ? current.id : acc, 0)
-		} else {
+		super();
+		try {
+			if (existsSync(files.configFile)) {
+				const str = readFileSync(files.configFile).toString();
+				this.config = JSON.parse(str);
+				this.config.tasks.forEach(task => task.schedule.state = TaskState.stopped);
+				TaskService.lastId = this.config.tasks.reduce((acc, current) => acc < current.id ? current.id : acc, 0)
+			} else {
+				throw "";
+			}
+		} catch {
 			this.config = {
 				tasks: []
 			}
 		}
+
+
 		this.save(true);
 		this.runAll();
 	}
 
 
 	@Log(TaskService.logger)
+	public getConfig() {
+		return this.config;
+	}
+
+	@Log(TaskService.logger)
 	public async addTask(conf: AddTaskParam) {
+		let id = TaskService.lastId++;
 		this.config.tasks.push({
 			work: conf.work,
-			id: TaskService.lastId++,
+			id,
 			schedule: {
 				state: TaskState.stopped,
 				interval: conf.schedule.interval,
 			}
 		})
-		return this.save()
+		await this.save();
+		return id;
 	}
 
 	/**
@@ -56,17 +77,25 @@ export class TaskService {
 	@Log(TaskService.logger)
 	public run(id: number) {
 		const task = this.config.tasks.find(task => task.id === id);
+
+		if (!task) {
+			throw new Error(`Could not find a task with id=${id}`)
+		}
+
 		// Start task every X milliseconds
 		if (this.intervals[task.id] === undefined) {
 			this.intervals[task.id] = setInterval(() => {
 				return this.run(task.id);
 			}, task.schedule.interval)
 		}
-		return Services.backup.process(task);
+		return Services.process.process(task);
 	}
 
 	@Log(TaskService.logger)
 	public save(sync: boolean = false): void | Promise<void> {
+
+		this.emit("update", this.config);
+
 		if (sync) {
 			writeFileSync(files.configFile, JSON.stringify(this.config, null, 4));
 		} else {
@@ -90,6 +119,7 @@ export class TaskService {
 	 * Stop a task from restarting
 	 * @param id
 	 */
+	@Log(TaskService.logger)
 	async stop(id: number) {
 		const task = this.config.tasks.find(task => task.id === id);
 		if (task) {
@@ -102,3 +132,4 @@ export class TaskService {
 
 	}
 }
+

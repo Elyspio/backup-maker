@@ -32,7 +32,10 @@ export const Log = (logger: Logger, logOnly: number[] = []) => (target: any, pro
 		};
 
 		if (typeof result === "object" && typeof result.then === "function") {
-			const promise = result.then(exitLog);
+			const promise = result.then((ret) => {
+				exitLog();
+				return ret;
+			});
 			if (typeof promise.catch === "function") {
 				promise.catch((e: any) => e);
 			}

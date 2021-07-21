@@ -1,5 +1,9 @@
 export type Config = {
 	endpoints: {
-		core: string
+		core: string,
+		socket: {
+			namespace: string,
+			hostname: string,
+		}
 	}
 }

@@ -1,5 +1,5 @@
 import {createReducer} from "@reduxjs/toolkit";
-import {getConfig, setTaskCreationSchedule, setTaskCreationState, setTaskCreationWork} from "./task.action";
+import {setConfig, setTaskCreationSchedule, setTaskCreationState, setTaskCreationWork} from "./task.action";
 import {AddTask, SaveTypeEnum, ServiceConfig, TaskOnTypeEnum, TaskWorkListTypeEnum} from "../../../core/apis/backend";
 
 export interface TaskState {
@@ -13,7 +13,7 @@ const defaultState: TaskState = {
 };
 
 export const taskReducer = createReducer(defaultState, (builder) => {
-	builder.addCase(getConfig.fulfilled, (state, action) => {
+	builder.addCase(setConfig, (state, action) => {
 		state.config = action.payload;
 	})
 

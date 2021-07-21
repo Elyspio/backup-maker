@@ -26,6 +26,9 @@ export const webConfig: Partial<TsED.Configuration> = {
 	swagger: [{
 		path: "/swagger",
 		specVersion: "3.0.3"
-	}]
+	}],
+	socketIO: {
+		cors: {origin: [process.env.BACKEND_HOST ?? "http://localhost:3000"]},
+	}
 
 };
