@@ -1,0 +1,21 @@
+{
+    "files": [
+        "authentication",
+        "automatize-github-docker",
+        "backup-maker",
+        "command-runner",
+        "docker-update",
+        "electron-auto-updater",
+        "electron-react-ts-template",
+        "express-react-ts-template",
+        "freebox-manager",
+        "graylog",
+        "jetbrains-swagger-import",
+        "light-manager",
+        "media-tools",
+        "project-lister",
+        "speech",
+        "switch-visualizer",
+        "webscrapper"
+    ]
+}

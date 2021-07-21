@@ -4,10 +4,10 @@ import {Box, Grid, IconButton, Paper} from "@material-ui/core";
 import {TaskWorkList} from "./list/TaskWorkList";
 import Schedule from "../common/schedule/Schedule";
 import "./Task.scss"
-import {PlayArrow, Stop} from "@material-ui/icons";
+import {Close, PlayArrow, Stop} from "@material-ui/icons";
 import {green, grey, red} from "@material-ui/core/colors";
 import {useAppDispatch} from "../../../../store";
-import {startTask, stopTask} from "../../../../store/module/task/task.action";
+import {startTask, stopTask, removeTask} from "../../../../store/module/task/task.action";
 
 type TaskProps = {
 	data: ITask
@@ -20,6 +20,7 @@ function Task({data: {work, id, schedule}}: TaskProps) {
 	const colors = {
 		play: schedule.state !== ScheduleStateEnum.Stopped ? grey[500] : green[500],
 		stop: schedule.state === ScheduleStateEnum.Stopped ? grey[500] : red[500],
+		close:   grey[900],
 	}
 
 	return (
@@ -41,6 +42,10 @@ function Task({data: {work, id, schedule}}: TaskProps) {
 					onClick={() => dispatch(stopTask(id))}
 					disabled={schedule.state === ScheduleStateEnum.Stopped}>
 					<Stop style={{color: colors.stop}}/>
+				</IconButton>
+				<IconButton
+					onClick={() => dispatch(removeTask(id))}>
+					<Close style={{color: colors.close}}/>
 				</IconButton>
 			</Box>
 

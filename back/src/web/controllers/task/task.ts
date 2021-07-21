@@ -1,4 +1,4 @@
-import {BodyParams, Controller, Get, PathParams, Post} from "@tsed/common";
+import {BodyParams, Controller, Delete, Get, PathParams, Post} from "@tsed/common";
 import {Description, Required, Returns} from "@tsed/schema";
 import {Log} from "../../../core/utils/decorators/logger";
 import {getLogger} from "../../../core/utils/logger";
@@ -44,12 +44,23 @@ export class Task {
 	}
 
 
+	@Delete("/:id")
+	@Returns(constants.HTTP_STATUS_NO_CONTENT)
+	@Log(Task.log)
+	async deleteTask(@PathParams("id") id: number) {
+		return Services.task.delete(id);
+	}
+
+
 	@Post("/run")
 	@Returns(constants.HTTP_STATUS_NO_CONTENT)
 	@Log(Task.log)
 	async runAllTask(@PathParams("id") id: number) {
 		return Services.task.runAll();
 	}
+
+
+
 }
 
 

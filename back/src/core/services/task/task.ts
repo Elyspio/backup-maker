@@ -56,7 +56,7 @@ export class TaskService extends EventEmitter {
 
 	@Log(TaskService.logger)
 	public async addTask(conf: AddTaskParam) {
-		let id = TaskService.lastId++;
+		let id = ++TaskService.lastId;
 		this.config.tasks.push({
 			work: conf.work,
 			id,
@@ -116,7 +116,7 @@ export class TaskService extends EventEmitter {
 
 
 	/**
-	 * Stop a task from restarting
+	 * Prevent a task from restarting
 	 * @param id
 	 */
 	@Log(TaskService.logger)
@@ -130,6 +130,17 @@ export class TaskService extends EventEmitter {
 			await this.save()
 		}
 
+	}
+
+	/**
+	 * Delete a task
+	 * @param id
+	 */
+	@Log(TaskService.logger)
+	async delete(id: number) {
+		await this.stop(id);
+		this.config.tasks = this.config.tasks.filter(x => x.id !== id);
+		await this.save();
 	}
 }
 

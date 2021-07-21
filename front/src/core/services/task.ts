@@ -18,4 +18,7 @@ export class TaskService {
 		return Apis.task.taskRunTask(id);
 	}
 
+	async deleteTask(id: number) {
+		return Apis.task.taskDeleteTask(id);
+	}
 }

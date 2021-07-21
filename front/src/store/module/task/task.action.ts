@@ -26,6 +26,10 @@ export const stopTask = createAsyncThunk("task/stopTask", async (id: Task["id"],
 export const startTask = createAsyncThunk("task/startTask", async (id: Task["id"], {dispatch}) => {
 	await Services.task.startTask(id);
 })
+export const removeTask = createAsyncThunk("task/startTask", async (id: Task["id"], {dispatch}) => {
+	await Services.task.deleteTask(id);
+})
+
 export const setTaskCreationState = createAction<boolean>("setTaskCreationState");
 
 export const setTaskCreationSchedule = createAction<AddTask["schedule"]>("setTaskCreationInterval");
