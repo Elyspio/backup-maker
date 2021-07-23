@@ -23,7 +23,7 @@ RUN cd /front && npm run build
 FROM node:16-alpine
 
 COPY --from=builder-back /back/package.json /back/package.json
-RUN cd /back && npm install
+RUN cd /back && npm install --only=prod
 
 COPY --from=builder-back /back/build /back/build
 COPY --from=builder-front /front/build /front

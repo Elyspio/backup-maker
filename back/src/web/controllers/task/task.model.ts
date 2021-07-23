@@ -1,11 +1,10 @@
 import {CollectionOf, Description, Enum, Example, Min, Property, Required} from "@tsed/schema";
 import {AddTaskParam} from "../../../core/services/task/task";
-import {ITask, ITaskOnLocal, ITaskOnSsh, ITaskWorkList, TaskState, TaskType, TaskWorkType} from "../../../core/services/task/task.type";
+import {ConnectionInfo as IConnectionInfo, ITask, ITaskOnLocal, ITaskOnSsh, ITaskWorkList, TaskState, TaskType, TaskWorkType} from "../../../core/services/task/task.type";
 
-class ConnectOptions {
+class ConnectionInfo implements IConnectionInfo {
 	@Required()
 	@Description("Hostname or IP address of the server.")
-	@Property(String)
 	host: string;
 
 	@Required()
@@ -15,13 +14,14 @@ class ConnectOptions {
 
 	@Required()
 	@Description("Username for authentication.")
-	@Property(String)
 	username: string;
 
-	@Required()
 	@Description("Password for password-based user authentication.")
-	@Property(String)
 	password: string;
+
+	@Description("Private key (base64 encoded).")
+	privateKey: string;
+
 }
 
 
@@ -30,8 +30,8 @@ class Save {
 	@Required()
 	type: "ssh" | "local"
 
-	@Property(ConnectOptions)
-	connectionInfo: ConnectOptions
+	@Property(ConnectionInfo)
+	connectionInfo: ConnectionInfo
 
 	@Property()
 	@Required()
@@ -62,7 +62,7 @@ class Schedule extends ScheduleLight {
 class TaskOn implements ITaskOnLocal, ITaskOnSsh {
 
 	@Property()
-	connectionInfo: ConnectOptions;
+	connectionInfo: ConnectionInfo;
 
 	@Property()
 	@Required()

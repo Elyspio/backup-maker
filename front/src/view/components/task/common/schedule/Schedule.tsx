@@ -34,7 +34,7 @@ function Schedule({data: {state, lastRun, interval}}: ScheduleProps) {
 			lastRunStr: formatDuration(dayjs.duration(now.diff(lastRun), "milliseconds")),
 			nextRunStr: state === ScheduleStateEnum.Waiting ? formatDuration(dayjs.duration(nbSeconds, "seconds")) : "Never"
 		}
-	}, [lastRun, interval, now])
+	}, [lastRun, interval, now, state])
 
 	return (
 		<Grid container spacing={4} alignItems={"center"}>

@@ -7,7 +7,7 @@ import "./Task.scss"
 import {Close, PlayArrow, Stop} from "@material-ui/icons";
 import {green, grey, red} from "@material-ui/core/colors";
 import {useAppDispatch} from "../../../../store";
-import {startTask, stopTask, removeTask} from "../../../../store/module/task/task.action";
+import {removeTask, startTask, stopTask} from "../../../../store/module/task/task.action";
 
 type TaskProps = {
 	data: ITask
@@ -20,7 +20,7 @@ function Task({data: {work, id, schedule}}: TaskProps) {
 	const colors = {
 		play: schedule.state !== ScheduleStateEnum.Stopped ? grey[500] : green[500],
 		stop: schedule.state === ScheduleStateEnum.Stopped ? grey[500] : red[500],
-		close:   grey[900],
+		close: grey[900],
 	}
 
 	return (

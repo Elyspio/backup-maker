@@ -1,12 +1,16 @@
 import React, {useCallback} from 'react';
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography} from "@material-ui/core";
+import {Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography} from "@material-ui/core";
 import {useAppDispatch, useAppSelector} from "../../../../store";
 import {createTask, setTaskCreationSchedule, setTaskCreationState} from "../../../../store/module/task/task.action";
 import Interval from "../common/schedule/Interval";
 import {CreateTaskWork} from "./CreateTaskWork";
 import "./CreateTask.scss"
+import { Button } from '../../utils/button/Button';
 
 const CreateTask = () => {
+
+
+	const [isFormValid, setformValid] = React.useState(false);
 
 	const dispatch = useAppDispatch();
 	const handleClose = React.useCallback(() => {
@@ -44,17 +48,19 @@ const CreateTask = () => {
 						</Grid>
 					</Grid>
 
-					<CreateTaskWork data={task.work}/>
+					<CreateTaskWork
+						onValidationStateChange={setformValid}
+						data={task.work}
+					/>
 
 				</Grid>
-
 
 			</DialogContent>
 			<DialogActions>
 				<Button onClick={handleClose} color="primary">
 					Cancel
 				</Button>
-				<Button onClick={handleCreate} color="primary" autoFocus>
+				<Button onClick={handleCreate} color="primary" autoFocus disabled={!isFormValid}>
 					Create
 				</Button>
 			</DialogActions>

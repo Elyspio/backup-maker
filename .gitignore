@@ -2,3 +2,4 @@ node_modules
 *.js
 .idea
 !front/public/conf.js
+back/config.json

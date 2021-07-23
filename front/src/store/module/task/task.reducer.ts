@@ -25,15 +25,15 @@ export const taskReducer = createReducer(defaultState, (builder) => {
 				type: TaskWorkListTypeEnum.List,
 				save: {
 					type: SaveTypeEnum.Local,
-					path: "/dump.json",
+					path: "",
 				},
 				on: {
 					type: TaskOnTypeEnum.Local,
-					folder: "/"
+					folder: ""
 				}
 			},
 			schedule: {
-				interval: 1000
+				interval: 60000
 			}
 		}
 	})

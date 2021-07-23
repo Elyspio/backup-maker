@@ -1,4 +1,4 @@
-import {AddTask, ConnectOptions, Save, SaveTypeEnum, TaskOn, TaskOnTypeEnum, TaskWorkListTypeEnum} from "../../../../core/apis/backend";
+import {AddTask, ConnectionInfo as IConnectionInfo, Save, SaveTypeEnum, TaskOn, TaskOnTypeEnum, TaskWorkListTypeEnum} from "../../../../core/apis/backend";
 import React from "react";
 import {FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography} from "@material-ui/core";
 import {useAppDispatch} from "../../../../store";
@@ -7,21 +7,25 @@ import ConnectionInfo from "../common/ssh/ConnectionInfo";
 
 
 type CreateTaskWorkProps = {
-	data: AddTask["work"]
+	data: AddTask["work"],
+	onValidationStateChange: (valid: boolean) => void
 }
 
-const defaultConnectionInfo: ConnectOptions = {
+const defaultConnectionInfo: IConnectionInfo = {
 	username: "",
 	port: 22,
 	host: "",
-	password: ""
 }
 
-export function CreateTaskWork({data}: CreateTaskWorkProps) {
+const isEmpty = (str?: string) => str?.length === 0 || !str;
+
+const isConnectionInfoValid = (conf: IConnectionInfo) => !isEmpty(conf.host) && !isEmpty(conf.port.toString()) && !isEmpty(conf.username) && !(isEmpty(conf.password) && isEmpty(conf.privateKey))
+
+
+export function CreateTaskWork({data, onValidationStateChange}: CreateTaskWorkProps) {
 	const [type, setType] = React.useState(data.type);
 	const [on, setOn] = React.useState(data.on);
 	const [save, setSave] = React.useState(data.save);
-
 	const dispatch = useAppDispatch();
 
 	React.useEffect(() => {
@@ -60,6 +64,17 @@ export function CreateTaskWork({data}: CreateTaskWorkProps) {
 
 
 	}, [on])
+
+	// Handle form validation
+	React.useEffect(() => {
+		onValidationStateChange(!isEmpty(on.folder)
+			&& !isEmpty(save.path)
+			&& !isEmpty(on.folder)
+			&& !(save.type === SaveTypeEnum.Ssh && !isConnectionInfoValid(save.connectionInfo!))
+			&& !(on.type === TaskOnTypeEnum.Ssh && !isConnectionInfoValid(on.connectionInfo!))
+		)
+	}, [on, save, onValidationStateChange])
+
 
 	return <>
 		<Grid item xs>
@@ -103,13 +118,18 @@ export function CreateTaskWork({data}: CreateTaskWorkProps) {
 			<Grid item>
 				<TextField
 					fullWidth
+					defaultValue={on.folder}
+					error={isEmpty(on.folder)}
 					label={on.type === TaskOnTypeEnum.Ssh ? "Remote folder" : "Local folder"}
 					onChange={e => changeOnProperty("folder", e.target.value)}
 				/>
 			</Grid>
 			{
 				on.type === TaskOnTypeEnum.Ssh && on.connectionInfo && <Grid item>
-					<ConnectionInfo data={on.connectionInfo} onChange={e => changeOnProperty("connectionInfo", e)}/>
+					<ConnectionInfo
+						data={on.connectionInfo}
+						onChange={e => changeOnProperty("connectionInfo", e)}
+					/>
 				</Grid>
 			}
 
@@ -140,6 +160,8 @@ export function CreateTaskWork({data}: CreateTaskWorkProps) {
 			<Grid item>
 				<TextField
 					fullWidth
+					defaultValue={save.path}
+					error={isEmpty(save.path)}
 					label={save.type === SaveTypeEnum.Ssh ? "Remote path" : "Local path"}
 					onChange={e => changeSaveProperty("path", e.target.value)}
 				/>

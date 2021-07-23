@@ -33,7 +33,11 @@ export class ProcessService {
 
 	@Log(ProcessService.logger)
 	private async processListSsh({folder, connectionInfo}: ITaskOnSsh) {
-		const client = await Services.ssh.init(connectionInfo);
+		const privateKey = Buffer.from(connectionInfo.privateKey as string, "base64");
+		const client = await Services.ssh.init({
+			...connectionInfo,
+			privateKey,
+		});
 		ProcessService.logger.info({client})
 		return (await client.list(folder)).map(file => file.name);
 	}
@@ -44,7 +48,7 @@ export class ProcessService {
 	}
 
 
-	// region save files
+	// region save files.ts
 
 	@Log(ProcessService.logger)
 	private async saveListLocal(info: ISaveFilesLocal, files: string[]) {

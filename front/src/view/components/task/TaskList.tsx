@@ -12,7 +12,7 @@ const TaskList = () => {
 		<Box className={"TaskList"}>
 			<Container>
 				<Grid container direction={"column"} spacing={4}>
-					{conf.tasks.map(task => <Grid item>
+					{conf.tasks.map(task => <Grid item key={task.id}>
 						<Task data={task}/>
 					</Grid>)}
 				</Grid>

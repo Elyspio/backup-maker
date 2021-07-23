@@ -1,4 +1,19 @@
 import {ConnectOptions} from "ssh2-sftp-client";
+import {Description, Property, Required} from "@tsed/schema";
+
+
+export interface ConnectionInfo {
+	// Hostname or IP address of the server.
+	host: string;
+	// Port number of the server.
+	port: number;
+	// Username for authentication.
+	username: string;
+	// Password for password-based user authentication.
+	password: string;
+	// Private key (base64 encoded).
+	privateKey: string;
+}
 
 export enum TaskType {
 	local = "local",
@@ -39,7 +54,7 @@ export interface ITaskOnLocal {
 
 export interface ITaskOnSsh extends Omit<ITaskOnLocal, "type"> {
 	type: TaskType.ssh,
-	connectionInfo: ConnectOptions
+	connectionInfo: ConnectionInfo
 }
 
 export interface ISaveFilesLocal {
@@ -49,6 +64,6 @@ export interface ISaveFilesLocal {
 
 export interface ISaveFilesSsh extends Omit<ISaveFilesLocal, "type"> {
 	type: TaskType.ssh
-	connectionInfo: ConnectOptions
+	connectionInfo: ConnectionInfo
 
 }
