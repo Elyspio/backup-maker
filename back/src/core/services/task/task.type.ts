@@ -1,7 +1,3 @@
-import {ConnectOptions} from "ssh2-sftp-client";
-import {Description, Property, Required} from "@tsed/schema";
-
-
 export interface ConnectionInfo {
 	// Hostname or IP address of the server.
 	host: string;

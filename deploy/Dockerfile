@@ -22,13 +22,14 @@ RUN cd /front && npm run build
 # Running
 FROM node:16-alpine
 
+RUN apk add --no-cache openssh
+
 COPY --from=builder-back /back/package.json /back/package.json
 RUN cd /back && npm install --only=prod
 
 COPY --from=builder-back /back/build /back/build
 COPY --from=builder-front /front/build /front
 
-RUN apk add --no-cache openssh
 
 WORKDIR /back
 ENV FRONT_PATH /front

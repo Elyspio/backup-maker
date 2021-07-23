@@ -5,5 +5,5 @@ import {UtilityService} from "./utils";
 export const Services = {
 	task: new TaskService(),
 	file: new FileService(),
-	utility : new UtilityService()
+	utility: new UtilityService()
 }

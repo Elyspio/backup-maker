@@ -5,7 +5,7 @@ import {createTask, setTaskCreationSchedule, setTaskCreationState} from "../../.
 import Interval from "../common/schedule/Interval";
 import {CreateTaskWork} from "./CreateTaskWork";
 import "./CreateTask.scss"
-import { Button } from '../../utils/button/Button';
+import {Button} from '../../utils/button/Button';
 
 const CreateTask = () => {
 

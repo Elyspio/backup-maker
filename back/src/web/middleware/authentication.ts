@@ -1,10 +1,10 @@
 import {IMiddleware, Middleware, QueryParams, Req} from "@tsed/common";
 import {ArrayOf, Integer, Property, Returns} from "@tsed/schema";
 import {Unauthorized} from "@tsed/exceptions"
-import {Services} from "../../core/services";
 import {Request} from "express"
 import {authorization_cookie_token} from "../../config/authentication";
 import {getLogger} from "../../core/utils/logger";
+import {AuthenticationService} from "../../core/services/authentication";
 
 export class UnauthorizedModel {
 	@ArrayOf(String)
@@ -20,6 +20,10 @@ export class UnauthorizedModel {
 
 @Middleware()
 export class RequireLogin implements IMiddleware {
+
+
+	constructor(private authenticationService: AuthenticationService) {
+	}
 
 	private static log = getLogger.middleware(RequireLogin)
 
@@ -41,7 +45,7 @@ export class RequireLogin implements IMiddleware {
 				token = token ?? headerToken as string
 
 
-				if (await Services.authentication.isAuthenticated(token)) {
+				if (await this.authenticationService.isAuthenticated(token)) {
 					return true
 				} else throw ""
 			} catch (e) {

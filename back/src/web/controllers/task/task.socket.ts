@@ -1,25 +1,44 @@
-import {IO, Nsp, Socket, SocketService, SocketSession} from "@tsed/socketio";
+import {Inject, InjectorService, OnInit} from "@tsed/common";
+import {Namespace, Nsp, OnNamespaceInit, Socket, SocketIOServer, SocketService, SocketSession,} from "@tsed/socketio";
 import * as SocketIO from "socket.io";
-import {Services} from "../../../core/services";
+import {ConfigService, ServiceConfig} from "../../../core/services/task/config";
 
 @SocketService("/socket.io/config")
-export class MySocketService {
+export class TaskSocketService implements OnInit, OnNamespaceInit {
 
-	@Nsp nsp!: SocketIO.Namespace;
+	private static readonly events = {newConfig: "new-config"};
 
-	private readonly events = {newConfig: "new-config"};
+	@Inject()
+	injector: InjectorService;
+	@Nsp nsp: Namespace;
+	private services: { config: ConfigService };
+	@Inject()
+	private io: SocketIOServer;
 
-	constructor(@IO private io: SocketIO.Server) {
-		Services.task.on("update", config => {
-			this.nsp.emit(this.events.newConfig, config);
-		})
+	/**
+	 * Triggered the namespace is created
+	 */
+	$onNamespaceInit(nsp: SocketIO.Namespace) {
+		this.nsp = nsp;
+	}
+
+	$onInit() {
+		this.services = {
+			config: this.injector.get<ConfigService>(ConfigService)!
+		}
 	}
 
 	/**
 	 * Triggered when a new client connects to the Namespace.
 	 */
-	$onConnection(@Socket socket: SocketIO.Socket, @SocketSession session: SocketSession) {
-		socket.emit(this.events.newConfig, Services.task.getConfig())
+	async $onConnection(@Socket socket: SocketIO.Socket, @SocketSession session: SocketSession) {
+		socket.emit(TaskSocketService.events.newConfig, await this.services.config.getConfig())
+	}
+
+	emitUpdate(conf: ServiceConfig) {
+		if (this.nsp === undefined) setTimeout(() => this.emitUpdate(conf), 500)
+		else this.nsp.emit(TaskSocketService.events.newConfig, conf);
 	}
 
 }
+

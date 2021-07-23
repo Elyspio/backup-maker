@@ -3,6 +3,7 @@ import * as path from "path";
 import * as os from "os";
 import {Log} from "../utils/decorators/logger";
 import {getLogger} from "../utils/logger";
+import {Service} from "@tsed/common";
 
 const {writeFile, readFile} = promises
 
@@ -10,11 +11,12 @@ export const files = {
 	configFile: process.env.CONFIG_PATH ?? "./config.json"
 }
 
-export class Storage {
+@Service()
+export class StorageService {
 
-	private static logger = getLogger.service(Storage)
+	private static logger = getLogger.service(StorageService)
 
-	@Log(Storage.logger, [0])
+	@Log(StorageService.logger, [0])
 	async store(name: string, data: string | object) {
 
 		if (name[0] === "~") {
@@ -26,7 +28,7 @@ export class Storage {
 		return writeFile(path.resolve(name), data);
 	}
 
-	@Log(Storage.logger)
+	@Log(StorageService.logger)
 	async read(name: string) {
 		return (await readFile(name)).toString()
 	}

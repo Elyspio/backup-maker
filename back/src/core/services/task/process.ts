@@ -1,26 +1,48 @@
 import {Log} from "../../utils/decorators/logger";
-import {Services} from "../index";
 import {readdir} from "fs/promises";
 import {getLogger} from "../../utils/logger";
 import {ISaveFilesLocal, ISaveFilesSsh, ITask, ITaskOnLocal, ITaskOnSsh, TaskState, TaskType, TaskWorkType} from "./task.type";
+import {Service} from "@tsed/common";
+import {StorageService} from "../storage";
+import {SshService} from "../ssh";
+import {ConfigService} from "./config";
+import {TaskNotFoundException} from "./config.exception";
 
+@Service()
 export class ProcessService {
-
 	private static logger = getLogger.service(ProcessService);
+	private services: { config: ConfigService; ssh: SshService; storage: StorageService };
 
-	@Log(ProcessService.logger)
-	public async process(conf: ITask) {
-		conf.schedule.state = TaskState.running;
-		conf.schedule.lastRun = new Date();
-		await Services.task.save();
-
-		if (conf.work.type === TaskWorkType.list) await this.processList(conf.work)
-
-		conf.schedule.state = TaskState.waiting;
-		await Services.task.save();
+	constructor(taskService: ConfigService, storageService: StorageService, sshService: SshService) {
+		this.services = {
+			config: taskService,
+			storage: storageService,
+			ssh: sshService
+		}
 	}
 
-	@Log(ProcessService.logger)
+	@Log(ProcessService.logger, false)
+	public async process(conf: ITask) {
+
+		ProcessService.logger.debug(`Processing task with id=${conf.id}`)
+
+		const task = this.services.config.getTask(conf.id);
+		if (!task) {
+			throw new TaskNotFoundException(conf.id)
+		}
+		conf = await this.services.config.alterTask({
+			...conf,
+			schedule: {
+				...conf.schedule,
+				state: TaskState.running,
+				lastRun: new Date()
+			}
+		})
+		if (conf.work.type === TaskWorkType.list) await this.processList(conf.work)
+		await this.services.config.setTaskState(conf.id, TaskState.waiting);
+	}
+
+	@Log(ProcessService.logger, false)
 	private async processList(work: ITask["work"]) {
 		let nodes = Array<string>();
 		if (work.on.type == TaskType.local) nodes = await this.processListLocal(work.on)
@@ -31,33 +53,31 @@ export class ProcessService {
 
 	}
 
-	@Log(ProcessService.logger)
+	// region process
+
+	@Log(ProcessService.logger, false)
 	private async processListSsh({folder, connectionInfo}: ITaskOnSsh) {
-		const privateKey = Buffer.from(connectionInfo.privateKey as string, "base64");
-		const client = await Services.ssh.init({
-			...connectionInfo,
-			privateKey,
-		});
-		ProcessService.logger.info({client})
+		const client = await this.services.ssh.init(connectionInfo);
 		return (await client.list(folder)).map(file => file.name);
 	}
 
-	@Log(ProcessService.logger)
+	@Log(ProcessService.logger, false)
 	private async processListLocal({folder,}: ITaskOnLocal) {
 		return readdir(folder)
 	}
 
+	// endregion process
 
-	// region save files.ts
+	// region save
 
-	@Log(ProcessService.logger)
+	@Log(ProcessService.logger, false)
 	private async saveListLocal(info: ISaveFilesLocal, files: string[]) {
-		await Services.storage.store(info.path, {files})
+		await this.services.storage.store(info.path, {files})
 	}
 
-	@Log(ProcessService.logger)
+	@Log(ProcessService.logger, false)
 	private async saveListSsh(info: ISaveFilesSsh, files: string[]) {
-		const client = await Services.ssh.init(info.connectionInfo);
+		const client = await this.services.ssh.init(info.connectionInfo);
 		await client.put(JSON.stringify({files}, null, 4), info.path)
 	}
 
