@@ -26,39 +26,39 @@ function Schedule({data: {state, lastRun, interval}}: ScheduleProps) {
 		return () => clearInterval(interval);
 	}, [])
 
-	const {lastRunStr, nextRunStr} = useMemo(() => {
+	const {nextRunStr, lastRunStrFull} = useMemo(() => {
 
 		const nbSeconds = now.diff(dayjs(lastRun).add(interval, "milliseconds"), "seconds");
 
 		return {
-			lastRunStr: formatDuration(dayjs.duration(now.diff(lastRun), "milliseconds")),
-			nextRunStr: state === ScheduleStateEnum.Waiting ? formatDuration(dayjs.duration(nbSeconds, "seconds")) : "Never"
+			nextRunStr: state === ScheduleStateEnum.Waiting ? formatDuration(dayjs.duration(nbSeconds, "seconds")) : "Never",
+			lastRunStrFull: dayjs(lastRun).format("DD/MM/YYYY hh:mm:ss")
 		}
 	}, [lastRun, interval, now, state])
 
 	return (
 		<Grid container spacing={4} alignItems={"center"}>
 
-			<Grid item>
-				<Typography color={"textPrimary"} className={"task-title"} variant={"overline"}>Schedule</Typography>
-			</Grid>
-
-			<Grid item>
+			<Grid item xs>
 				<Interval value={interval} readonly/>
 			</Grid>
 
-			<Grid item>
+			<Grid item xs>
 				<TextHeader header={"State"} text={state}/>
 			</Grid>
 
-			<Grid item>
-				<TextHeader header={"Last run"} text={lastRunStr ?? "Never"}/>
+			<Grid container item  alignItems={"center"} xs>
+				<Grid item>
+					<TextHeader header={"Last run"} text={lastRunStrFull ?? "Never"}/>
+				</Grid>
+
+
+				<Grid item>
+					<TextHeader header={"Next run"} text={nextRunStr ?? "Never"}/>
+				</Grid>
 			</Grid>
 
 
-			<Grid item>
-				<TextHeader header={"Next run"} text={nextRunStr ?? "Never"}/>
-			</Grid>
 		</Grid>
 	);
 }

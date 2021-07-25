@@ -1,6 +1,6 @@
 .Task {
-	padding: 2rem;
 	position: relative;
+	width: 50rem;
 
 	.task-title {
 		width: 6.4rem;
@@ -10,11 +10,17 @@
 	.task-actions {
 		display: none;
 		position: absolute;
-		top: 1rem;
-		right: 1rem;
+		top: 3.5rem;
+		right: .5rem;
 	}
 
 	&:hover .task-actions {
 		display: block;
+	}
+
+	.TabPanel {
+		margin: 2rem;
+		padding-left: 2rem;
+		padding-right: 2rem;
 	}
 }

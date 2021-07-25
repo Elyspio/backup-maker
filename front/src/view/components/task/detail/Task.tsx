@@ -1,13 +1,14 @@
 import React from 'react';
-import {ScheduleStateEnum, Task as ITask, TaskWorkListTypeEnum} from "../../../../core/apis/backend";
-import {Box, Grid, IconButton, Paper} from "@material-ui/core";
-import {TaskWorkList} from "./list/TaskWorkList";
+import {ScheduleStateEnum, Task as ITask} from "../../../../core/apis/backend";
+import {Box, IconButton, Paper} from "@material-ui/core";
+import {TaskWorkListOn, TaskWorkListSave} from "./list/TaskWorkList";
 import Schedule from "../common/schedule/Schedule";
 import "./Task.scss"
 import {Close, PlayArrow, Stop} from "@material-ui/icons";
 import {green, grey, red} from "@material-ui/core/colors";
 import {useAppDispatch} from "../../../../store";
 import {removeTask, startTask, stopTask} from "../../../../store/module/task/task.action";
+import {TabContainer, TabContainerProps} from "../../utils/tabs/TabPanel";
 
 type TaskProps = {
 	data: ITask
@@ -23,33 +24,42 @@ function Task({data: {work, id, schedule}}: TaskProps) {
 		close: grey[900],
 	}
 
+	const tabs: TabContainerProps["items"] = [
+		{
+			label: "Schedule",
+			component: <Schedule data={schedule}/>
+		},
+		{
+			label: "Work",
+			component: <TaskWorkListOn data={work}/>
+		},
+		{
+			label: "Save",
+			component: <TaskWorkListSave data={work}/>
+		}
+	]
+
 	return (
 		<Paper className={"Task"} elevation={2}>
-			<Grid container direction={"column"} spacing={4}>
-				{work.type === TaskWorkListTypeEnum.List && <TaskWorkList data={work}/>}
-				<Grid item>
-					<Schedule data={schedule}/>
-				</Grid>
-			</Grid>
-
+			<TabContainer items={tabs}/>
 			<Box className={"task-actions"}>
-				<IconButton
-					onClick={() => dispatch(startTask(id))}
-					disabled={schedule.state !== ScheduleStateEnum.Stopped}>
-					<PlayArrow style={{color: colors.play}}/>
-				</IconButton>
-				<IconButton
-					onClick={() => dispatch(stopTask(id))}
-					disabled={schedule.state === ScheduleStateEnum.Stopped}>
-					<Stop style={{color: colors.stop}}/>
-				</IconButton>
+
+				{
+					schedule.state === ScheduleStateEnum.Stopped
+						? <IconButton onClick={() => dispatch(startTask(id))}>
+							<PlayArrow style={{color: colors.play}}/>
+						</IconButton>
+						: <IconButton onClick={() => dispatch(stopTask(id))}>
+							<Stop style={{color: colors.stop}}/>
+						</IconButton>
+				}
+
+
 				<IconButton
 					onClick={() => dispatch(removeTask(id))}>
 					<Close style={{color: colors.close}}/>
 				</IconButton>
 			</Box>
-
-
 		</Paper>
 	);
 }

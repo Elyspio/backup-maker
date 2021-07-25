@@ -9,68 +9,54 @@ type TaskProps = {
 	data: Task["work"]
 }
 
+export function TaskWorkListOn({data}: TaskProps) {
+	return <Grid item container spacing={4} alignItems={"center"}>
 
-export function TaskWorkList({data}: TaskProps) {
-	return (
-		<>
-			<Grid item container spacing={2} alignItems={"center"}>
+		<Grid item xs>
+			<TextHeader header={"Work type"} text={data.on.type.toString()}/>
+		</Grid>
 
-				<Grid item className={"task-title"}>
-					<Typography color={"textPrimary"} variant={"overline"}>Work</Typography>
-				</Grid>
-
-				<Grid item xs>
-					<TextHeader header={"Work type"} text={data.on.type.toString()}/>
-				</Grid>
-
-				<Grid item xs>
-					<TextHeader
-						header={data.on.type === TaskOnTypeEnum.Ssh
-							? "Remote folder"
-							: "Local folder"
-						}
-						text={data.on.folder}
-					/>
-				</Grid>
-				{
-					data.on.type === TaskOnTypeEnum.Ssh && data.save.connectionInfo && <Grid item xs={6}>
-						<ConnectionInfo data={data.save.connectionInfo} readonly/>
-					</Grid>
+		<Grid item xs>
+			<TextHeader
+				header={data.on.type === TaskOnTypeEnum.Ssh
+					? "Remote folder"
+					: "Local folder"
 				}
-
+				text={data.on.folder}
+			/>
+		</Grid>
+		{
+			data.on.type === TaskOnTypeEnum.Ssh && data.on.connectionInfo && <Grid item xs={6}>
+				<ConnectionInfo data={data.on.connectionInfo} readonly/>
 			</Grid>
+		}
 
-			<Grid item container spacing={2} alignItems={"center"}>
+	</Grid>
+}
 
-				<Grid item className={"task-title"}>
-					<Typography color={"textPrimary"} variant={"overline"}>Save</Typography>
-				</Grid>
+export function TaskWorkListSave({data}: TaskProps) {
+	return <Grid item container spacing={2} >
 
+		<Grid item xs={6}>
+			<TextHeader header={"Save type"} text={data.save.type.toString()}/>
+		</Grid>
 
-				<Grid item xs>
-					<TextHeader header={"Save type"} text={data.save.type.toString()}/>
-				</Grid>
-
-				<Grid item xs>
-					<TextHeader
-						header={data.save.type === SaveTypeEnum.Ssh
-							? "Remote path"
-							: "Local path"
-						}
-						text={data.save.path}
-					/>
-				</Grid>
-
-
-				{
-					data.save.type === SaveTypeEnum.Ssh && data.save.connectionInfo && <Grid item>
-						<ConnectionInfo data={data.save.connectionInfo} readonly
-						/>
-					</Grid>
+		<Grid item xs={6}>
+			<TextHeader
+				header={data.save.type === SaveTypeEnum.Ssh
+					? "Remote path"
+					: "Local path"
 				}
+				text={data.save.path}
+			/>
+		</Grid>
 
+
+		{
+			data.save.type === SaveTypeEnum.Ssh && data.save.connectionInfo && <Grid item xs={12}>
+				<ConnectionInfo data={data.save.connectionInfo} readonly/>
 			</Grid>
-		</>
+		}
 
-	);
+	</Grid>
 }

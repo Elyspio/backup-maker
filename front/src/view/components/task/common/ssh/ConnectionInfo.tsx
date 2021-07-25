@@ -1,8 +1,8 @@
 import React from 'react';
 import {ConnectionInfo as IConnectionInfo} from "../../../../../core/apis/backend";
-import {Grid, TextField} from "@material-ui/core";
-import InputFile from "../../../utils/input-file/InputFile";
+import {Grid, TextField, Typography} from "@material-ui/core";
 import {Services} from "../../../../../core/services";
+import InputFile from "../../../utils/input-file/InputFile";
 
 
 type ConnectionInfoProps = {
@@ -70,25 +70,36 @@ function ConnectionInfo({data, readonly, onChange}: ConnectionInfoProps) {
 				/>
 			</Grid>
 
-			<Grid container item direction={"row"} spacing={2} alignItems={"center"} justifyContent={"space-evenly"} xs={12}>
+			<Grid container item direction={"row"}  alignItems={"center"} justifyContent={"space-evenly"} xs={12}>
 
-				<Grid item xs={6}>
-					<TextField
-						label={"Password"}
-						fullWidth
-						error={Services.utility.string.isEmpty(password) && Services.utility.string.isEmpty(privateKey)}
-						onChange={e => updateProperty("password", e)}
-						value={password}
-					/>
-				</Grid>
+				{readonly ?
+					<Typography color={"textPrimary"}>
+						{!Services.utility.string.isEmpty(password) && "Password Authentication"}
+						{!Services.utility.string.isEmpty(privateKey) && "Private key Authentication"}
+					</Typography>
+					: <>
+						<Grid item xs={6}>
+							<TextField
+								label={"Password"}
+								fullWidth
+								error={Services.utility.string.isEmpty(password) && Services.utility.string.isEmpty(privateKey)}
+								onChange={e => updateProperty("password", e)}
+								value={password}
+							/>
+						</Grid>
 
-				<Grid item xs={6}>
-					<InputFile
-						error={Services.utility.string.isEmpty(password) && Services.utility.string.isEmpty(privateKey)}
-						mode={"base64"}
-						label={Services.utility.string.isEmpty(privateKey) ? "Select private key" : "Clear private key"}
-						onSelect={(base64) => updateProperty("privateKey", base64)}/>
-				</Grid>
+						<Grid item xs={6}>
+							<InputFile
+								error={Services.utility.string.isEmpty(password) && Services.utility.string.isEmpty(privateKey)}
+								mode={"base64"}
+								label={Services.utility.string.isEmpty(privateKey) ? "Select private key" : "Clear private key"}
+								onSelect={(base64) => updateProperty("privateKey", base64)}/>
+						</Grid>
+					</>
+
+				}
+
+
 			</Grid>
 
 
