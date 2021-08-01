@@ -16,11 +16,7 @@ export function TabPanel(props: TabPanelProps) {
 			aria-labelledby={`scrollable-auto-tab-${index}`}
 			{...other}
 		>
-			{value === index && (
-				<Box>
-					{children}
-				</Box>
-			)}
+			{value === index && children}
 		</div>
 	);
 }
@@ -37,6 +33,10 @@ const useStyles = makeStyles((theme) => ({
 		flexGrow: 1,
 		width: '100%',
 		backgroundColor: theme.palette.background.paper,
+		display: "flex",
+		flexDirection: "column" ,
+		alignItems: "center",
+		justifyContent: "center"
 	},
 }));
 
@@ -57,11 +57,11 @@ export function TabContainer(props: TabContainerProps) {
 				value={value}
 				onChange={handleChange}
 				variant="fullWidth"
-				indicatorColor="secondary"
-				textColor="secondary"
+				indicatorColor="primary"
+				textColor="primary"
 				aria-label="icon label tabs example"
 			>
-				{props.items.map(item => <Tab key={item.label} label={item.label}/>)}
+				{props.items.map((item, i) => <Tab key={item.label} label={item.label}/>)}
 			</Tabs>
 		</AppBar>
 		{props.items.map((item, i) => <TabPanel

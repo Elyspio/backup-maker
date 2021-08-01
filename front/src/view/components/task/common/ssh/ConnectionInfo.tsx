@@ -3,7 +3,7 @@ import {ConnectionInfo as IConnectionInfo} from "../../../../../core/apis/backen
 import {Grid, TextField, Typography} from "@material-ui/core";
 import {Services} from "../../../../../core/services";
 import InputFile from "../../../utils/input-file/InputFile";
-
+import "./ConnectionInfo.scss"
 
 type ConnectionInfoProps = {
 	data: IConnectionInfo,
@@ -40,12 +40,13 @@ function ConnectionInfo({data, readonly, onChange}: ConnectionInfoProps) {
 
 
 	return (
-		<Grid container direction={"row"} spacing={2}>
+		<Grid container direction={"row"} spacing={2} className={"ConnectionInfo" + (readonly ? " readonly" : "")}>
 			<Grid item xs={12}>
 				<TextField
 					fullWidth
 					label={"Host"}
 					onChange={e => updateProperty("host", e)}
+					disabled={readonly}
 					value={host}
 				/>
 			</Grid>
@@ -56,6 +57,7 @@ function ConnectionInfo({data, readonly, onChange}: ConnectionInfoProps) {
 					fullWidth
 					error={Services.utility.string.isEmpty(username)}
 					onChange={e => updateProperty("username", e)}
+					disabled={readonly}
 					value={username}
 				/>
 			</Grid>
@@ -66,11 +68,12 @@ function ConnectionInfo({data, readonly, onChange}: ConnectionInfoProps) {
 					fullWidth
 					error={Services.utility.string.isEmpty(port.toString())}
 					onChange={e => updateProperty("port", e)}
+					disabled={readonly}
 					value={port}
 				/>
 			</Grid>
 
-			<Grid container item direction={"row"}  alignItems={"center"} justifyContent={"space-evenly"} xs={12}>
+			<Grid container item direction={"row"} alignItems={"center"} justifyContent={"space-evenly"} xs={12}>
 
 				{readonly ?
 					<Typography color={"textPrimary"}>
@@ -82,9 +85,11 @@ function ConnectionInfo({data, readonly, onChange}: ConnectionInfoProps) {
 							<TextField
 								label={"Password"}
 								fullWidth
+								type="paswword"
 								error={Services.utility.string.isEmpty(password) && Services.utility.string.isEmpty(privateKey)}
 								onChange={e => updateProperty("password", e)}
 								value={password}
+								disabled={readonly}
 							/>
 						</Grid>
 
@@ -93,6 +98,7 @@ function ConnectionInfo({data, readonly, onChange}: ConnectionInfoProps) {
 								error={Services.utility.string.isEmpty(password) && Services.utility.string.isEmpty(privateKey)}
 								mode={"base64"}
 								label={Services.utility.string.isEmpty(privateKey) ? "Select private key" : "Clear private key"}
+								disabled={readonly}
 								onSelect={(base64) => updateProperty("privateKey", base64)}/>
 						</Grid>
 					</>

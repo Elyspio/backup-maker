@@ -3,3 +3,4 @@ node_modules
 .idea
 !front/public/conf.js
 back/config.json
+back/tests/files

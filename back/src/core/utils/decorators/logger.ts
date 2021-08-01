@@ -9,7 +9,13 @@ declare global {
 }
 
 
-export const Log = (logger: Logger, logOnly: number[] | false = []) => (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+/**
+ *
+ * @param logger
+ * @param logArguments false means that no argument is logged, [] means that all arguments are logged, [0] means that only the first argument is logged
+ * @constructor
+ */
+export const Log = (logger: Logger, logArguments: number[] | boolean = true) => (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
 	let originalMethod = descriptor.value
 
 
@@ -18,10 +24,10 @@ export const Log = (logger: Logger, logOnly: number[] | false = []) => (target: 
 	descriptor.value = function (...args: any[]) {
 		let argsStr = ""
 
-		if (logOnly !== false) {
+		if (logArguments !== false) {
 			argsStr = argsName.reduce((previousValue, currentValue, currentIndex) => {
-				if (logOnly.length > 0) {
-					if (!logOnly.includes(currentIndex)) return previousValue;
+				if (logArguments!== true) {
+					if (!logArguments.includes(currentIndex)) return previousValue;
 				}
 				return `${previousValue} ${currentValue}=${JSON.stringify(args[currentIndex])}`
 			}, "-");
@@ -42,8 +48,8 @@ export const Log = (logger: Logger, logOnly: number[] | false = []) => (target: 
 				return ret;
 			});
 			if (typeof promise.catch === "function") {
-				promise.catch((e: any) => {
-					logger.error(`${propertyKey} - Error ${e}`)
+				promise.catch((e: Error) => {
+					logger.error(`${propertyKey} - Error ${e}`, {stack: e.stack})
 					return e
 				});
 			}

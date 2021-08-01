@@ -78,7 +78,9 @@ export class ProcessService {
 	@Log(ProcessService.logger, false)
 	private async saveListSsh(info: ISaveFilesSsh, files: string[]) {
 		const client = await this.services.ssh.init(info.connectionInfo);
-		await client.put(JSON.stringify({files}, null, 4), info.path)
+		const {clean, filepath} = await this.services.storage.createTempFile(JSON.stringify({files}, null, 4));
+		await client.put(filepath, info.path)
+		await clean();
 	}
 
 	// endregion

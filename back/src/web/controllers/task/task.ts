@@ -26,12 +26,12 @@ export class Task {
 	@Description("Get all configs")
 	@Log(Task.log)
 	async getConfig() {
-		return this.services.config.getConfig();
+		return this.services.config.getConfig(false);
 	}
 
 
 	@Post("/add")
-	@Returns(201, Number)
+	@Returns(constants.HTTP_STATUS_CREATED, Number)
 	@Description("Add a local config")
 	@Log(Task.log)
 	async createTask(@BodyParams() @Required() config: AddTask) {
@@ -40,7 +40,7 @@ export class Task {
 
 
 	@Post("/:id/run")
-	@Returns(constants.HTTP_STATUS_NO_CONTENT)
+	@Returns(201)
 	@Log(Task.log)
 	async runTask(@PathParams("id") id: number) {
 		return this.services.task.run(id);

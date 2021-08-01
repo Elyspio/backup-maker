@@ -1,4 +1,4 @@
-import {Grid, Typography} from "@material-ui/core";
+import {Grid} from "@material-ui/core";
 import {SaveTypeEnum, Task, TaskOnTypeEnum} from "../../../../../core/apis/backend";
 import React from "react";
 
@@ -25,6 +25,7 @@ export function TaskWorkListOn({data}: TaskProps) {
 				text={data.on.folder}
 			/>
 		</Grid>
+
 		{
 			data.on.type === TaskOnTypeEnum.Ssh && data.on.connectionInfo && <Grid item xs={6}>
 				<ConnectionInfo data={data.on.connectionInfo} readonly/>
@@ -35,7 +36,7 @@ export function TaskWorkListOn({data}: TaskProps) {
 }
 
 export function TaskWorkListSave({data}: TaskProps) {
-	return <Grid item container spacing={2} >
+	return <Grid item container spacing={2} alignItems={"center"} >
 
 		<Grid item xs={6}>
 			<TextHeader header={"Save type"} text={data.save.type.toString()}/>
@@ -50,7 +51,6 @@ export function TaskWorkListSave({data}: TaskProps) {
 				text={data.save.path}
 			/>
 		</Grid>
-
 
 		{
 			data.save.type === SaveTypeEnum.Ssh && data.save.connectionInfo && <Grid item xs={12}>

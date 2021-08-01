@@ -2,11 +2,12 @@ import {existsSync, readFileSync} from "fs";
 import {files, StorageService} from "../storage";
 import {getLogger} from "../../utils/logger";
 import {Log} from "../../utils/decorators/logger";
-import {ITask, TaskState} from "./task.type";
+import {ITask, TaskState, TaskType} from "./task.type";
 import {Inject, InjectorService, OnInit, Service} from "@tsed/common";
-const merge = require("lodash/merge");
 import {TaskNotFoundException} from "./config.exception";
 import {TaskSocketService} from "../../../web/controllers/task/task.socket";
+
+const merge = require("lodash/merge");
 
 
 export interface ServiceConfig {
@@ -22,10 +23,42 @@ export class ConfigService implements OnInit {
 	private static lastId: number;
 	@Inject()
 	injector: InjectorService;
-	private config: ServiceConfig
+	private _config: ServiceConfig
 	private services: {
 		storage: StorageService,
 		taskSocketService: TaskSocketService
+	}
+
+	private get config(): ServiceConfig {
+		return {
+			...this._config,
+			tasks: this._config.tasks.map(task => ({
+				...task,
+				work: {
+					...task.work,
+					save: {
+						...task.work.save,
+						...(task.work.save.type === TaskType.ssh && {
+							"connectionInfo": {
+								...task.work.save.connectionInfo,
+								privateKey: "private"
+							}
+						})
+					},
+					on: {
+						...task.work.on,
+						...(task.work.on.type === TaskType.ssh && {
+							"connectionInfo": {
+								...task.work.on.connectionInfo,
+								...(task.work.on.connectionInfo.privateKey && {privateKey: "private"}),
+								...(task.work.on.connectionInfo.password && {password: "private"}),
+							}
+						}),
+					},
+				}
+			}))
+
+		}
 	}
 
 	$onInit(): void | Promise<any> {
@@ -37,14 +70,14 @@ export class ConfigService implements OnInit {
 		try {
 			if (existsSync(files.configFile)) {
 				const str = readFileSync(files.configFile).toString();
-				this.config = JSON.parse(str);
-				this.config.tasks.forEach(task => task.schedule.state = TaskState.stopped);
-				ConfigService.lastId = this.config.tasks.reduce((acc, current) => acc < current.id ? current.id : acc, 1) ?? 1
+				this._config = JSON.parse(str);
+				this._config.tasks.forEach(task => task.schedule.state = TaskState.stopped);
+				ConfigService.lastId = this._config.tasks.reduce((acc, current) => acc < current.id ? current.id : acc, 1) ?? 1
 			} else {
 				throw "";
 			}
 		} catch {
-			this.config = {
+			this._config = {
 				tasks: []
 			}
 			ConfigService.lastId = 1;
@@ -52,23 +85,24 @@ export class ConfigService implements OnInit {
 		return this.save();
 	}
 
-
 	@Log(ConfigService.logger)
-	public async getConfig() {
+	public async getConfig(raw = true) {
 		return new Promise<ServiceConfig>(resolve => {
-			if (this.config) resolve(this.config);
+			if (this._config) {
+				if(raw) resolve(this._config);
+				else resolve(this.config);
+			}
 			else setTimeout(() => resolve(this.getConfig()), 100);
 		})
 	}
 
-
 	@Log(ConfigService.logger)
 	public getTask(id: ITask["id"]) {
-		return this.config.tasks.find(t => t.id === id);
+		return this._config.tasks.find(t => t.id === id);
 	}
 
 	/**
-	 * @param save if the config has to be saved on disk
+	 * @param save if the _config has to be saved on disk
 	 * @param task
 	 */
 	@Log(ConfigService.logger, false)
@@ -77,7 +111,7 @@ export class ConfigService implements OnInit {
 		if (!t) throw new TaskNotFoundException(task.id);
 		merge(t, task);
 		await this.delete(task.id, save);
-		this.config.tasks.push(t);
+		this._config.tasks.push(t);
 		if (save) await this.save();
 		return t;
 	}
@@ -85,7 +119,7 @@ export class ConfigService implements OnInit {
 	@Log(ConfigService.logger)
 	public async addTask(conf: AddTaskParam) {
 		let id = ++ConfigService.lastId;
-		this.config.tasks.push({
+		this._config.tasks.push({
 			work: conf.work,
 			id,
 			schedule: {
@@ -102,7 +136,7 @@ export class ConfigService implements OnInit {
 	 * Trigger the running every X seconds
 	 * @param id id of a task
 	 * @param state new state of the task
-	 * @param save if the config has to be saved on disk
+	 * @param save if the _config has to be saved on disk
 	 */
 	@Log(ConfigService.logger)
 	public async setTaskState(id: number, state: ITask["schedule"]["state"], save = true) {
@@ -117,19 +151,18 @@ export class ConfigService implements OnInit {
 
 	@Log(ConfigService.logger)
 	public save(): Promise<void> {
-		this.services.taskSocketService.emitUpdate(this.config);
-		return this.services.storage.store(files.configFile, this.config);
+		this.services.taskSocketService.emitUpdate(this._config);
+		return this.services.storage.store(files.configFile, this._config);
 	}
-
 
 	/**
 	 * Delete a task
 	 * @param id
-	 * @param save if the config has to be saved on disk
+	 * @param save if the _config has to be saved on disk
 	 */
 	@Log(ConfigService.logger)
 	async delete(id: number, save: boolean = true) {
-		this.config.tasks = this.config.tasks.filter(x => x.id !== id);
+		this._config.tasks = this._config.tasks.filter(x => x.id !== id);
 		if (save) await this.save();
 	}
 }

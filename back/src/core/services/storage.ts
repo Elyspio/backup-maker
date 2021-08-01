@@ -4,8 +4,9 @@ import * as os from "os";
 import {Log} from "../utils/decorators/logger";
 import {getLogger} from "../utils/logger";
 import {Service} from "@tsed/common";
+import * as crypto from "crypto";
 
-const {writeFile, readFile} = promises
+const {writeFile, readFile, rm, mkdir} = promises
 
 export const files = {
 	configFile: process.env.CONFIG_PATH ?? "./config.json"
@@ -32,4 +33,18 @@ export class StorageService {
 	async read(name: string) {
 		return (await readFile(name)).toString()
 	}
+
+	@Log(StorageService.logger, false)
+	async createTempFile(content: string) {
+		const filename = crypto.randomBytes(16).toString("hex");
+		const tempdir = path.join(os.tmpdir(), "backup-maker")
+		await mkdir(tempdir, {recursive: true});
+		const filepath = path.join(tempdir,  filename);
+		await writeFile(filepath, content);
+		return {
+			filepath,
+			clean: () =>  rm(filepath)
+		}
+	}
+
 }

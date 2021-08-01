@@ -88,7 +88,7 @@ export class TaskService {
 	async stop(id: number) {
 		const task = this.services.config.getTask(id);
 		if (task) {
-			this.services.config.setTaskState(id, TaskState.stopped)
+			await this.services.config.setTaskState(id, TaskState.stopped, false)
 			if (this.intervals[task.id] !== undefined) {
 				clearInterval(this.intervals[task.id])
 			}

@@ -32,7 +32,7 @@ export class TaskSocketService implements OnInit, OnNamespaceInit {
 	 * Triggered when a new client connects to the Namespace.
 	 */
 	async $onConnection(@Socket socket: SocketIO.Socket, @SocketSession session: SocketSession) {
-		socket.emit(TaskSocketService.events.newConfig, await this.services.config.getConfig())
+		socket.emit(TaskSocketService.events.newConfig, await this.services.config.getConfig(false))
 	}
 
 	emitUpdate(conf: ServiceConfig) {

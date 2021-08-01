@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import {ScheduleStateEnum, Task} from "../../../../../core/apis/backend";
-import {Grid, Typography} from "@material-ui/core";
+import {Grid} from "@material-ui/core";
 import Interval from "./Interval";
 import TextHeader from "../../../utils/text-header/TextHeader";
 import {formatDuration} from "../../../../util/date";
@@ -47,7 +47,7 @@ function Schedule({data: {state, lastRun, interval}}: ScheduleProps) {
 				<TextHeader header={"State"} text={state}/>
 			</Grid>
 
-			<Grid container item  alignItems={"center"} xs>
+			<Grid container item alignItems={"center"} xs spacing={2}>
 				<Grid item>
 					<TextHeader header={"Last run"} text={lastRunStrFull ?? "Never"}/>
 				</Grid>

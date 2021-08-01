@@ -5,8 +5,8 @@ services:
         ports:
             - "4009:4000"
         volumes:
-            - backup-maker:/back/
-            - ./conf.js:/front/conf.js
+            - ./config/front/conf.js:/front/conf.js
+            - ./config/back/config.json:/back/config.json
         environment:
             CONFIG_PATH: /back/config.json
 

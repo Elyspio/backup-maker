@@ -8,11 +8,12 @@ interface InputFileProps {
 	mode: "base64",
 	error?: boolean,
 	onSelect: (base64?: string) => void,
-	label: string
+	label: string,
+	disabled?: boolean
 }
 
 
-function InputFile({onSelect, mode, error, label}: InputFileProps) {
+function InputFile({onSelect, mode, error, label, disabled}: InputFileProps) {
 
 	const ref = useRef<HTMLInputElement>(null);
 	const [selected, setSelected] = React.useState(false);
@@ -46,7 +47,12 @@ function InputFile({onSelect, mode, error, label}: InputFileProps) {
 				<input type="file" hidden ref={ref} onChange={onFileChange}/>
 			</Grid>
 			<Grid item>
-				<Button color={error ? "error" : "secondary"} variant={selected ? "outlined" : "outlined"} onClick={openDialog}>{label}</Button>
+				<Button
+					color={error ? "error" : "secondary"}
+					disabled={disabled}
+					variant={selected ? "outlined" : "outlined"}
+					onClick={openDialog}
+				>{label}</Button>
 			</Grid>
 		</Grid>
 	);
