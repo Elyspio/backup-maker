@@ -1,0 +1,64 @@
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS builder-back
+
+ARG MAIN_CSPROJ_PATH
+ARG ROOT_FOLDER
+
+ENV SRC /app
+
+RUN mkdir ${SRC}
+WORKDIR ${SRC}
+
+
+# region optimize dotnet restore
+COPY ${SLN_PATH} ${SRC}/
+COPY ${ROOT_FOLDER}/Entrypoints/*/*.csproj ${SRC}/${ROOT_FOLDER}/Entrypoints
+COPY ${ROOT_FOLDER}/Internal/*/*.csproj ${SRC}/${ROOT_FOLDER}/Internal
+COPY ${ROOT_FOLDER}/Tools/*/*.csproj ${SRC}/${ROOT_FOLDER}/Tools/
+COPY ${ROOT_FOLDER}/Adapters/*/*.csproj ${SRC}/${ROOT_FOLDER}/Adapters/
+
+WORKDIR ${SRC}/${ROOT_FOLDER}/Entrypoints
+RUN find *.csproj | sed -e 's/.csproj//g' | xargs mkdir -p
+RUN find *.csproj | sed -r -e 's/((.+).csproj)/.\/\1 .\/\2/g' | xargs -I % sh -c 'mv %'
+
+WORKDIR ${SRC}/${ROOT_FOLDER}/Internal
+RUN find *.csproj | sed -e 's/.csproj//g' | xargs mkdir -p
+RUN find *.csproj | sed -r -e 's/((.+).csproj)/.\/\1 .\/\2/g' | xargs -I % sh -c 'mv %'
+
+WORKDIR ${SRC}/${ROOT_FOLDER}/Adapters
+RUN find *.csproj | sed -e 's/.csproj//g' | xargs mkdir -p
+RUN find *.csproj | sed -r -e 's/((.+).csproj)/.\/\1 .\/\2/g' | xargs -I % sh -c 'mv %'
+# endregion optimize dotnet restore
+
+
+COPY ${ROOT_FOLDER} ${SRC}/${ROOT_FOLDER}
+
+WORKDIR ${SRC}/${ROOT_FOLDER}
+RUN dotnet restore ${MAIN_CSPROJ_PATH}
+RUN dotnet publish ${MAIN_CSPROJ_PATH} --no-restore -o /app/out
+
+
+# Building front
+FROM --platform=linux/amd64 node:16 as builder-front
+
+COPY front/package.json /front/
+COPY front/yarn.lock /front/
+RUN cd /front && yarn --immutable --immutable-cache --check-cache
+
+COPY front /front/
+RUN cd /front && yarn build
+
+
+# Running
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS production
+
+ARG ENTRY_DLL
+ENV ENTRY_DLL ${ENTRY_DLL}
+
+WORKDIR /back
+COPY --from=builder-back /app/out .
+
+COPY --from=builder-front /front/dist /back/wwwroot
+ENV FRONT_PATH /back/wwwroot
+
+EXPOSE 4000
+CMD dotnet ${ENTRY_DLL}

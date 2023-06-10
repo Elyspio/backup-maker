@@ -1,13 +1,12 @@
-import {createTheme, Theme} from "@material-ui/core";
-import * as colors from "@material-ui/core/colors";
+import { createTheme, Theme } from "@mui/material/styles";
+import * as colors from "@mui/material/colors";
 
 const darkTheme = createTheme({
 	palette: {
-		type: "dark",
+		mode: "dark",
 		secondary: {
 			...colors.grey,
 			main: colors.grey["500"],
-
 		},
 		primary: {
 			...colors.blue,
@@ -16,14 +15,24 @@ const darkTheme = createTheme({
 		background: {
 			paper: "#1d1d1d",
 			default: "#181818",
-		}
-
+		},
+	},
+	components: {
+		MuiPaper: {
+			styleOverrides: {
+				root: {
+					"&.MuiPaper-root": {
+						backgroundImage: "unset !important",
+					},
+				},
+			},
+		},
 	},
 });
 
 const lightTheme = createTheme({
 	palette: {
-		type: "light",
+		mode: "light",
 		secondary: {
 			...colors.grey,
 			main: colors.grey["900"],
@@ -31,6 +40,21 @@ const lightTheme = createTheme({
 		primary: {
 			...colors.blue,
 			main: colors.blue["400"],
+		},
+		background: {
+			paper: "#ffffff",
+			default: "#e6e6e6",
+		},
+	},
+	components: {
+		MuiPaper: {
+			styleOverrides: {
+				root: {
+					"&.MuiPaper-root": {
+						backgroundImage: "unset !important",
+					},
+				},
+			},
 		},
 	},
 });
@@ -41,8 +65,6 @@ export const themes = {
 };
 
 export type Themes = "dark" | "light";
-export const getUrlTheme = (): Themes =>
-	new URL(window.location.toString()).searchParams.get("theme")
-	|| ("light" as any);
+export const getUrlTheme = (): Themes => new URL(window.location.toString()).searchParams.get("theme") || ("dark" as any);
 
 export const getCurrentTheme = (theme: Themes): Theme => themes[theme];

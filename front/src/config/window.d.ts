@@ -1,9 +1,13 @@
 export type Config = {
 	endpoints: {
-		core: string,
-		socket: {
-			namespace: string,
-			hostname: string,
-		}
+		core: string;
+		authentication: string;
+	};
+	loginPageUrl: "http://localhost";
+};
+
+declare global {
+	interface Window {
+		config: Config;
 	}
 }

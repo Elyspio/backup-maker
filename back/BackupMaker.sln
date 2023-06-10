@@ -1,0 +1,62 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.31911.260
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackupMaker.Api.Entrypoints.Web", "Entrypoints\Entrypoints.Web\BackupMaker.Api.Entrypoints.Web.csproj", "{6FAC2AF8-E9B2-424C-B084-AC9A2918948A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackupMaker.Api.Adapters.Rest", "Adapters\Adapters.Rest\BackupMaker.Api.Adapters.Rest.csproj", "{50FA3551-FCC1-46EE-9A03-CC3CCBE67225}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackupMaker.Api.Core", "Internal\Internal.Core\BackupMaker.Api.Core.csproj", "{BAADE704-FB99-4460-8B64-18296AE956DF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackupMaker.Api.Adapters.Mongo", "Adapters\Adapters.Mongo\BackupMaker.Api.Adapters.Mongo.csproj", "{DB580F46-4558-41BE-B3FF-ACA86560D225}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BackupMaker.Api.Abstractions", "Internal\Internal.Abstractions\BackupMaker.Api.Abstractions.csproj", "{328B0283-BE3B-48C6-963D-849661EB9E36}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Adapters", "Adapters", "{5FEC1367-1714-4958-9275-5EC567137D92}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Entrypoints", "Entrypoints", "{51BB580F-17BB-45D9-A065-E909A48696B9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Internal", "Internal", "{6685CB66-B49B-4278-B7C1-264FBC87412C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6FAC2AF8-E9B2-424C-B084-AC9A2918948A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FAC2AF8-E9B2-424C-B084-AC9A2918948A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FAC2AF8-E9B2-424C-B084-AC9A2918948A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FAC2AF8-E9B2-424C-B084-AC9A2918948A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50FA3551-FCC1-46EE-9A03-CC3CCBE67225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50FA3551-FCC1-46EE-9A03-CC3CCBE67225}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50FA3551-FCC1-46EE-9A03-CC3CCBE67225}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50FA3551-FCC1-46EE-9A03-CC3CCBE67225}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAADE704-FB99-4460-8B64-18296AE956DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAADE704-FB99-4460-8B64-18296AE956DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAADE704-FB99-4460-8B64-18296AE956DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAADE704-FB99-4460-8B64-18296AE956DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB580F46-4558-41BE-B3FF-ACA86560D225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB580F46-4558-41BE-B3FF-ACA86560D225}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB580F46-4558-41BE-B3FF-ACA86560D225}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB580F46-4558-41BE-B3FF-ACA86560D225}.Release|Any CPU.Build.0 = Release|Any CPU
+		{328B0283-BE3B-48C6-963D-849661EB9E36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{328B0283-BE3B-48C6-963D-849661EB9E36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{328B0283-BE3B-48C6-963D-849661EB9E36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{328B0283-BE3B-48C6-963D-849661EB9E36}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C06C51DE-C20A-42EF-9888-D7036893957B}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{50FA3551-FCC1-46EE-9A03-CC3CCBE67225} = {5FEC1367-1714-4958-9275-5EC567137D92}
+		{DB580F46-4558-41BE-B3FF-ACA86560D225} = {5FEC1367-1714-4958-9275-5EC567137D92}
+		{6FAC2AF8-E9B2-424C-B084-AC9A2918948A} = {51BB580F-17BB-45D9-A065-E909A48696B9}
+		{328B0283-BE3B-48C6-963D-849661EB9E36} = {6685CB66-B49B-4278-B7C1-264FBC87412C}
+		{BAADE704-FB99-4460-8B64-18296AE956DF} = {6685CB66-B49B-4278-B7C1-264FBC87412C}
+	EndGlobalSection
+EndGlobal

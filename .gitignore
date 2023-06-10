@@ -1,6 +1,6 @@
-node_modules
-*.js
-.idea
-!front/public/conf.js
-back/config.json
-back/tests/files
+﻿.idea
+.vs
+back/**/bin/
+back/**/obj/
+front/build
+front/node_modules

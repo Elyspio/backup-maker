@@ -1,0 +1,27 @@
+version: "3"
+services:
+    backup-maker:
+        container_name: backup-maker
+        image: elyspio/backup-maker
+        volumes:
+            - "./config/front/conf.js:/back/wwwroot/conf.js"
+        networks:
+            - external
+            - backup-maker
+            - authentication
+        labels:
+            - "traefik.enable=true"
+            - "traefik.docker.network=external"
+            - "traefik.http.middlewares.backup-maker-prefix.stripprefix.prefixes=/backup"
+            - "traefik.http.routers.backup-maker.middlewares=backup-maker-prefix@docker"
+            - "traefik.http.routers.backup-maker.rule=PathPrefix(`/backup`)"
+            - "traefik.http.services.backup-maker.loadbalancer.server.port=4000"
+            - "traefik.http.routers.backup-maker.entrypoints=external"
+
+networks:
+    backup-maker:
+        name: backup-maker
+    external:
+        external: true
+    authentication:
+        external: true

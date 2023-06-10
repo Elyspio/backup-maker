@@ -1,0 +1,7 @@
+back/**/bin
+back/**/obj
+.idea
+.vs
+.git
+front/build
+front/node_modules
