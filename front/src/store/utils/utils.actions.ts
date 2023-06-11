@@ -18,7 +18,10 @@ export function createReplaceAction<T>(creator: (module: string) => any): Action
 	return creator("replace");
 }
 
-type ThunkParam = { extra: ExtraArgument; state: RealStoreState };
+type ThunkParam = {
+	extra: ExtraArgument;
+	state: RealStoreState;
+};
 
 export function createAsyncActionGenerator(prefix: string) {
 	return <Ret, Arg = void>(suffix: string, payloadCreator: AsyncThunkPayloadCreator<Ret, Arg, ThunkParam>) => _createAsyncThunk<Ret, Arg>(`${prefix}/${suffix}`, payloadCreator);

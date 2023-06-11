@@ -22,7 +22,18 @@ export function Frame() {
 		logged: s.authentication.logged,
 	}));
 
-	const storeActions = React.useMemo(() => bindActionCreators({ toggleTheme, logout, login }, dispatch), [dispatch]);
+	const storeActions = React.useMemo(
+		() =>
+			bindActionCreators(
+				{
+					toggleTheme,
+					logout,
+					login,
+				},
+				dispatch
+			),
+		[dispatch]
+	);
 
 	const actions = useMemo(() => {
 		const arr = [

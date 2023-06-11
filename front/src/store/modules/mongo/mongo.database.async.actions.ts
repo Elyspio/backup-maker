@@ -32,7 +32,23 @@ export const manageMongoConnections = {
 
 		return databaseMongoService.connections.getAll();
 	}),
+	updateConnectionString: createAsyncThunk("connections/update-connection-string", ({ connectionString, idConnection }: UpdateConnectionStringParams, { extra, getState }) => {
+		const state = getState();
+
+		const databaseMongoService = getService(DatabaseMongoService, extra);
+
+		const con = state["databases/mongo"].connections[idConnection];
+		return toast.promise(databaseMongoService.connections.updateConnectionString(idConnection, connectionString), {
+			error: `Could not update "${con.name}" connection string`,
+			success: `The connection string for "${con.name}" has been updated`,
+		});
+	}),
 };
+
+interface UpdateConnectionStringParams {
+	idConnection: IdConnection;
+	connectionString: string;
+}
 
 export const getMongoDetails = createAsyncThunk("get-details", (_, { extra }) => {
 	const databaseMongoService = getService(DatabaseMongoService, extra);

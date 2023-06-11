@@ -1,9 +1,13 @@
 import React, { useMemo } from "react";
 import { useAppSelector } from "@store";
 import { CollectionInfo, CollectionSizes, MongoConnectionData } from "@apis/backend/generated";
-import { Stack, SxProps, Typography } from "@mui/material";
+import { IconButton, Stack, SxProps, Tooltip, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { AppAccordion } from "@components/utils/accordion/AppAccordion";
+import { DeleteForever, Edit } from "@mui/icons-material";
+import { useModal } from "@hooks/useModal";
+import { DeleteMongoConnection } from "@components/connections/mongo/DeleteMongoConnection";
+import { AddMongoConnection } from "@components/connections/mongo/AddMongoConnection";
 
 enum ColumnField {
 	Name = "name",
@@ -70,7 +74,9 @@ const datagridColumns: GridColDef[] = [
 	},
 ];
 
-function getRow(data: CollectionInfo): { id: string } & Record<ColumnField, any> {
+function getRow(data: CollectionInfo): {
+	id: string;
+} & Record<ColumnField, any> {
 	return {
 		id: data.name,
 		name: data.name,
@@ -82,11 +88,13 @@ function getRow(data: CollectionInfo): { id: string } & Record<ColumnField, any>
 }
 
 export function MongoConnection() {
-	const { detail, name } = useAppSelector((s) => {
-		const state = s.router.location?.state as MongoConnectionData;
+	const { detail, name, id } = useAppSelector((s) => {
+		const state = s.router.location?.state as MongoConnectionData | undefined;
+		if (!state) return {};
 		return {
-			detail: s.databases.mongo.details[state?.id],
-			name: state?.name,
+			detail: s.databases.mongo.details[state.id],
+			id: state.id,
+			name: state.name,
 		};
 	});
 
@@ -112,22 +120,38 @@ export function MongoConnection() {
 		});
 	}, [detail]);
 
-	if (!detail || !name) return null;
+	const deleteModal = useModal(false);
+	const updateModal = useModal(false);
+
+	if (!detail || !name || !id) return null;
 
 	return (
 		<Stack height={"100%"} className={"MongoConnection"} sx={rootSx}>
-			<Stack direction={"row"} spacing={2} alignItems={"center"}>
+			<Stack direction={"row"} spacing={2} alignItems={"center"} width={"100%"}>
 				<Typography fontSize={"100%"} variant={"overline"}>
 					Connection :
 				</Typography>
 				<Typography color={"primary"} sx={{ opacity: 0.9 }} fontSize={"110%"}>
 					Mongo/{name}
 				</Typography>
+				<Tooltip title={"Update the connection"}>
+					<IconButton color={"warning"} onClick={updateModal.setOpen}>
+						<Edit />
+					</IconButton>
+				</Tooltip>
+				<Tooltip title={"Delete the connection"}>
+					<IconButton color={"error"} onClick={deleteModal.setOpen}>
+						<DeleteForever />
+					</IconButton>
+				</Tooltip>
 			</Stack>
 
 			<Stack maxHeight={"100%"} overflow={"auto"} my={2} spacing={1}>
 				{arrays}
 			</Stack>
+
+			<DeleteMongoConnection setClose={deleteModal.setClose} open={deleteModal.open} />
+			<AddMongoConnection open={updateModal.open} setClose={updateModal.setClose} update={id} />
 		</Stack>
 	);
 }

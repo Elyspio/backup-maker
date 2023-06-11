@@ -26,7 +26,9 @@ export class DatabaseClient {
 	 * Get informations about databases, collections, sizes for all connections
 	 * @return Success
 	 */
-	getInfos(cancelToken?: CancelToken | undefined): Promise<{ [key: string]: DatabaseInfo[] }> {
+	getInfos(cancelToken?: CancelToken | undefined): Promise<{
+		[key: string]: DatabaseInfo[];
+	}> {
 		let url_ = this.baseUrl + "/api/database/infos";
 		url_ = url_.replace(/[?&]$/, "");
 
@@ -57,7 +59,7 @@ export class DatabaseClient {
 	 * Add a new database connection
 	 * @return No Content
 	 */
-	addConnection(body: AddMongoConnectionRequest, cancelToken?: CancelToken | undefined): Promise<MongoConnectionData[]> {
+	addConnection(body: AddMongoConnectionRequest, cancelToken?: CancelToken | undefined): Promise<void> {
 		let url_ = this.baseUrl + "/api/database/connections";
 		url_ = url_.replace(/[?&]$/, "");
 
@@ -69,7 +71,6 @@ export class DatabaseClient {
 			url: url_,
 			headers: {
 				"Content-Type": "application/json",
-				Accept: "text/plain",
 			},
 			cancelToken,
 		};
@@ -125,7 +126,7 @@ export class DatabaseClient {
 	 * @param body new connectionString
 	 * @return No Content
 	 */
-	updateConnectionString(idConnection: string, body: string, cancelToken?: CancelToken | undefined): Promise<MongoConnectionData[]> {
+	updateConnectionString(idConnection: string, body: string, cancelToken?: CancelToken | undefined): Promise<void> {
 		let url_ = this.baseUrl + "/api/database/connections/{idConnection}/connection-string";
 		if (idConnection === undefined || idConnection === null) throw new Error("The parameter 'idConnection' must be defined.");
 		url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
@@ -139,7 +140,6 @@ export class DatabaseClient {
 			url: url_,
 			headers: {
 				"Content-Type": "application/json",
-				Accept: "text/plain",
 			},
 			cancelToken,
 		};
@@ -163,7 +163,7 @@ export class DatabaseClient {
 	 * @param idConnection Connection's id
 	 * @return No Content
 	 */
-	deleteConnection(idConnection: string, cancelToken?: CancelToken | undefined): Promise<MongoConnectionData[]> {
+	deleteConnection(idConnection: string, cancelToken?: CancelToken | undefined): Promise<void> {
 		let url_ = this.baseUrl + "/api/database/connections/{idConnection}";
 		if (idConnection === undefined || idConnection === null) throw new Error("The parameter 'idConnection' must be defined.");
 		url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
@@ -172,9 +172,7 @@ export class DatabaseClient {
 		let options_: AxiosRequestConfig = {
 			method: "DELETE",
 			url: url_,
-			headers: {
-				Accept: "text/plain",
-			},
+			headers: {},
 			cancelToken,
 		};
 
@@ -192,7 +190,9 @@ export class DatabaseClient {
 			});
 	}
 
-	protected processGetInfos(response: AxiosResponse): Promise<{ [key: string]: DatabaseInfo[] }> {
+	protected processGetInfos(response: AxiosResponse): Promise<{
+		[key: string]: DatabaseInfo[];
+	}> {
 		const status = response.status;
 		let _headers: any = {};
 		if (response.headers && typeof response.headers === "object") {
@@ -207,15 +207,19 @@ export class DatabaseClient {
 			let result200: any = null;
 			let resultData200 = _responseText;
 			result200 = JSON.parse(resultData200);
-			return Promise.resolve<{ [key: string]: DatabaseInfo[] }>(result200);
+			return Promise.resolve<{
+				[key: string]: DatabaseInfo[];
+			}>(result200);
 		} else if (status !== 200 && status !== 204) {
 			const _responseText = response.data;
 			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
 		}
-		return Promise.resolve<{ [key: string]: DatabaseInfo[] }>(null as any);
+		return Promise.resolve<{
+			[key: string]: DatabaseInfo[];
+		}>(null as any);
 	}
 
-	protected processAddConnection(response: AxiosResponse): Promise<MongoConnectionData[]> {
+	protected processAddConnection(response: AxiosResponse): Promise<void> {
 		const status = response.status;
 		let _headers: any = {};
 		if (response.headers && typeof response.headers === "object") {
@@ -227,15 +231,12 @@ export class DatabaseClient {
 		}
 		if (status === 204) {
 			const _responseText = response.data;
-			let result204: any = null;
-			let resultData204 = _responseText;
-			result204 = JSON.parse(resultData204);
-			return Promise.resolve<MongoConnectionData[]>(result204);
+			return Promise.resolve<void>(null as any);
 		} else if (status !== 200 && status !== 204) {
 			const _responseText = response.data;
 			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
 		}
-		return Promise.resolve<MongoConnectionData[]>(null as any);
+		return Promise.resolve<void>(null as any);
 	}
 
 	protected processGetConnections(response: AxiosResponse): Promise<MongoConnectionData[]> {
@@ -261,7 +262,7 @@ export class DatabaseClient {
 		return Promise.resolve<MongoConnectionData[]>(null as any);
 	}
 
-	protected processUpdateConnectionString(response: AxiosResponse): Promise<MongoConnectionData[]> {
+	protected processUpdateConnectionString(response: AxiosResponse): Promise<void> {
 		const status = response.status;
 		let _headers: any = {};
 		if (response.headers && typeof response.headers === "object") {
@@ -273,18 +274,15 @@ export class DatabaseClient {
 		}
 		if (status === 204) {
 			const _responseText = response.data;
-			let result204: any = null;
-			let resultData204 = _responseText;
-			result204 = JSON.parse(resultData204);
-			return Promise.resolve<MongoConnectionData[]>(result204);
+			return Promise.resolve<void>(null as any);
 		} else if (status !== 200 && status !== 204) {
 			const _responseText = response.data;
 			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
 		}
-		return Promise.resolve<MongoConnectionData[]>(null as any);
+		return Promise.resolve<void>(null as any);
 	}
 
-	protected processDeleteConnection(response: AxiosResponse): Promise<MongoConnectionData[]> {
+	protected processDeleteConnection(response: AxiosResponse): Promise<void> {
 		const status = response.status;
 		let _headers: any = {};
 		if (response.headers && typeof response.headers === "object") {
@@ -296,15 +294,12 @@ export class DatabaseClient {
 		}
 		if (status === 204) {
 			const _responseText = response.data;
-			let result204: any = null;
-			let resultData204 = _responseText;
-			result204 = JSON.parse(resultData204);
-			return Promise.resolve<MongoConnectionData[]>(result204);
+			return Promise.resolve<void>(null as any);
 		} else if (status !== 200 && status !== 204) {
 			const _responseText = response.data;
 			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
 		}
-		return Promise.resolve<MongoConnectionData[]>(null as any);
+		return Promise.resolve<void>(null as any);
 	}
 }
 
@@ -326,7 +321,9 @@ export interface CollectionSizes {
 	/** Sum of BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.DocumentsSize and BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.IndexesSize */
 	totalSize: number;
 	documentsSize: number;
-	indexesSize: { [key: string]: number };
+	indexesSize: {
+		[key: string]: number;
+	};
 }
 
 export interface DatabaseInfo {
@@ -345,11 +342,21 @@ export class ApiException extends Error {
 	override message: string;
 	status: number;
 	response: string;
-	headers: { [key: string]: any };
+	headers: {
+		[key: string]: any;
+	};
 	result: any;
 	protected isApiException = true;
 
-	constructor(message: string, status: number, response: string, headers: { [key: string]: any }, result: any) {
+	constructor(
+		message: string,
+		status: number,
+		response: string,
+		headers: {
+			[key: string]: any;
+		},
+		result: any
+	) {
 		super();
 
 		this.message = message;

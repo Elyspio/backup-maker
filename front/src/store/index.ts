@@ -22,7 +22,9 @@ const store = configureStore({
 
 export type RealStoreState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-export type ExtraArgument = { container: typeof container };
+export type ExtraArgument = {
+	container: typeof container;
+};
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 

@@ -39,8 +39,8 @@ internal class MongoDatabaseService : IMongoDatabaseService
 
 		if (result.Status == ParallelStatus.Faulted)
 		{
-			var messages = result.Exceptions.Select((pair) => $"{pair.Key.Id} {pair.Value}");
-			throw new HttpException(HttpStatusCode.InternalServerError, string.Join("\n\n", messages));
+			var messages = result.Exceptions.Select((pair) => $"{pair.Key.Id}");
+			throw new HttpException(HttpStatusCode.InternalServerError, string.Join(", ", messages), new AggregateException(result.Exceptions.Values));
 		}
 
 		logger.Exit();

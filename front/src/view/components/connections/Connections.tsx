@@ -27,7 +27,7 @@ export function Connections() {
 					<Stack direction={"row"} justifyContent={"space-between"} width={"100%"} alignItems={"center"}>
 						<Typography>Mongo</Typography>
 						<Tooltip title={"Add a new mongo connection"}>
-							<IconButton onClick={addMongoConnection}>
+							<IconButton onClick={addMongoConnection} color={"success"}>
 								<Add />
 							</IconButton>
 						</Tooltip>

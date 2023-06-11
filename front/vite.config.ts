@@ -6,5 +6,8 @@ const config = getDefaultConfig({ basePath: __dirname });
 export default defineConfig({
 	...config,
 	base: "/backup",
-	build: { ...config.build, outDir: "build" },
+	build: {
+		...config.build,
+		outDir: "build",
+	},
 });

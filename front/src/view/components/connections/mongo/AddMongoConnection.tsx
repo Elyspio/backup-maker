@@ -1,13 +1,22 @@
 import React, { useCallback, useState } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
+import { useAppDispatch, useAppSelector } from "@store";
+import { manageMongoConnections } from "@modules/mongo/mongo.database.async.actions";
+import { IdConnection } from "@modules/mongo/mongo.database.types";
+import { AsyncThunkAction } from "@reduxjs/toolkit";
 
 interface AddMongoConnectionProps {
 	open: boolean;
 	setClose: () => void;
+	update?: IdConnection;
 }
 
-export function AddMongoConnection({ open, setClose }: AddMongoConnectionProps) {
-	const [name, setName] = useState("");
+export function AddMongoConnection({ open, setClose, update }: AddMongoConnectionProps) {
+	const updateName = useAppSelector((s) => s.databases.mongo.connections[update!]?.name);
+
+	const dispatch = useAppDispatch();
+
+	const [name, setName] = useState(updateName ?? "");
 	const [connectionString, setConnectionString] = useState("");
 
 	const updateField = useCallback(
@@ -18,21 +27,36 @@ export function AddMongoConnection({ open, setClose }: AddMongoConnectionProps) 
 		[]
 	);
 
+	const createNewConnection = useCallback(() => {
+		const action = !update
+			? manageMongoConnections.add({
+					name,
+					connectionString,
+			  })
+			: manageMongoConnections.updateConnectionString({
+					connectionString,
+					idConnection: update,
+			  });
+
+		dispatch(action as AsyncThunkAction<any, any, any>);
+		setClose();
+	}, [update, name, connectionString, dispatch, setClose]);
+
 	return (
 		<Dialog open={open} onClose={setClose} maxWidth={"md"} fullWidth>
 			<DialogTitle>Create a mongodb connection</DialogTitle>
 			<DialogContent dividers>
 				<Stack spacing={3} p={3}>
-					<TextField onChange={updateField("name")} value={name} label={"Name"} />
+					<TextField onChange={updateField("name")} disabled={!!update} value={name} label={"Name"} />
 					<TextField onChange={updateField("connectionString")} value={connectionString} label={"Connection String"} />
 				</Stack>
 			</DialogContent>
 			<DialogActions>
 				<Stack direction={"row"} spacing={3}>
-					<Button color={"primary"} variant={"outlined"}>
+					<Button color={"primary"} variant={"outlined"} onClick={createNewConnection}>
 						Add
 					</Button>
-					<Button color={"inherit"} variant={"outlined"}>
+					<Button color={"inherit"} variant={"outlined"} onClick={setClose}>
 						Cancel
 					</Button>
 				</Stack>

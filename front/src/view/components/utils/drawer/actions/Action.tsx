@@ -19,5 +19,7 @@ export const ActionComponent = ({ children, icon, onClick, className }: ActionCo
 	);
 };
 
-export type ActionDescriptionProps = { children: ReactNode };
+export type ActionDescriptionProps = {
+	children: ReactNode;
+};
 export const ActionDescription = (props: ActionDescriptionProps) => <Typography className={"MuiButton-label ActionDescription"}>{props.children}</Typography>;

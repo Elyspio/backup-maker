@@ -1,7 +1,8 @@
 import { inject, injectable } from "inversify";
 import { BackendApi } from "@apis/backend";
 import { BaseService } from "./common/technical/base.service";
-import { AddMongoConnectionRequest, MongoConnectionData } from "@apis/backend/generated";
+import { AddMongoConnectionRequest } from "@apis/backend/generated";
+import { IdConnection } from "@modules/mongo/mongo.database.types";
 
 @injectable()
 export class DatabaseMongoService extends BaseService {
@@ -15,8 +16,11 @@ export class DatabaseMongoService extends BaseService {
 		getAll: () => {
 			return this.backendApiClient.database.getConnections();
 		},
-		remove: (idConnection: MongoConnectionData["id"]) => {
+		remove: (idConnection: IdConnection) => {
 			return this.backendApiClient.database.deleteConnection(idConnection);
+		},
+		updateConnectionString: (idConnection: IdConnection, connectionString: string) => {
+			return this.backendApiClient.database.updateConnectionString(idConnection, connectionString);
 		},
 	};
 

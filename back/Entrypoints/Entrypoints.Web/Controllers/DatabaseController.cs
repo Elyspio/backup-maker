@@ -47,7 +47,7 @@ public class DatabaseController : ControllerBase
 	/// <param name="req"></param>
 	/// <returns></returns>
 	[HttpPost("connections")]
-	[ProducesResponseType(typeof(List<MongoConnectionData>), StatusCodes.Status204NoContent)]
+	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> AddConnection([FromBody] AddMongoConnectionRequest req)
 	{
 		var logger = _logger.Enter($"{Log.F(req)}", LogLevel.Information);
@@ -84,7 +84,7 @@ public class DatabaseController : ControllerBase
 	/// <param name="connectionString">new connectionString</param>
 	/// <returns></returns>
 	[HttpPut("connections/{idConnection:guid}/connection-string")]
-	[ProducesResponseType(typeof(List<MongoConnectionData>), StatusCodes.Status204NoContent)]
+	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> UpdateConnectionString([FromRoute] Guid idConnection, [FromBody] string connectionString)
 	{
 		var logger = _logger.Enter($"{Log.F(idConnection)} {Log.F(connectionString)}", LogLevel.Information);
@@ -101,7 +101,7 @@ public class DatabaseController : ControllerBase
 	/// <param name="idConnection">Connection's id</param>
 	/// <returns></returns>
 	[HttpDelete("connections/{idConnection:guid}")]
-	[ProducesResponseType(typeof(List<MongoConnectionData>), StatusCodes.Status204NoContent)]
+	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> DeleteConnection([FromRoute] Guid idConnection)
 	{
 		var logger = _logger.Enter($"{Log.F(idConnection)}", LogLevel.Information);
