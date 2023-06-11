@@ -1,13 +1,12 @@
 const { spawnSync } = require("child_process");
 const path = require("path");
 
-const dockerCommand =
-  `docker buildx build --platform linux/amd64,linux/arm64  -f ${__dirname}/prod.dockerfile  -t elyspio/backup-maker:latest --push .`
-    .split(" ")
-    .filter((str) => str.length);
+const dockerCommand = `docker buildx bake -f docker-bake.hcl --push`
+  .split(" ")
+  .filter((str) => str.length);
 
 const ret = spawnSync(dockerCommand[0], dockerCommand.slice(1), {
-  cwd: path.resolve(__dirname, "../../"),
+  cwd: __dirname,
   stdio: "inherit",
 });
 

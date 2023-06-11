@@ -14,9 +14,9 @@ target "app" {
 		"elyspio/backup-maker:latest"
 	]
 	args = {
-		SLN_PATH         = "back/SwitchVirtualizer.sln"
-		MAIN_CSPROJ_PATH = "Entrypoints/SwitchVirtualizer.Api.Web/SwitchVirtualizer.Api.Web.csproj"
+		SLN_PATH         = "back/BackupMaker.sln"
+		MAIN_CSPROJ_PATH = "Entrypoints/Entrypoints.Web/BackupMaker.Api.Entrypoints.Web.csproj"
 		ROOT_FOLDER      = "back/"
-		ENTRY_DLL        = "SwitchVirtualizer.Api.Web.dll"
+		ENTRY_DLL        = "BackupMaker.Api.Entrypoints.Web.dll"
 	}
 }

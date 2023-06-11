@@ -8,6 +8,7 @@ public class HttpExceptionFilter : ExceptionFilterAttribute
 {
 	public override void OnException(ExceptionContext context)
 	{
+		
 		if (context.Exception is HttpException ex)
 			context.Result = new ObjectResult(ex.ToString())
 			{
@@ -22,6 +23,8 @@ public class HttpExceptionFilter : ExceptionFilterAttribute
 				Value = context.Exception.ToString()
 			};
 		}
+
+		Console.WriteLine(context.Exception);
 
 		base.OnException(context);
 	}

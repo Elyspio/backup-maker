@@ -4,3 +4,4 @@ back/**/bin/
 back/**/obj/
 front/build
 front/node_modules
+deploy/environments/prod/config/back/appsettings.docker.json

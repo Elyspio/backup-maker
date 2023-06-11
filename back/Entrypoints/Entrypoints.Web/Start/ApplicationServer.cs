@@ -10,14 +10,26 @@ public static class ApplicationServer
 
 		if (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
 
-		app.UseHttpsRedirection();
-		app.UseRouting();
+		app.UseAdvancedDependencyInjection();
 
-		if (app.Environment.IsDevelopment()) app.UseCors("Cors");
-
+		// Setup authentication
+		app.UseAuthentication();
 		app.UseAuthorization();
 
+		// Setup Controllers
 		app.MapControllers();
+
+		if (!app.Environment.IsProduction()) return app;
+
+		// Start SPA serving
+		app.UseRouting();
+		app.UseStaticFiles();
+
+		app.MapWhen(ctx => !ctx.Request.Path.StartsWithSegments("/api"), appBuilder =>
+		{
+			appBuilder.UseRouting();
+			appBuilder.UseEndpoints(ep => { ep.MapFallbackToFile("index.html"); });
+		});
 
 		return app;
 	}
