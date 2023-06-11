@@ -1,4 +1,4 @@
-import store, { StoreState } from "../../index";
+import store from "../../index";
 import { setTheme } from "../theme/theme.action";
 import { toast } from "react-toastify";
 import { container } from "@/core/di";
@@ -45,7 +45,7 @@ export const login = createAsyncThunk("login", async (_, { getState, dispatch, e
 	const tokenService = getService(TokenService, extra);
 	const authenticationService = getService(AuthenticationService, extra);
 
-	const { logged } = (getState() as StoreState).authentication;
+	const { logged } = getState().authentication;
 
 	if (!logged) {
 		const toastId = toast.info("Connecting", { autoClose: false });

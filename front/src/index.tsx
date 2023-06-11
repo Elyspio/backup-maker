@@ -3,14 +3,16 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import "./index.scss";
 import { Provider } from "react-redux";
-import store, { useAppSelector } from "./store";
-import Application from "./view/components/Application";
+import store, { history, useAppSelector } from "./store";
+import { Frame } from "@components/Frame";
 import { StyledEngineProvider, ThemeProvider } from "@mui/material/styles";
 import { themes } from "./config/theme";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import { Provider as DiProvider } from "inversify-react";
 import { container } from "./core/di";
+import { HistoryRouter } from "redux-first-history/rr6";
+import { CssBaseline } from "@mui/material";
 
 function Wrapper() {
 	const { theme, current } = useAppSelector((state) => ({
@@ -21,7 +23,8 @@ function Wrapper() {
 	return (
 		<StyledEngineProvider injectFirst>
 			<ThemeProvider theme={theme}>
-				<Application />
+				<Frame />
+				<CssBaseline />
 				<ToastContainer theme={current} position={"top-right"} />
 			</ThemeProvider>
 		</StyledEngineProvider>
@@ -31,9 +34,11 @@ function Wrapper() {
 function App() {
 	return (
 		<DiProvider container={container}>
-			<Provider store={store}>
-				<Wrapper />
-			</Provider>
+			<HistoryRouter history={history} basename={"/backup"}>
+				<Provider store={store}>
+					<Wrapper />
+				</Provider>
+			</HistoryRouter>
 		</DiProvider>
 	);
 }
