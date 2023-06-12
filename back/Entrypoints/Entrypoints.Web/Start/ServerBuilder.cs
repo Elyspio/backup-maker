@@ -17,8 +17,8 @@ public class ServerBuilder
 	public ServerBuilder(string[] args)
 	{
 		var builder = WebApplication.CreateBuilder(args);
-		
-		
+
+
 		builder.Configuration.AddCommandLine(args).AddJsonFile("appsettings.docker.json", true, true);
 
 		builder.WebHost.ConfigureKestrel((_, options) =>
@@ -32,7 +32,7 @@ public class ServerBuilder
 			}
 		);
 
-		
+
 		// Setup Logging
 		builder.Host.UseSerilog((_, lc) => lc
 			.MinimumLevel.Debug()

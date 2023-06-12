@@ -1,7 +1,6 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Extensions;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info;
-using BackupMaker.Api.Adapters.Mongo.Models;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -42,7 +41,7 @@ internal class MongoDatabaseManager : IMongoDatabaseManager
 	}
 
 	/// <summary>
-	/// Get detailed info about a collection
+	///     Get detailed info about a collection
 	/// </summary>
 	/// <param name="database"></param>
 	/// <param name="collectionName"></param>
@@ -61,18 +60,18 @@ internal class MongoDatabaseManager : IMongoDatabaseManager
 		var indexes = stats["indexSizes"].AsBsonDocument.ToDictionary().ToDictionary(pair => pair.Key, pair => Convert.ToDouble(pair.Value) / scale);
 
 
-		return new CollectionInfo(collectionName, stats["count"].AsInt32, new(stats["totalSize"].ToDouble() / scale, stats["storageSize"].ToDouble() / scale, indexes));
+		return new(collectionName, stats["count"].AsInt32, new(stats["totalSize"].ToDouble() / scale, stats["storageSize"].ToDouble() / scale, indexes));
 	}
 
 
 	/// <summary>
-	/// Get all collections in a database (without returning views)
+	///     Get all collections in a database (without returning views)
 	/// </summary>
 	/// <param name="database"></param>
 	/// <returns></returns>
 	private async Task<List<string>> GetCollectionOnlyNames(IMongoDatabase database)
 	{
-		var storages = (await (await database.ListCollectionsAsync()).ToListAsync());
+		var storages = await (await database.ListCollectionsAsync()).ToListAsync();
 
 		return storages.Where(s => s["type"] == "collection").Select(s => s["name"].AsString).ToList();
 	}

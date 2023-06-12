@@ -391,8 +391,6 @@ public record IndexDetails(
 	[property: JsonPropertyName("_id_")] Id Id
 );
 
-
-
 [BsonIgnoreExtraElements]
 public record LSM(
 	[property: JsonPropertyName("bloom filter false positives")]

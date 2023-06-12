@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useAppSelector } from "@store";
-import { CollectionInfo, CollectionSizes, MongoConnectionData } from "@apis/backend/generated";
+import { CollectionInfo, CollectionSizes } from "@apis/backend/generated";
 import { IconButton, Stack, SxProps, Tooltip, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { AppAccordion } from "@components/utils/accordion/AppAccordion";
@@ -8,6 +8,7 @@ import { DeleteForever, Edit } from "@mui/icons-material";
 import { useModal } from "@hooks/useModal";
 import { DeleteMongoConnection } from "@components/connections/mongo/DeleteMongoConnection";
 import { AddMongoConnection } from "@components/connections/mongo/AddMongoConnection";
+import { useParams } from "react-router";
 
 enum ColumnField {
 	Name = "name",
@@ -88,15 +89,20 @@ function getRow(data: CollectionInfo): {
 }
 
 export function MongoConnection() {
-	const { detail, name, id } = useAppSelector((s) => {
-		const state = s.router.location?.state as MongoConnectionData | undefined;
-		if (!state) return {};
+	const { details, connections } = useAppSelector((s) => {
 		return {
-			detail: s.databases.mongo.details[state.id],
-			id: state.id,
-			name: state.name,
+			details: s.databases.mongo.details,
+			connections: s.databases.mongo.connections,
 		};
 	});
+
+	const { name } = useParams<{
+		name: string;
+	}>();
+
+	const connection = useMemo(() => Object.values(connections).find((con) => con.name === name), [connections, name]);
+
+	const detail = useMemo(() => (connection ? details[connection?.id] : null), [details, connection]);
 
 	const arrays = useMemo(() => {
 		const databaseInfos = Object.values(detail ?? {});
@@ -123,7 +129,17 @@ export function MongoConnection() {
 	const deleteModal = useModal(false);
 	const updateModal = useModal(false);
 
-	if (!detail || !name || !id) return null;
+	if (!connection)
+		return (
+			<Stack alignItems={"center"} justifyContent={"center"} height={"100%"} width={"100%"}>
+				<Typography variant={"h4"}>
+					Unable to find the MongoDB connection{" "}
+					<Typography component={"span"} fontSize={"110%"} color={"error"}>
+						"{name}"
+					</Typography>
+				</Typography>
+			</Stack>
+		);
 
 	return (
 		<Stack height={"100%"} className={"MongoConnection"} sx={rootSx}>
@@ -132,7 +148,7 @@ export function MongoConnection() {
 					Connection :
 				</Typography>
 				<Typography color={"primary"} sx={{ opacity: 0.9 }} fontSize={"110%"}>
-					Mongo/{name}
+					Mongo/{connection.name}
 				</Typography>
 				<Tooltip title={"Update the connection"}>
 					<IconButton color={"warning"} onClick={updateModal.setOpen}>
@@ -146,12 +162,25 @@ export function MongoConnection() {
 				</Tooltip>
 			</Stack>
 
-			<Stack maxHeight={"100%"} overflow={"auto"} my={2} spacing={1}>
-				{arrays}
-			</Stack>
+			{detail && (
+				<Stack maxHeight={"100%"} overflow={"auto"} my={2} spacing={1}>
+					{arrays}
+				</Stack>
+			)}
+			{connection.error && (
+				<Stack p={2} maxHeight={"100%"} overflow={"auto"} my={2} bgcolor={"background.default"}>
+					{connection.error.split("\n\r").map((line) => (
+						<Typography whiteSpace={"pre-wrap"}>{line}</Typography>
+					))}
+				</Stack>
+			)}
 
-			<DeleteMongoConnection setClose={deleteModal.setClose} open={deleteModal.open} />
-			<AddMongoConnection open={updateModal.open} setClose={updateModal.setClose} update={id} />
+			{connection && (
+				<>
+					<DeleteMongoConnection setClose={deleteModal.setClose} open={deleteModal.open} {...connection} />
+					<AddMongoConnection open={updateModal.open} setClose={updateModal.setClose} update={connection.id} />
+				</>
+			)}
 		</Stack>
 	);
 }

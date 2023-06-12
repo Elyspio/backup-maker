@@ -16,8 +16,8 @@ public static class ServiceCollectionExtensions
 
 		// Set the comments path for the Swagger JSON and UI.
 		var xmlPaths = Directory.GetFiles(AppContext.BaseDirectory).ToList().Where(f => f.EndsWith(".xml"));
-		
-		
+
+
 		services.AddSwaggerGen(options =>
 		{
 			options.SupportNonNullableReferenceTypes();
@@ -27,10 +27,7 @@ public static class ServiceCollectionExtensions
 
 			options.CustomOperationIds(e => e.ActionDescriptor.RouteValues["action"]);
 
-			foreach (var xmlPath in xmlPaths)
-			{
-				options.IncludeXmlComments(xmlPath);
-			}
+			foreach (var xmlPath in xmlPaths) options.IncludeXmlComments(xmlPath);
 		});
 
 		return services;

@@ -8,382 +8,357 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from "axios";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError } from 'axios';
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
 
 export class DatabaseClient {
-	protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-	private instance: AxiosInstance;
-	private baseUrl: string;
+    private instance: AxiosInstance;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
-	constructor(baseUrl?: string, instance?: AxiosInstance) {
-		this.instance = instance ? instance : axios.create();
+    constructor(baseUrl?: string, instance?: AxiosInstance) {
 
-		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
-	}
+        this.instance = instance ? instance : axios.create();
 
-	/**
-	 * Get informations about databases, collections, sizes for all connections
-	 * @return Success
-	 */
-	getInfos(cancelToken?: CancelToken | undefined): Promise<{
-		[key: string]: DatabaseInfo[];
-	}> {
-		let url_ = this.baseUrl + "/api/database/infos";
-		url_ = url_.replace(/[?&]$/, "");
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
 
-		let options_: AxiosRequestConfig = {
-			method: "GET",
-			url: url_,
-			headers: {
-				Accept: "text/plain",
-			},
-			cancelToken,
-		};
+    }
 
-		return this.instance
-			.request(options_)
-			.catch((_error: any) => {
-				if (isAxiosError(_error) && _error.response) {
-					return _error.response;
-				} else {
-					throw _error;
-				}
-			})
-			.then((_response: AxiosResponse) => {
-				return this.processGetInfos(_response);
-			});
-	}
+    /**
+     * Get informations about databases, collections, sizes for all connections
+     * @return Success
+     */
+    getInfos(  cancelToken?: CancelToken | undefined): Promise<GetConnectionInformationResponse> {
+        let url_ = this.baseUrl + "/api/database/infos";
+        url_ = url_.replace(/[?&]$/, "");
 
-	/**
-	 * Add a new database connection
-	 * @return No Content
-	 */
-	addConnection(body: AddMongoConnectionRequest, cancelToken?: CancelToken | undefined): Promise<void> {
-		let url_ = this.baseUrl + "/api/database/connections";
-		url_ = url_.replace(/[?&]$/, "");
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
 
-		const content_ = JSON.stringify(body);
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetInfos(_response);
+        });
+    }
 
-		let options_: AxiosRequestConfig = {
-			data: content_,
-			method: "POST",
-			url: url_,
-			headers: {
-				"Content-Type": "application/json",
-			},
-			cancelToken,
-		};
+    protected processGetInfos(response: AxiosResponse): Promise<GetConnectionInformationResponse> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = JSON.parse(resultData200);
+            return Promise.resolve<GetConnectionInformationResponse>(result200);
 
-		return this.instance
-			.request(options_)
-			.catch((_error: any) => {
-				if (isAxiosError(_error) && _error.response) {
-					return _error.response;
-				} else {
-					throw _error;
-				}
-			})
-			.then((_response: AxiosResponse) => {
-				return this.processAddConnection(_response);
-			});
-	}
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<GetConnectionInformationResponse>(null as any);
+    }
 
-	/**
-	 * Get all databases connections available
-	 * @return Success
-	 */
-	getConnections(cancelToken?: CancelToken | undefined): Promise<MongoConnectionData[]> {
-		let url_ = this.baseUrl + "/api/database/connections";
-		url_ = url_.replace(/[?&]$/, "");
+    /**
+     * Add a new database connection
+     * @return No Content
+     */
+    addConnection(body: AddMongoConnectionRequest , cancelToken?: CancelToken | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/database/connections";
+        url_ = url_.replace(/[?&]$/, "");
 
-		let options_: AxiosRequestConfig = {
-			method: "GET",
-			url: url_,
-			headers: {
-				Accept: "text/plain",
-			},
-			cancelToken,
-		};
+        const content_ = JSON.stringify(body);
 
-		return this.instance
-			.request(options_)
-			.catch((_error: any) => {
-				if (isAxiosError(_error) && _error.response) {
-					return _error.response;
-				} else {
-					throw _error;
-				}
-			})
-			.then((_response: AxiosResponse) => {
-				return this.processGetConnections(_response);
-			});
-	}
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
 
-	/**
-	 * Replace the connectionString for a connection
-	 * @param idConnection Connection's id
-	 * @param body new connectionString
-	 * @return No Content
-	 */
-	updateConnectionString(idConnection: string, body: string, cancelToken?: CancelToken | undefined): Promise<void> {
-		let url_ = this.baseUrl + "/api/database/connections/{idConnection}/connection-string";
-		if (idConnection === undefined || idConnection === null) throw new Error("The parameter 'idConnection' must be defined.");
-		url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
-		url_ = url_.replace(/[?&]$/, "");
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processAddConnection(_response);
+        });
+    }
 
-		const content_ = JSON.stringify(body);
+    protected processAddConnection(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 204) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
 
-		let options_: AxiosRequestConfig = {
-			data: content_,
-			method: "PUT",
-			url: url_,
-			headers: {
-				"Content-Type": "application/json",
-			},
-			cancelToken,
-		};
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
 
-		return this.instance
-			.request(options_)
-			.catch((_error: any) => {
-				if (isAxiosError(_error) && _error.response) {
-					return _error.response;
-				} else {
-					throw _error;
-				}
-			})
-			.then((_response: AxiosResponse) => {
-				return this.processUpdateConnectionString(_response);
-			});
-	}
+    /**
+     * Get all databases connections available
+     * @return Success
+     */
+    getConnections(  cancelToken?: CancelToken | undefined): Promise<MongoConnectionData[]> {
+        let url_ = this.baseUrl + "/api/database/connections";
+        url_ = url_.replace(/[?&]$/, "");
 
-	/**
-	 * Replace the connectionString for a connection
-	 * @param idConnection Connection's id
-	 * @return No Content
-	 */
-	deleteConnection(idConnection: string, cancelToken?: CancelToken | undefined): Promise<void> {
-		let url_ = this.baseUrl + "/api/database/connections/{idConnection}";
-		if (idConnection === undefined || idConnection === null) throw new Error("The parameter 'idConnection' must be defined.");
-		url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
-		url_ = url_.replace(/[?&]$/, "");
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "text/plain"
+            },
+            cancelToken
+        };
 
-		let options_: AxiosRequestConfig = {
-			method: "DELETE",
-			url: url_,
-			headers: {},
-			cancelToken,
-		};
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetConnections(_response);
+        });
+    }
 
-		return this.instance
-			.request(options_)
-			.catch((_error: any) => {
-				if (isAxiosError(_error) && _error.response) {
-					return _error.response;
-				} else {
-					throw _error;
-				}
-			})
-			.then((_response: AxiosResponse) => {
-				return this.processDeleteConnection(_response);
-			});
-	}
+    protected processGetConnections(response: AxiosResponse): Promise<MongoConnectionData[]> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = JSON.parse(resultData200);
+            return Promise.resolve<MongoConnectionData[]>(result200);
 
-	protected processGetInfos(response: AxiosResponse): Promise<{
-		[key: string]: DatabaseInfo[];
-	}> {
-		const status = response.status;
-		let _headers: any = {};
-		if (response.headers && typeof response.headers === "object") {
-			for (let k in response.headers) {
-				if (response.headers.hasOwnProperty(k)) {
-					_headers[k] = response.headers[k];
-				}
-			}
-		}
-		if (status === 200) {
-			const _responseText = response.data;
-			let result200: any = null;
-			let resultData200 = _responseText;
-			result200 = JSON.parse(resultData200);
-			return Promise.resolve<{
-				[key: string]: DatabaseInfo[];
-			}>(result200);
-		} else if (status !== 200 && status !== 204) {
-			const _responseText = response.data;
-			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-		}
-		return Promise.resolve<{
-			[key: string]: DatabaseInfo[];
-		}>(null as any);
-	}
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<MongoConnectionData[]>(null as any);
+    }
 
-	protected processAddConnection(response: AxiosResponse): Promise<void> {
-		const status = response.status;
-		let _headers: any = {};
-		if (response.headers && typeof response.headers === "object") {
-			for (let k in response.headers) {
-				if (response.headers.hasOwnProperty(k)) {
-					_headers[k] = response.headers[k];
-				}
-			}
-		}
-		if (status === 204) {
-			const _responseText = response.data;
-			return Promise.resolve<void>(null as any);
-		} else if (status !== 200 && status !== 204) {
-			const _responseText = response.data;
-			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-		}
-		return Promise.resolve<void>(null as any);
-	}
+    /**
+     * Replace the connectionString for a connection
+     * @param idConnection Connection's id
+     * @param body new connectionString
+     * @return No Content
+     */
+    updateConnectionString(idConnection: string, body: string , cancelToken?: CancelToken | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/database/connections/{idConnection}/connection-string";
+        if (idConnection === undefined || idConnection === null)
+            throw new Error("The parameter 'idConnection' must be defined.");
+        url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
+        url_ = url_.replace(/[?&]$/, "");
 
-	protected processGetConnections(response: AxiosResponse): Promise<MongoConnectionData[]> {
-		const status = response.status;
-		let _headers: any = {};
-		if (response.headers && typeof response.headers === "object") {
-			for (let k in response.headers) {
-				if (response.headers.hasOwnProperty(k)) {
-					_headers[k] = response.headers[k];
-				}
-			}
-		}
-		if (status === 200) {
-			const _responseText = response.data;
-			let result200: any = null;
-			let resultData200 = _responseText;
-			result200 = JSON.parse(resultData200);
-			return Promise.resolve<MongoConnectionData[]>(result200);
-		} else if (status !== 200 && status !== 204) {
-			const _responseText = response.data;
-			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-		}
-		return Promise.resolve<MongoConnectionData[]>(null as any);
-	}
+        const content_ = JSON.stringify(body);
 
-	protected processUpdateConnectionString(response: AxiosResponse): Promise<void> {
-		const status = response.status;
-		let _headers: any = {};
-		if (response.headers && typeof response.headers === "object") {
-			for (let k in response.headers) {
-				if (response.headers.hasOwnProperty(k)) {
-					_headers[k] = response.headers[k];
-				}
-			}
-		}
-		if (status === 204) {
-			const _responseText = response.data;
-			return Promise.resolve<void>(null as any);
-		} else if (status !== 200 && status !== 204) {
-			const _responseText = response.data;
-			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-		}
-		return Promise.resolve<void>(null as any);
-	}
+        let options_: AxiosRequestConfig = {
+            data: content_,
+            method: "PUT",
+            url: url_,
+            headers: {
+                "Content-Type": "application/json",
+            },
+            cancelToken
+        };
 
-	protected processDeleteConnection(response: AxiosResponse): Promise<void> {
-		const status = response.status;
-		let _headers: any = {};
-		if (response.headers && typeof response.headers === "object") {
-			for (let k in response.headers) {
-				if (response.headers.hasOwnProperty(k)) {
-					_headers[k] = response.headers[k];
-				}
-			}
-		}
-		if (status === 204) {
-			const _responseText = response.data;
-			return Promise.resolve<void>(null as any);
-		} else if (status !== 200 && status !== 204) {
-			const _responseText = response.data;
-			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-		}
-		return Promise.resolve<void>(null as any);
-	}
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processUpdateConnectionString(_response);
+        });
+    }
+
+    protected processUpdateConnectionString(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 204) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
+    /**
+     * Replace the connectionString for a connection
+     * @param idConnection Connection's id
+     * @return No Content
+     */
+    deleteConnection(idConnection: string , cancelToken?: CancelToken | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/database/connections/{idConnection}";
+        if (idConnection === undefined || idConnection === null)
+            throw new Error("The parameter 'idConnection' must be defined.");
+        url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "DELETE",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDeleteConnection(_response);
+        });
+    }
+
+    protected processDeleteConnection(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 204) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
 }
 
 export interface AddMongoConnectionRequest {
-	name: string;
-	connectionString: string;
+    name: string;
+    connectionString: string;
 }
 
 export interface CollectionInfo {
-	/** Collection's name */
-	name: string;
-	/** Collection documents count */
-	documents: number;
-	sizes: CollectionSizes;
+    /** Collection's name */
+    name: string;
+    /** Collection documents count */
+    documents: number;
+    sizes: CollectionSizes;
 }
 
 /** Collection size in MegaBytes */
 export interface CollectionSizes {
-	/** Sum of BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.DocumentsSize and BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.IndexesSize */
-	totalSize: number;
-	documentsSize: number;
-	indexesSize: {
-		[key: string]: number;
-	};
+    /** Sum of BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.DocumentsSize and BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.IndexesSize */
+    totalSize: number;
+    documentsSize: number;
+    indexesSize: { [key: string]: number; };
 }
 
 export interface DatabaseInfo {
-	/** Database's name */
-	name: string;
-	/** Database's Collections */
-	collections: CollectionInfo[];
+    /** Database's name */
+    name: string;
+    /** Database's Collections */
+    collections: CollectionInfo[];
+}
+
+export interface GetConnectionInformationResponse {
+    data: { [key: string]: DatabaseInfo[]; };
+    errors: { [key: string]: string; };
 }
 
 export interface MongoConnectionData {
-	name: string;
-	id: string;
+    name: string;
+    id: string;
 }
 
 export class ApiException extends Error {
-	override message: string;
-	status: number;
-	response: string;
-	headers: {
-		[key: string]: any;
-	};
-	result: any;
-	protected isApiException = true;
+    override message: string;
+    status: number;
+    response: string;
+    headers: { [key: string]: any; };
+    result: any;
 
-	constructor(
-		message: string,
-		status: number,
-		response: string,
-		headers: {
-			[key: string]: any;
-		},
-		result: any
-	) {
-		super();
+    constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
+        super();
 
-		this.message = message;
-		this.status = status;
-		this.response = response;
-		this.headers = headers;
-		this.result = result;
-	}
+        this.message = message;
+        this.status = status;
+        this.response = response;
+        this.headers = headers;
+        this.result = result;
+    }
 
-	static isApiException(obj: any): obj is ApiException {
-		return obj.isApiException === true;
-	}
+    protected isApiException = true;
+
+    static isApiException(obj: any): obj is ApiException {
+        return obj.isApiException === true;
+    }
 }
 
-function throwException(
-	message: string,
-	status: number,
-	response: string,
-	headers: {
-		[key: string]: any;
-	},
-	result?: any
-): any {
-	if (result !== null && result !== undefined) throw result;
-	else throw new ApiException(message, status, response, headers, null);
+function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): any {
+    if (result !== null && result !== undefined)
+        throw result;
+    else
+        throw new ApiException(message, status, response, headers, null);
 }
 
 function isAxiosError(obj: any | undefined): obj is AxiosError {
-	return obj && obj.isAxiosError === true;
+    return obj && obj.isAxiosError === true;
 }

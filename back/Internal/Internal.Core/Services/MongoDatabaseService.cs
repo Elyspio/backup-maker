@@ -1,14 +1,11 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Extensions;
 using BackupMaker.Api.Abstractions.Common.Helpers;
-using BackupMaker.Api.Abstractions.Exceptions;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
-using BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info;
-using BackupMaker.Api.Abstractions.Models.Entities;
 using BackupMaker.Api.Abstractions.Models.Transports;
+using BackupMaker.Api.Abstractions.Models.Transports.Responses;
 using BackupMaker.Api.Core.Assemblers;
 using Microsoft.Extensions.Logging;
-using System.Net;
 
 namespace BackupMaker.Api.Core.Services;
 
@@ -16,9 +13,9 @@ internal class MongoDatabaseService : IMongoDatabaseService
 {
 	private readonly ILogger<MongoDatabaseService> _logger;
 	private readonly MongoConnectionAssembler _mongoConnectionAssembler;
+	private readonly IMongoConnectionRepository _mongoConnectionRepository;
 
 	private readonly IMongoDatabaseManager _mongoDatabaseManager;
-	private readonly IMongoConnectionRepository _mongoConnectionRepository;
 
 
 	public MongoDatabaseService(IMongoDatabaseManager mongoDatabaseManager, IMongoConnectionRepository mongoConnectionRepository, MongoConnectionAssembler mongoConnectionAssembler, ILogger<MongoDatabaseService> logger)
@@ -29,23 +26,26 @@ internal class MongoDatabaseService : IMongoDatabaseService
 		_logger = logger;
 	}
 
-	public async Task<Dictionary<Guid, List<DatabaseInfo>>> GetInfos()
+
+	public async Task<GetConnectionInformationResponse> GetInfos()
 	{
 		var logger = _logger.Enter();
 
 		var connections = await _mongoConnectionRepository.GetAll();
 
-		var result = await connections.Parallelize(async connection => (Id: connection.Id.AsGuid(), Infos: await  _mongoDatabaseManager.GetDatabases(connection.ConnectionString)));
+		var result = await connections.Parallelize(async connection => (Id: connection.Id.AsGuid(), Infos: await _mongoDatabaseManager.GetDatabases(connection.ConnectionString)));
 
-		if (result.Status == ParallelStatus.Faulted)
-		{
-			var messages = result.Exceptions.Select((pair) => $"{pair.Key.Id}");
-			throw new HttpException(HttpStatusCode.InternalServerError, string.Join(", ", messages), new AggregateException(result.Exceptions.Values));
-		}
+
+		var data = result.Data.ToDictionary(pair => pair.Id, pair => pair.Infos);
+		var errors = result.Exceptions.ToDictionary(pair => pair.Key.Id.AsGuid(), pair => pair.Value.ToString());
 
 		logger.Exit();
-		
-		return result.Data.ToDictionary(pair => pair.Id, pair => pair.Infos);
+
+		return new()
+		{
+			Errors = errors,
+			Data = data
+		};
 	}
 
 	public async Task<List<MongoConnectionData>> GetConnections()
@@ -85,6 +85,6 @@ internal class MongoDatabaseService : IMongoDatabaseService
 
 		await _mongoConnectionRepository.Delete(idConnection.AsObjectId());
 
-		logger.Exit();	
+		logger.Exit();
 	}
 }

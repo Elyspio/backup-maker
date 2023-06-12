@@ -19,11 +19,19 @@ const slice = createSlice({
 		});
 
 		builder.addCase(getMongoDetails.fulfilled, (state, action) => {
-			for (const [id, infos] of Object.entries(action.payload)) {
+			for (const id of Object.keys(state.connections)) {
+				state.connections[id].error = undefined;
+			}
+
+			for (const [id, infos] of Object.entries(action.payload.data)) {
 				state.details[id] = {};
 				for (const info of infos) {
 					state.details[id][info.name] = info;
 				}
+			}
+
+			for (const [id, error] of Object.entries(action.payload.errors)) {
+				state.connections[id].error = error;
 			}
 		});
 	},

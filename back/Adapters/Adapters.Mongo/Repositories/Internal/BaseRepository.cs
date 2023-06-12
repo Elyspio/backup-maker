@@ -31,7 +31,6 @@ public abstract class BaseRepository<T>
 	protected IMongoCollection<T> EntityCollection => context.MongoDatabase.GetCollection<T>(CollectionName);
 
 
-
 	protected void CreateIndexIfMissing(ICollection<string> properties, bool unique = false)
 	{
 		var indexName = string.Join("-", properties);

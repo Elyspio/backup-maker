@@ -8,7 +8,8 @@ using System.Reflection;
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Filters.Swagger;
 
 /// <summary>
-///     Permet que les paramètres des endpoints dans le swagger soient affichés en tant que required ssi ils ne sont pas optionnels (int?)
+///     Permet que les paramètres des endpoints dans le swagger soient affichés en tant que required ssi ils ne sont pas
+///     optionnels (int?)
 /// </summary>
 public class SwaggerSetNullableOperationFilter : IOperationFilter
 {
@@ -39,7 +40,10 @@ public class SwaggerSetNullableOperationFilter : IOperationFilter
 	/// <summary>
 	///     Renvoie tous les paramètres de la méthode en gérant l'attribut <see cref="FromQueryAttribute" />
 	/// </summary>
-	/// <returns>un dictionnaire avec comme clé le nom du paramètre et comme valeur les informations avec la notion de nullabilité </returns>
+	/// <returns>
+	///     un dictionnaire avec comme clé le nom du paramètre et comme valeur les informations avec la notion de
+	///     nullabilité
+	/// </returns>
 	private Dictionary<string, NullabilityInfo> GetNullableInfos(MethodBase method)
 	{
 		var allParameters = new Dictionary<string, NullabilityInfo>();

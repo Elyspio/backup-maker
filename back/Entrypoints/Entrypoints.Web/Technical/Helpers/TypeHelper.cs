@@ -15,8 +15,8 @@ public static class TypeHelper
 			new JsonStringEnumConverter()
 		}
 	};
-	
-	
+
+
 	/// <summary>
 	///     Renvoie le nom de la propriété en accord avec l'attribut <see cref="JsonIgnoreAttribute" />
 	/// </summary>

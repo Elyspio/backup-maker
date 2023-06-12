@@ -3,16 +3,15 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typog
 import { useAppDispatch, useAppSelector } from "@store";
 import { manageMongoConnections } from "@modules/mongo/mongo.database.async.actions";
 import { MongoConnectionData } from "@apis/backend/generated";
+import { IdConnection, MongoConnectionMeta } from "@modules/mongo/mongo.database.types";
 
-interface AddMongoConnectionProps {
+interface AddMongoConnectionProps extends Pick<MongoConnectionMeta, "id" | "name"> {
 	open: boolean;
 	setClose: () => void;
 }
 
-export function DeleteMongoConnection({ open, setClose }: AddMongoConnectionProps) {
+export function DeleteMongoConnection({ open, setClose, name, id }: AddMongoConnectionProps) {
 	const dispatch = useAppDispatch();
-
-	const { id, name } = useAppSelector((s) => s.router.location?.state as MongoConnectionData);
 
 	const deleteCb = useCallback(() => {
 		dispatch(manageMongoConnections.delete(id));
@@ -21,11 +20,11 @@ export function DeleteMongoConnection({ open, setClose }: AddMongoConnectionProp
 
 	return (
 		<Dialog open={open} onClose={setClose}>
-			<DialogTitle>Create a mongodb connection</DialogTitle>
+			<DialogTitle>Delete a MongoDB connection</DialogTitle>
 			<DialogContent dividers>
-				<Stack direction={"row"} spacing={2}>
+				<Stack direction={"row"} spacing={1}>
 					<Typography whiteSpace={"nowrap"}>Are you sure that you want to delete</Typography>
-					<Typography whiteSpace={"nowrap"} color="primary" variant={"overline"}>
+					<Typography whiteSpace={"nowrap"} color="primary" fontWeight={"bold"}>
 						{name}
 					</Typography>
 					<Typography whiteSpace={"nowrap"}>mongo connection?</Typography>
@@ -36,8 +35,8 @@ export function DeleteMongoConnection({ open, setClose }: AddMongoConnectionProp
 					<Button color={"error"} variant={"contained"} onClick={deleteCb}>
 						Yes
 					</Button>
-					<Button color={"inherit"} variant={"outlined"} onClick={setClose}>
-						No
+					<Button color={"inherit"} onClick={setClose}>
+						Cancel
 					</Button>
 				</Stack>
 			</DialogActions>

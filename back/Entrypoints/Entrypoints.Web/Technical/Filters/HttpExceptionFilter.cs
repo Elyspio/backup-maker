@@ -8,7 +8,6 @@ public class HttpExceptionFilter : ExceptionFilterAttribute
 {
 	public override void OnException(ExceptionContext context)
 	{
-		
 		if (context.Exception is HttpException ex)
 			context.Result = new ObjectResult(ex.ToString())
 			{
@@ -16,13 +15,11 @@ public class HttpExceptionFilter : ExceptionFilterAttribute
 				Value = ex.ToString()
 			};
 		else
-		{
 			context.Result = new ObjectResult(context.Exception.ToString())
 			{
 				StatusCode = 500,
 				Value = context.Exception.ToString()
 			};
-		}
 
 		Console.WriteLine(context.Exception);
 

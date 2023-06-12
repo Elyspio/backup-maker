@@ -12,29 +12,29 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.5" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
-        <PackageReference Include="Scrutor.AspNetCore" Version="3.3.0" />
-        <PackageReference Include="Serilog.Extensions.Hosting" Version="7.0.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.5"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4"/>
+        <PackageReference Include="Scrutor.AspNetCore" Version="3.3.0"/>
+        <PackageReference Include="Serilog.Extensions.Hosting" Version="7.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Technical\" />
-        <Folder Include="Technical\Middlewares\" />
+        <Folder Include="Technical\"/>
+        <Folder Include="Technical\Middlewares\"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Properties\launchSettings.json" />
+        <None Remove="Properties\launchSettings.json"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Adapters\Adapters.Mongo\BackupMaker.Api.Adapters.Mongo.csproj" />
-      <ProjectReference Include="..\..\Adapters\Adapters.Rest\BackupMaker.Api.Adapters.Rest.csproj" />
-      <ProjectReference Include="..\..\Internal\Internal.Abstractions\BackupMaker.Api.Abstractions.csproj" />
-      <ProjectReference Include="..\..\Internal\Internal.Core\BackupMaker.Api.Core.csproj" />
+        <ProjectReference Include="..\..\Adapters\Adapters.Mongo\BackupMaker.Api.Adapters.Mongo.csproj"/>
+        <ProjectReference Include="..\..\Adapters\Adapters.Rest\BackupMaker.Api.Adapters.Rest.csproj"/>
+        <ProjectReference Include="..\..\Internal\Internal.Abstractions\BackupMaker.Api.Abstractions.csproj"/>
+        <ProjectReference Include="..\..\Internal\Internal.Core\BackupMaker.Api.Core.csproj"/>
     </ItemGroup>
 
 

@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "@store";
 import { manageMongoConnections } from "@modules/mongo/mongo.database.async.actions";
 import { IdConnection } from "@modules/mongo/mongo.database.types";
 import { AsyncThunkAction } from "@reduxjs/toolkit";
+import { usePropsState } from "@hooks/usePropsState";
 
 interface AddMongoConnectionProps {
 	open: boolean;
@@ -16,7 +17,7 @@ export function AddMongoConnection({ open, setClose, update }: AddMongoConnectio
 
 	const dispatch = useAppDispatch();
 
-	const [name, setName] = useState(updateName ?? "");
+	const [name, setName] = usePropsState(updateName ?? "");
 	const [connectionString, setConnectionString] = useState("");
 
 	const updateField = useCallback(
@@ -24,7 +25,7 @@ export function AddMongoConnection({ open, setClose, update }: AddMongoConnectio
 			const fn = field === "connectionString" ? setConnectionString : setName;
 			fn(e.target.value);
 		},
-		[]
+		[setName]
 	);
 
 	const createNewConnection = useCallback(() => {

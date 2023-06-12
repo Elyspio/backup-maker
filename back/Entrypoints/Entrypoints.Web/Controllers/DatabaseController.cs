@@ -1,14 +1,14 @@
 using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
-using BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info;
 using BackupMaker.Api.Abstractions.Models.Transports;
 using BackupMaker.Api.Abstractions.Models.Transports.Requests;
+using BackupMaker.Api.Abstractions.Models.Transports.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackupMaker.Api.Entrypoints.Web.Controllers;
 
 /// <summary>
-/// Manage database connection and information (databases, collections, sizes)
+///     Manage database connection and information (databases, collections, sizes)
 /// </summary>
 [ApiController]
 [Route("api/database")]
@@ -25,11 +25,11 @@ public class DatabaseController : ControllerBase
 
 
 	/// <summary>
-	/// Get informations about databases, collections, sizes for all connections 
+	///     Get informations about databases, collections, sizes for all connections
 	/// </summary>
 	/// <returns></returns>
 	[HttpGet("infos")]
-	[ProducesResponseType(typeof(Dictionary<Guid, List<DatabaseInfo>>), 200)]
+	[ProducesResponseType(typeof(GetConnectionInformationResponse), 200)]
 	public async Task<IActionResult> GetInfos()
 	{
 		var logger = _logger.Enter("", LogLevel.Information);
@@ -42,7 +42,7 @@ public class DatabaseController : ControllerBase
 	}
 
 	/// <summary>
-	/// Add a new database connection
+	///     Add a new database connection
 	/// </summary>
 	/// <param name="req"></param>
 	/// <returns></returns>
@@ -58,9 +58,9 @@ public class DatabaseController : ControllerBase
 
 		return NoContent();
 	}
-	
+
 	/// <summary>
-	/// Get all databases connections available
+	///     Get all databases connections available
 	/// </summary>
 	/// <returns></returns>
 	[HttpGet("connections")]
@@ -74,11 +74,11 @@ public class DatabaseController : ControllerBase
 		logger.Exit($"{Log.F(connections.Count)}");
 
 		return Ok(connections);
-	}	
+	}
 
-	
+
 	/// <summary>
-	/// Replace the connectionString for a connection
+	///     Replace the connectionString for a connection
 	/// </summary>
 	/// <param name="idConnection">Connection's id</param>
 	/// <param name="connectionString">new connectionString</param>
@@ -94,9 +94,10 @@ public class DatabaseController : ControllerBase
 		logger.Exit();
 
 		return NoContent();
-	}		
+	}
+
 	/// <summary>
-	/// Replace the connectionString for a connection
+	///     Replace the connectionString for a connection
 	/// </summary>
 	/// <param name="idConnection">Connection's id</param>
 	/// <returns></returns>
@@ -111,6 +112,5 @@ public class DatabaseController : ControllerBase
 		logger.Exit();
 
 		return NoContent();
-	}	
-
+	}
 }
