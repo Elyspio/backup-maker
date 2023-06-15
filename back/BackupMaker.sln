@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Entrypoints", "Entrypoints"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Internal", "Internal", "{6685CB66-B49B-4278-B7C1-264FBC87412C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackupMaker.Api.Adapters.Hangfire", "Adapters\BackupMaker.Api.Adapters.Hangfire\BackupMaker.Api.Adapters.Hangfire.csproj", "{C0B2B9EF-A0FB-4525-90DE-073CE5350D89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{328B0283-BE3B-48C6-963D-849661EB9E36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{328B0283-BE3B-48C6-963D-849661EB9E36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{328B0283-BE3B-48C6-963D-849661EB9E36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0B2B9EF-A0FB-4525-90DE-073CE5350D89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0B2B9EF-A0FB-4525-90DE-073CE5350D89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0B2B9EF-A0FB-4525-90DE-073CE5350D89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0B2B9EF-A0FB-4525-90DE-073CE5350D89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,5 +64,6 @@ Global
 		{6FAC2AF8-E9B2-424C-B084-AC9A2918948A} = {51BB580F-17BB-45D9-A065-E909A48696B9}
 		{328B0283-BE3B-48C6-963D-849661EB9E36} = {6685CB66-B49B-4278-B7C1-264FBC87412C}
 		{BAADE704-FB99-4460-8B64-18296AE956DF} = {6685CB66-B49B-4278-B7C1-264FBC87412C}
+		{C0B2B9EF-A0FB-4525-90DE-073CE5350D89} = {5FEC1367-1714-4958-9275-5EC567137D92}
 	EndGlobalSection
 EndGlobal

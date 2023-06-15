@@ -33,6 +33,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\Adapters\Adapters.Mongo\BackupMaker.Api.Adapters.Mongo.csproj"/>
         <ProjectReference Include="..\..\Adapters\Adapters.Rest\BackupMaker.Api.Adapters.Rest.csproj"/>
+        <ProjectReference Include="..\..\Adapters\BackupMaker.Api.Adapters.Hangfire\BackupMaker.Api.Adapters.Hangfire.csproj"/>
         <ProjectReference Include="..\..\Internal\Internal.Abstractions\BackupMaker.Api.Abstractions.csproj"/>
         <ProjectReference Include="..\..\Internal\Internal.Core\BackupMaker.Api.Core.csproj"/>
     </ItemGroup>

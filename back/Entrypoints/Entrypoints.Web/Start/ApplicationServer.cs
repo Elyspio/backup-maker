@@ -1,4 +1,5 @@
 ﻿using BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
+using Hangfire;
 
 namespace BackupMaker.Api.Entrypoints.Web.Start;
 
@@ -7,7 +8,7 @@ public static class ApplicationServer
 	public static WebApplication Initialize(this WebApplication app)
 	{
 		app.UseSwaggerWithVersioning();
-
+		app.UseHangfireDashboard();
 		if (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
 
 		app.UseAdvancedDependencyInjection();

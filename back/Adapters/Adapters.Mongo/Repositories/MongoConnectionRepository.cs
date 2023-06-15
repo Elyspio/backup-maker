@@ -1,4 +1,5 @@
-﻿using BackupMaker.Api.Abstractions.Common.Helpers;
+﻿using BackupMaker.Api.Abstractions.Common.Extensions;
+using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Models.Entities;
 using BackupMaker.Api.Adapters.Mongo.Repositories.Internal;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace BackupMaker.Api.Adapters.Mongo.Repositories;
 
@@ -55,5 +57,16 @@ public class MongoConnectionRepository : BaseRepository<MongoConnectionEntity>, 
 	public async Task Delete(ObjectId idConnection)
 	{
 		await EntityCollection.DeleteOneAsync(connection => connection.Id == idConnection);
+	}
+
+	public async Task<MongoConnectionEntity> GetById(Guid idConnection)
+	{
+		var logger = _logger.Enter($"{Log.F(idConnection)}");
+
+		var connection = await EntityCollection.AsQueryable().FirstOrDefaultAsync(con => con.Id == idConnection.AsObjectId());
+
+		logger.Exit($"found=${connection is not null}");
+
+		return connection;
 	}
 }

@@ -1,4 +1,5 @@
 ﻿using BackupMaker.Api.Abstractions.Interfaces.Injections;
+using BackupMaker.Api.Adapters.Hangfire.Injections;
 using BackupMaker.Api.Adapters.Mongo.Injections;
 using BackupMaker.Api.Adapters.Rest.Injections;
 using BackupMaker.Api.Core.Injections;
@@ -58,6 +59,7 @@ public class ServerBuilder
 		builder.Services.AddModule<CoreModule>(builder.Configuration);
 		builder.Services.AddModule<MongoAdapterModule>(builder.Configuration);
 		builder.Services.AddModule<RestAdapterModule>(builder.Configuration);
+		builder.Services.AddModule<HangfireAdapterModule>(builder.Configuration);
 
 
 		builder.Services.AddControllers(options =>

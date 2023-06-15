@@ -43,4 +43,6 @@ public interface IMongoDatabaseService
 	/// <param name="connectionString">New URI to connect to the database</param>
 	/// <returns></returns>
 	public Task DeleteConnection(Guid idConnection);
+
+	public Task Backup(Guid idConnection, Dictionary<string, List<string>> elements);
 }

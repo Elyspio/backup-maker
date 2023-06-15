@@ -1,16 +1,22 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Extensions;
+using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Diagnostics;
+using System.Text;
 
 namespace BackupMaker.Api.Adapters.Mongo.Repositories;
 
 internal class MongoDatabaseManager : IMongoDatabaseManager
 {
+	private readonly ILogger<MongoDatabaseManager> _logger;
+
 	public MongoDatabaseManager(ILogger<MongoDatabaseManager> logger)
 	{
+		_logger = logger;
 	}
 
 	public async Task<List<DatabaseInfo>> GetDatabases(string connectionString)
@@ -39,6 +45,98 @@ internal class MongoDatabaseManager : IMongoDatabaseManager
 
 		return databasesResult.Data;
 	}
+
+	public async Task<string> Backup(string connectionString, Dictionary<string, List<string>> elements)
+	{
+		var logger = _logger.Enter($"{Log.F(connectionString)} {Log.F(elements)}");
+
+
+		var tempDir = Path.Join(Path.GetTempPath(), "backup-maker", DateTime.Now.ToString("yy-MMM-dd.hh-mm-ss"));
+
+		var commands = await Task.WhenAll(elements.Select(async elem =>
+		{
+			var database = new MongoClient(connectionString).GetDatabase(elem.Key);
+
+			var databaseCollections = await GetCollectionOnlyNames(database);
+
+			return GenerateMongoDumpCommandLine(connectionString, elem.Key, databaseCollections.Except(elem.Value).ToList(), tempDir);
+		}));
+
+		var results = await commands.Parallelize(Dump);
+
+		var exceptions = new List<Exception>();
+		var i = 0;
+		foreach (var (_, stderr, exitCode) in results.Data)
+		{
+			i += 1;
+			if (exitCode == 0) continue;
+			exceptions.Add(new($"{elements.Keys.ToArray()[i - 1]}: {stderr}"));
+		}
+
+		if (exceptions.Any()) throw new AggregateException(exceptions);
+
+
+		logger.Exit($"Output directory = {tempDir}");
+
+		return tempDir;
+	}
+
+
+	private async Task<(string stdout, string stderr, int exitCode)> Dump(string command)
+	{
+		// Create a new process instance
+		var process = new Process();
+
+		// Configure the process start info
+		var startInfo = new ProcessStartInfo
+		{
+			FileName = "mongodump", // Assuming 'mongodump' is in the system's PATH
+			Arguments = command,
+			RedirectStandardOutput = true,
+			RedirectStandardError = true,
+			UseShellExecute = false
+		};
+		// Assign the start info to the process
+		process.StartInfo = startInfo;
+
+		var stdout = new StringBuilder();
+		var stderr = new StringBuilder();
+
+		// Event handler for capturing stdout
+		process.OutputDataReceived += (sender, e) =>
+		{
+			if (!string.IsNullOrEmpty(e.Data)) stdout.Append(e.Data);
+		};
+
+		// Event handler for capturing stderr
+		process.ErrorDataReceived += (sender, e) =>
+		{
+			if (!string.IsNullOrEmpty(e.Data)) stderr.Append(e.Data);
+		};
+
+		// Start the process
+		process.Start();
+
+		// Begin capturing stdout and stderr
+		process.BeginOutputReadLine();
+		process.BeginErrorReadLine();
+		// Wait for the process to exit
+		await process.WaitForExitAsync();
+
+		return (stdout.ToString(), stderr.ToString(), process.ExitCode);
+	}
+
+	private string GenerateMongoDumpCommandLine(string connectionString, string database, List<string> excludedConnection, string directory)
+	{
+		var ignore = excludedConnection.Aggregate("", (acc, current) =>
+		{
+			acc += $" --excludeCollection {current}";
+			return acc;
+		});
+
+		return $"--uri \"{connectionString}\" --out {directory} --db {database} {ignore} --out {directory} ";
+	}
+
 
 	/// <summary>
 	///     Get detailed info about a collection

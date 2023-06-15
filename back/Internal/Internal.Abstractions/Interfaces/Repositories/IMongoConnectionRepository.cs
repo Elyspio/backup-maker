@@ -10,5 +10,6 @@ public interface IMongoConnectionRepository
 	public Task<List<MongoConnectionEntity>> GetAll();
 
 	public Task<MongoConnectionEntity> Update(ObjectId idDatabase, string connectionString);
-	Task Delete(ObjectId idConnection);
+	public Task Delete(ObjectId idConnection);
+	public Task<MongoConnectionEntity> GetById(Guid idConnection);
 }

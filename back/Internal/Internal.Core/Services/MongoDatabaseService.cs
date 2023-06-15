@@ -6,6 +6,9 @@ using BackupMaker.Api.Abstractions.Models.Transports;
 using BackupMaker.Api.Abstractions.Models.Transports.Responses;
 using BackupMaker.Api.Core.Assemblers;
 using Microsoft.Extensions.Logging;
+using SharpCompress.Archives;
+using SharpCompress.Archives.Zip;
+using SharpCompress.Common;
 
 namespace BackupMaker.Api.Core.Services;
 
@@ -86,5 +89,23 @@ internal class MongoDatabaseService : IMongoDatabaseService
 		await _mongoConnectionRepository.Delete(idConnection.AsObjectId());
 
 		logger.Exit();
+	}
+
+	public async Task Backup(Guid idConnection, Dictionary<string, List<string>> elements)
+	{
+		var logger = _logger.Enter($"{Log.F(idConnection)} {Log.F(elements.Keys)}");
+
+
+		var connection = await _mongoConnectionRepository.GetById(idConnection);
+
+		var folderToCompress = await _mongoDatabaseManager.Backup(connection.ConnectionString, elements);
+
+		var archivePath = Path.Join(folderToCompress, $"{idConnection}.zip");
+
+		using var archive = ZipArchive.Create();
+		archive.AddAllFromDirectory(folderToCompress);
+		archive.SaveTo(archivePath, CompressionType.Deflate);
+
+		logger.Exit($"{Log.F(archivePath)}");
 	}
 }
