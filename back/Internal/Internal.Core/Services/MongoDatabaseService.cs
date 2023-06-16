@@ -2,6 +2,7 @@
 using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
+using BackupMaker.Api.Abstractions.Models.Base.Database.Mongo;
 using BackupMaker.Api.Abstractions.Models.Transports;
 using BackupMaker.Api.Abstractions.Models.Transports.Responses;
 using BackupMaker.Api.Core.Assemblers;
@@ -91,21 +92,23 @@ internal class MongoDatabaseService : IMongoDatabaseService
 		logger.Exit();
 	}
 
-	public async Task Backup(Guid idConnection, Dictionary<string, List<string>> elements)
+	public async Task<string> Backup(MongoBackupTask task)
 	{
-		var logger = _logger.Enter($"{Log.F(idConnection)} {Log.F(elements.Keys)}");
+		var logger = _logger.Enter($"{Log.F(task.IdConnection)} {Log.F(task.Elements.Keys)}");
 
 
-		var connection = await _mongoConnectionRepository.GetById(idConnection);
+		var connection = await _mongoConnectionRepository.GetById(task.IdConnection);
 
-		var folderToCompress = await _mongoDatabaseManager.Backup(connection.ConnectionString, elements);
+		var folderToCompress = await _mongoDatabaseManager.Backup(connection.ConnectionString, task.Elements);
 
-		var archivePath = Path.Join(folderToCompress, $"{idConnection}.zip");
+		var archivePath = Path.Join(folderToCompress, $"{task.IdConnection}.zip");
 
 		using var archive = ZipArchive.Create();
 		archive.AddAllFromDirectory(folderToCompress);
 		archive.SaveTo(archivePath, CompressionType.Deflate);
 
 		logger.Exit($"{Log.F(archivePath)}");
+
+		return archivePath;
 	}
 }

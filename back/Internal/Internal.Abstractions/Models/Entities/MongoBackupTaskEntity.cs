@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace BackupMaker.Api.Abstractions.Models.Entities;
 
-public class MongoBackupJobEntity : MongoBackupJob
+public class MongoBackupTaskEntity : MongoBackupTask
 {
 	[BsonId]
 	[BsonRepresentation(BsonType.ObjectId)]

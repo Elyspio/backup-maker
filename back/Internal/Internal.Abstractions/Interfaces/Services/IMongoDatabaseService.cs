@@ -1,4 +1,5 @@
-﻿using BackupMaker.Api.Abstractions.Models.Entities;
+﻿using BackupMaker.Api.Abstractions.Models.Base.Database.Mongo;
+using BackupMaker.Api.Abstractions.Models.Entities;
 using BackupMaker.Api.Abstractions.Models.Transports;
 using BackupMaker.Api.Abstractions.Models.Transports.Responses;
 
@@ -40,9 +41,13 @@ public interface IMongoDatabaseService
 	///     Replace the connectionString for a connection
 	/// </summary>
 	/// <param name="idConnection">Connection's id</param>
-	/// <param name="connectionString">New URI to connect to the database</param>
 	/// <returns></returns>
 	public Task DeleteConnection(Guid idConnection);
 
-	public Task Backup(Guid idConnection, Dictionary<string, List<string>> elements);
+	/// <summary>
+	///     Backup a mongo database from task configuration
+	/// </summary>
+	/// <param name="task"></param>
+	/// <returns></returns>
+	public Task<string> Backup(MongoBackupTask task);
 }

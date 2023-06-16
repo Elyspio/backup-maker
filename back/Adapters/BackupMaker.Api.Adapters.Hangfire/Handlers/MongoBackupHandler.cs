@@ -1,29 +1,36 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Interfaces.Handlers;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
-using BackupMaker.Api.Abstractions.Models.Base.Database.Mongo;
+using BackupMaker.Api.Abstractions.Models.Transports.Jobs;
 using Microsoft.Extensions.Logging;
 
 namespace BackupMaker.Api.Adapters.Hangfire.Handlers;
 
-public class MongoBackupHandler : IJobHandler<MongoBackupJob>
+public class MongoBackupHandler : IJobHandler<BackupMongoLocalJobData>
 {
 	private readonly ILogger<MongoBackupHandler> _logger;
-
+	private readonly ILocalDeploymentService _localDeploymentService;
+	private readonly IMongoBackupService _mongoBackupService;
 	private readonly IMongoDatabaseService _mongoDatabaseService;
 
-	public MongoBackupHandler(ILogger<MongoBackupHandler> logger, IMongoDatabaseService mongoDatabaseService)
+	public MongoBackupHandler(ILogger<MongoBackupHandler> logger, IMongoDatabaseService mongoDatabaseService, ILocalDeploymentService localDeploymentService, IMongoBackupService mongoBackupService)
 	{
 		_logger = logger;
 		_mongoDatabaseService = mongoDatabaseService;
+		_localDeploymentService = localDeploymentService;
+		_mongoBackupService = mongoBackupService;
 	}
 
 
-	public async Task Process(MongoBackupJob payload)
+	public async Task Process(BackupMongoLocalJobData payload)
 	{
-		var logger = _logger.Enter($"{Log.F(payload.IdConnection)} {Log.F(payload.CronInterval)}");
+		var logger = _logger.Enter($"{Log.F(payload)}");
 
-		await _mongoDatabaseService.Backup(payload.IdConnection, payload.Elements);
+		var backupTask = await _mongoBackupService.GetById(payload.IdMongoBackup);
+
+		var archivePath = await _mongoDatabaseService.Backup(backupTask);
+
+		await _localDeploymentService.Deploy(payload.IdLocalDeploy, archivePath);
 
 		logger.Exit();
 	}
