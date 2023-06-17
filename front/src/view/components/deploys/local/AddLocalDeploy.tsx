@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "@store";
 import { IdConnection } from "@modules/databases/mongo/mongo.database.types";
 import { AsyncThunkAction } from "@reduxjs/toolkit";
 import { usePropsState } from "@hooks/usePropsState";
-import { manageLocalDeploy } from "@modules/deploys/local/deploy.async.actions";
+import { manageLocalDeploy } from "@modules/deploys/deploys.async.actions";
 
 export interface AddEntityProps<T> {
 	open: boolean;

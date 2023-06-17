@@ -1,26 +1,12 @@
 import React, { useMemo } from "react";
 import { useAppSelector } from "@store";
-import { IconButton, Stack, SxProps, Tooltip, Typography } from "@mui/material";
+import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { DeleteForever, Edit } from "@mui/icons-material";
 import { useModal } from "@hooks/useModal";
 import { DeleteEntity } from "@components/entity/DeleteEntity";
 import { useParams } from "react-router";
-import { manageLocalDeploy } from "@modules/deploys/local/deploy.async.actions";
+import { manageLocalDeploy } from "@modules/deploys/deploys.async.actions";
 import { AddLocalDeploy } from "@components/deploys/local/AddLocalDeploy";
-
-enum ColumnField {
-	Name = "name",
-	Count = "count",
-	SizeTotal = "sizes/total",
-	SizeDocuments = "sizes/documents",
-	SizeIndexes = "sizes/indexes",
-}
-
-const rootSx: SxProps = {
-	".MuiDataGrid-footerContainer.MuiDataGrid-withBorderColor": {
-		display: "none",
-	},
-};
 
 export function LocalDeploy() {
 	const { locals } = useAppSelector((s) => ({
@@ -40,7 +26,7 @@ export function LocalDeploy() {
 		return (
 			<Stack alignItems={"center"} justifyContent={"center"} height={"100%"} width={"100%"}>
 				<Typography variant={"h4"}>
-					Unable to find the local deploymeny configuration{" "}
+					Unable to find the local deployment configuration{" "}
 					<Typography component={"span"} fontSize={"110%"} color={"error"}>
 						"{name}"
 					</Typography>
@@ -49,7 +35,7 @@ export function LocalDeploy() {
 		);
 
 	return (
-		<Stack height={"100%"} className={"MongoConnection"} sx={rootSx}>
+		<Stack height={"100%"} className={"MongoConnection"}>
 			<Stack direction={"row"} spacing={2} alignItems={"center"} width={"100%"}>
 				<Typography fontSize={"100%"} variant={"overline"}>
 					Deploy :
@@ -57,12 +43,12 @@ export function LocalDeploy() {
 				<Typography color={"primary"} sx={{ opacity: 0.9 }} fontSize={"110%"}>
 					Local/{deploy.name}
 				</Typography>
-				<Tooltip title={"Update the local deployment"}>
+				<Tooltip title={"Update the mongo deployment"}>
 					<IconButton color={"warning"} onClick={updateModal.setOpen}>
 						<Edit />
 					</IconButton>
 				</Tooltip>
-				<Tooltip title={"Delete the local deployment"}>
+				<Tooltip title={"Delete the mongo deployment"}>
 					<IconButton color={"error"} onClick={deleteModal.setOpen}>
 						<DeleteForever />
 					</IconButton>
@@ -80,10 +66,10 @@ export function LocalDeploy() {
 					<DeleteEntity
 						setClose={deleteModal.setClose}
 						open={deleteModal.open}
-						title={"Delete local deployment config"}
+						title={"Delete mongo deployment config"}
 						deleteFn={manageLocalDeploy.delete}
 						entity={deploy}
-						description={"local deployment config"}
+						description={"mongo deployment config"}
 					/>
 					<AddLocalDeploy open={updateModal.open} setClose={updateModal.setClose} update={deploy.id} />
 				</>

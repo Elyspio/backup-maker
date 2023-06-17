@@ -10,12 +10,12 @@ namespace BackupMaker.Api.Entrypoints.Web.Controllers;
 [ApiController]
 [Produces("application/json")]
 [Tags("TasksBackup")]
-public class BackupTasksController : ControllerBase
+public class TasksController : ControllerBase
 {
 	private readonly IMongoBackupTaskService _backupTaskService;
-	private readonly ILogger<BackupJobsController> _logger;
+	private readonly ILogger<JobsController> _logger;
 
-	public BackupTasksController(ILogger<BackupJobsController> logger, IMongoBackupTaskService backupTaskService)
+	public TasksController(ILogger<JobsController> logger, IMongoBackupTaskService backupTaskService)
 	{
 		_logger = logger;
 		_backupTaskService = backupTaskService;
@@ -46,9 +46,27 @@ public class BackupTasksController : ControllerBase
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> CreateMongoTask(MongoBackupTask task)
 	{
-		var logger = _logger.Enter("", LogLevel.Information);
+		var logger = _logger.Enter($"{Log.F(task)}", LogLevel.Information);
 
 		await _backupTaskService.Add(task);
+
+		logger.Exit();
+
+		return NoContent();
+	}	
+	/// <summary>
+	///     Update a  mongo backup task configuration
+	/// </summary>
+	/// <returns></returns>
+	[HttpPut("mongo/{idTask:guid}")]
+	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+	public async Task<IActionResult> UpdateMongoTask(Guid idTask, MongoBackupTask task)
+	{
+		var logger = _logger.Enter($"{Log.F(idTask)} {Log.F(task)}", LogLevel.Information);
+
+		
+		
+		await _backupTaskService.Update(idTask, task);
 
 		logger.Exit();
 
@@ -63,7 +81,7 @@ public class BackupTasksController : ControllerBase
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> DeleteMongoTask(Guid idTask)
 	{
-		var logger = _logger.Enter("", LogLevel.Information);
+		var logger = _logger.Enter(Log.F(idTask), LogLevel.Information);
 
 		await _backupTaskService.Delete(idTask);
 

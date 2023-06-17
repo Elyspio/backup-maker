@@ -819,6 +819,42 @@ export class TasksBackupClient {
 	}
 
 	/**
+	 * Update a  mongo backup task configuration
+	 * @return No Content
+	 */
+	updateMongoTask(idTask: string, body: MongoBackupTask, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/tasks/backup/mongo/{idTask}";
+		if (idTask === undefined || idTask === null) throw new Error("The parameter 'idTask' must be defined.");
+		url_ = url_.replace("{idTask}", encodeURIComponent("" + idTask));
+		url_ = url_.replace(/[?&]$/, "");
+
+		const content_ = JSON.stringify(body);
+
+		let options_: AxiosRequestConfig = {
+			data: content_,
+			method: "PUT",
+			url: url_,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processUpdateMongoTask(_response);
+			});
+	}
+
+	/**
 	 * Delete a mongo backup task configurations
 	 * @return No Content
 	 */
@@ -873,6 +909,26 @@ export class TasksBackupClient {
 	}
 
 	protected processCreateMongoTask(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+
+	protected processUpdateMongoTask(response: AxiosResponse): Promise<void> {
 		const status = response.status;
 		let _headers: any = {};
 		if (response.headers && typeof response.headers === "object") {
@@ -984,6 +1040,7 @@ export interface LocalDeployData {
 
 /** Backup job for a mongo connection */
 export interface MongoBackupTask {
+	name: string;
 	/** Id of the mongo connection */
 	idConnection: string;
 	/** Mapping of a database to a list of collection to backup */
@@ -993,6 +1050,7 @@ export interface MongoBackupTask {
 }
 
 export interface MongoBackupTaskData {
+	name: string;
 	/** Id of the mongo connection */
 	idConnection: string;
 	/** Mapping of a database to a list of collection to backup */

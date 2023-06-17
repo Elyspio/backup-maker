@@ -4,7 +4,7 @@ using BackupMaker.Api.Abstractions.Models.Base.Deploy;
 using BackupMaker.Api.Abstractions.Models.Transports;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BackupMaker.Api.Entrypoints.Web.Controllers.Deploys;
+namespace BackupMaker.Api.Entrypoints.Web.Controllers.Tasks;
 
 [Route("api/deploys/local/")]
 [ApiController]

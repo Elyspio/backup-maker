@@ -2,4 +2,5 @@
 
 public abstract class BaseBackupTask
 {
+	public required string Name { get; set; }
 }

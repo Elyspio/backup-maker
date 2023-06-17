@@ -22,7 +22,7 @@ function waitForLogin(page: Window) {
 		page.onclose = clearInter;
 
 		const func = () => {
-			console.debug("Checking if user is logged from local storage");
+			console.debug("Checking if user is logged from mongo storage");
 			const isPresent = localStorages.get() !== undefined;
 			if (isPresent) {
 				clearInter();

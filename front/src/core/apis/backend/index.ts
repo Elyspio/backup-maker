@@ -1,5 +1,5 @@
 import { inject, injectable } from "inversify";
-import { DeploysLocalClient, MongoDatabaseClient } from "./generated";
+import { DeploysLocalClient, MongoDatabaseClient, TasksBackupClient } from "./generated";
 import { TokenService } from "@services/common/auth/token.service";
 import axios from "axios";
 
@@ -9,6 +9,7 @@ export class BackendApi {
 	public deploys: {
 		local: DeploysLocalClient;
 	};
+	public tasks: TasksBackupClient;
 
 	constructor(@inject(TokenService) tokenService: TokenService) {
 		const instance = axios.create({
@@ -22,6 +23,7 @@ export class BackendApi {
 		});
 
 		this.database = new MongoDatabaseClient(window.config.endpoints.core, instance);
+		this.tasks = new TasksBackupClient(window.config.endpoints.core, instance);
 
 		this.deploys = {
 			local: new DeploysLocalClient(window.config.endpoints.core, instance),

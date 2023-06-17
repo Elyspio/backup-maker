@@ -38,6 +38,7 @@ public class MongoBackupRepository : BaseRepository<MongoBackupTaskEntity>, IMon
 
 		var entity = new MongoBackupTaskEntity
 		{
+			Name = deploy.Name,
 			IdConnection = deploy.IdConnection,
 			Elements = deploy.Elements
 		};
@@ -56,6 +57,7 @@ public class MongoBackupRepository : BaseRepository<MongoBackupTaskEntity>, IMon
 		logger.Exit();
 	}
 
+	/// <inheritdoc />
 	public async Task<MongoBackupTaskEntity> GetById(Guid id)
 	{
 		var logger = _logger.Enter($"{Log.F(id)}");
@@ -65,5 +67,23 @@ public class MongoBackupRepository : BaseRepository<MongoBackupTaskEntity>, IMon
 		logger.Exit($"{Log.F(entity is not null)}");
 
 		return entity;
+	}
+
+	/// <inheritdoc />
+	public async Task Update(Guid id, MongoBackupTask task)
+	{
+		var logger = _logger.Enter($"{Log.F(id)} {Log.F(task)}");
+
+		var entity = new MongoBackupTaskEntity
+		{
+			Id = id.AsObjectId(),
+			Name = task.Name,
+			IdConnection = task.IdConnection,
+			Elements = task.Elements
+		};
+
+		await EntityCollection.ReplaceOneAsync(backup => backup.Id == entity.Id, entity);
+
+		logger.Exit();
 	}
 }

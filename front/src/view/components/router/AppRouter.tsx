@@ -6,6 +6,8 @@ import { MongoConnection } from "@components/connections/mongo/MongoConnection";
 import { Connections } from "@components/connections/Connections";
 import { Deploys } from "@components/deploys/Deploys";
 import { LocalDeploy } from "@components/deploys/local/LocalDeploy";
+import { Tasks } from "@components/tasks/Tasks";
+import { MongoTask } from "@components/tasks/mongo/MongoTask";
 
 export function AppRouter() {
 	return (
@@ -13,11 +15,13 @@ export function AppRouter() {
 			<Stack spacing={2} px={2}>
 				<Connections />
 				<Deploys />
+				<Tasks />
 			</Stack>
 
 			<Box bgcolor={"background.paper"} p={2} width={"100%"}>
 				<Routes>
 					<Route path={AppRoutes.mongoConnection} element={<MongoConnection />} />
+					<Route path={AppRoutes.mongoTask} element={<MongoTask />} />
 					<Route path={AppRoutes.localDeploy} element={<LocalDeploy />} />
 				</Routes>
 			</Box>

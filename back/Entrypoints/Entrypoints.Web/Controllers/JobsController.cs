@@ -9,13 +9,13 @@ namespace BackupMaker.Api.Entrypoints.Web.Controllers;
 [ApiController]
 [Tags("JobsBackup")]
 [Produces("application/json")]
-public class BackupJobsController : ControllerBase
+public class JobsController : ControllerBase
 {
 	private readonly IMongoBackupTaskService _backupTaskService;
 
-	private readonly ILogger<BackupJobsController> _logger;
+	private readonly ILogger<JobsController> _logger;
 
-	public BackupJobsController(ILogger<BackupJobsController> logger, IMongoBackupTaskService backupTaskService)
+	public JobsController(ILogger<JobsController> logger, IMongoBackupTaskService backupTaskService)
 	{
 		_logger = logger;
 		_backupTaskService = backupTaskService;

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BackupMaker.Api.Core.Services;
 
+/// <inheritdoc />
 public class MongoBackupTaskService : IMongoBackupTaskService
 {
 	private readonly ILogger<MongoBackupTaskService> _logger;
@@ -22,6 +23,7 @@ public class MongoBackupTaskService : IMongoBackupTaskService
 	}
 
 
+	/// <inheritdoc />
 	public async Task<List<MongoBackupTaskData>> GetAll()
 	{
 		var logger = _logger.Enter();
@@ -33,24 +35,45 @@ public class MongoBackupTaskService : IMongoBackupTaskService
 		return _mongoBackupTaskAssembler.Convert(backups);
 	}
 
+	/// <inheritdoc />
 	public async Task Add(MongoBackupTask task)
 	{
-		throw new NotImplementedException();
+		var logger = _logger.Enter(Log.F(task));
+
+		await _mongoBackupRepository.Add(task);
+
+		logger.Exit();
 	}
 
+	/// <inheritdoc />
 	public async Task Delete(Guid id)
 	{
-		throw new NotImplementedException();
+		var logger = _logger.Enter();
+
+		await _mongoBackupRepository.Delete(id);
+
+		logger.Exit();
 	}
 
+	/// <inheritdoc />
 	public async Task<MongoBackupTaskData> GetById(Guid id)
 	{
-		var logger = _logger.Enter();
+		var logger = _logger.Enter($"{Log.F(id)}");
 
 		var backups = await _mongoBackupRepository.GetById(id);
 
 		logger.Exit();
 
 		return _mongoBackupTaskAssembler.Convert(backups);
+	}
+
+	/// <inheritdoc />
+	public async Task Update(Guid id, MongoBackupTask task)
+	{
+		var logger = _logger.Enter($"{Log.F(id)} {Log.F(task)}");
+
+		await _mongoBackupRepository.Update(id, task);
+
+		logger.Exit();
 	}
 }

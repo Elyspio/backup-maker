@@ -29,7 +29,7 @@ export function EntityManager<T>({ name, DetailComponent, AddComponent, title }:
 				<AppAccordion.Summary>
 					<Stack direction={"row"} justifyContent={"space-between"} width={150} alignItems={"center"}>
 						<Typography>{name}</Typography>
-						<Tooltip title={title}>
+						<Tooltip title={title} placement={"right"}>
 							<IconButton onClick={addEntity} color={"success"}>
 								<Add />
 							</IconButton>

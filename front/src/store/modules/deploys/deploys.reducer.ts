@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { DeployState } from "@modules/deploys/local/deploy.types";
-import { manageLocalDeploy } from "@modules/deploys/local/deploy.async.actions";
+import { DeployState } from "@modules/deploys/deploys.types";
+import { manageLocalDeploy } from "@modules/deploys/deploys.async.actions";
 
 const initialState: DeployState = {
 	locals: {},
@@ -20,4 +20,4 @@ const slice = createSlice({
 	},
 });
 
-export const deployReducer = slice.reducer;
+export const deploysReducer = slice.reducer;

@@ -7,7 +7,7 @@ import { DeployService } from "@services/deploy.service";
 const createAsyncThunk = createAsyncActionGenerator("databases/mongo");
 
 export const manageLocalDeploy = {
-	add: createAsyncThunk("deploy/local/add", (arg: LocalDeployBase, { extra }) => {
+	add: createAsyncThunk("deploy/mongo/add", (arg: LocalDeployBase, { extra }) => {
 		const databaseMongoService = getService(DeployService, extra);
 
 		return toast.promise(databaseMongoService.local.add(arg), {
@@ -15,7 +15,7 @@ export const manageLocalDeploy = {
 			success: `The mongo connection "${arg.name}" has been created`,
 		});
 	}),
-	delete: createAsyncThunk("deploy/local/delete", (idDeploy: IdConnection, { extra, getState }) => {
+	delete: createAsyncThunk("deploy/mongo/delete", (idDeploy: IdConnection, { extra, getState }) => {
 		const state = getState();
 
 		const databaseMongoService = getService(DeployService, extra);
@@ -27,12 +27,12 @@ export const manageLocalDeploy = {
 			success: `The mongo connection "${con.name}" has been deleted`,
 		});
 	}),
-	getAll: createAsyncThunk("deploy/local/get-all", (_, { extra }) => {
+	getAll: createAsyncThunk("deploy/mongo/get-all", (_, { extra }) => {
 		const databaseMongoService = getService(DeployService, extra);
 
 		return databaseMongoService.local.getAll();
 	}),
-	update: createAsyncThunk("deploy/local/update", (deploy: LocalDeployData, { extra }) => {
+	update: createAsyncThunk("deploy/mongo/update", (deploy: LocalDeployData, { extra }) => {
 		const databaseMongoService = getService(DeployService, extra);
 
 		return toast.promise(databaseMongoService.local.update(deploy), {

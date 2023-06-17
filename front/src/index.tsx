@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import React from "react";
+import React, { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.scss";
 import { Provider } from "react-redux";
@@ -33,13 +33,15 @@ function Wrapper() {
 
 function App() {
 	return (
-		<DiProvider container={container}>
-			<HistoryRouter history={history} basename={"/backup"}>
-				<Provider store={store}>
-					<Wrapper />
-				</Provider>
-			</HistoryRouter>
-		</DiProvider>
+		<StrictMode>
+			<DiProvider container={container}>
+				<HistoryRouter history={history} basename={"/backup"}>
+					<Provider store={store}>
+						<Wrapper />
+					</Provider>
+				</HistoryRouter>
+			</DiProvider>
+		</StrictMode>
 	);
 }
 

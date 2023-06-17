@@ -9,4 +9,6 @@ public class MongoBackupTaskEntity : MongoBackupTask
 	[BsonId]
 	[BsonRepresentation(BsonType.ObjectId)]
 	public ObjectId Id { get; set; }
+
+
 }
