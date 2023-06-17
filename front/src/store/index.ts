@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { themeReducer } from "@modules/theme/theme.reducer";
 import { authenticationReducer } from "@modules/authentication/authentication.reducer";
 import { container } from "@/core/di";
-import { mongoDatabaseReducer } from "@modules/mongo/mongo.database.reducer";
+import { mongoDatabaseReducer } from "@modules/databases/mongo/mongo.database.reducer";
 import { createBrowserHistory } from "history";
 import { createReduxHistoryContext } from "redux-first-history";
+import { deployReducer } from "@modules/deploys/local/deploy.reducer";
 
 const { createReduxHistory, routerMiddleware, routerReducer } = createReduxHistoryContext({ history: createBrowserHistory() });
 
@@ -15,6 +16,7 @@ const store = configureStore({
 		authentication: authenticationReducer,
 		router: routerReducer,
 		["databases/mongo"]: mongoDatabaseReducer,
+		deploys: deployReducer,
 	},
 	devTools: true,
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({ thunk: { extraArgument: { container } as ExtraArgument } }).prepend(routerMiddleware),
@@ -35,6 +37,7 @@ export type StoreState = {
 	databases: {
 		mongo: RealStoreState["databases/mongo"];
 	};
+	deploys: RealStoreState["deploys"];
 };
 
 export const useAppSelector = <T>(selector: (state: StoreState) => T) => {
@@ -46,6 +49,7 @@ export const useAppSelector = <T>(selector: (state: StoreState) => T) => {
 		databases: {
 			mongo: state["databases/mongo"],
 		},
+		deploys: state.deploys,
 	});
 };
 

@@ -1,33 +1,39 @@
 import React, { useCallback } from "react";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "@store";
-import { manageMongoConnections } from "@modules/mongo/mongo.database.async.actions";
-import { MongoConnectionData } from "@apis/backend/generated";
-import { IdConnection, MongoConnectionMeta } from "@modules/mongo/mongo.database.types";
+import { useAppDispatch } from "@store";
+import { AnyAction } from "redux";
+import { ThunkAction } from "@reduxjs/toolkit";
 
-interface AddMongoConnectionProps extends Pick<MongoConnectionMeta, "id" | "name"> {
+interface AddMongoConnectionProps {
 	open: boolean;
 	setClose: () => void;
+	entity: {
+		name: string;
+		id: string;
+	};
+	title: string;
+	description: string;
+	deleteFn: (id: string) => AnyAction | ThunkAction<any, any, any, any>;
 }
 
-export function DeleteMongoConnection({ open, setClose, name, id }: AddMongoConnectionProps) {
+export function DeleteEntity({ title, open, setClose, description, entity: { id, name }, deleteFn }: AddMongoConnectionProps) {
 	const dispatch = useAppDispatch();
 
 	const deleteCb = useCallback(() => {
-		dispatch(manageMongoConnections.delete(id));
+		dispatch(deleteFn(id));
 		setClose();
-	}, [dispatch, id, setClose]);
+	}, [deleteFn, dispatch, id, setClose]);
 
 	return (
 		<Dialog open={open} onClose={setClose}>
-			<DialogTitle>Delete a MongoDB connection</DialogTitle>
+			<DialogTitle>{title}</DialogTitle>
 			<DialogContent dividers>
 				<Stack direction={"row"} spacing={1}>
 					<Typography whiteSpace={"nowrap"}>Are you sure that you want to delete</Typography>
 					<Typography whiteSpace={"nowrap"} color="primary" fontWeight={"bold"}>
 						{name}
 					</Typography>
-					<Typography whiteSpace={"nowrap"}>mongo connection?</Typography>
+					<Typography whiteSpace={"nowrap"}>{description}</Typography>
 				</Stack>
 			</DialogContent>
 			<DialogActions>

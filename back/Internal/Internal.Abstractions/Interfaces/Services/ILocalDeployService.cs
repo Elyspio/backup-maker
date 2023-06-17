@@ -1,4 +1,5 @@
-﻿using BackupMaker.Api.Abstractions.Models.Transports;
+﻿using BackupMaker.Api.Abstractions.Models.Base.Deploy;
+using BackupMaker.Api.Abstractions.Models.Transports;
 
 namespace BackupMaker.Api.Abstractions.Interfaces.Services;
 
@@ -18,7 +19,7 @@ public interface ILocalDeploymentService
 	/// </summary>
 	/// <param name="deploy"></param>
 	/// <returns></returns>
-	Task Add(LocalDeployData deploy);
+	Task Add(LocalDeployBase deploy);
 
 
 	/// <summary>
@@ -29,4 +30,11 @@ public interface ILocalDeploymentService
 	Task Delete(Guid id);
 
 	Task Deploy(Guid idLocalDeploy, string archivePath);
+
+	/// <summary>
+	///     Update a local deployment configuration
+	/// </summary>
+	/// <param name="idLocalDeploy"></param>
+	/// <param name="deploy"></param>
+	Task Update(Guid idLocalDeploy, LocalDeployBase deploy);
 }

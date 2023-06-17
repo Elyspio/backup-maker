@@ -34,4 +34,12 @@ public interface ILocalDeploymentRepository
 	/// </summary>
 	/// <returns></returns>
 	Task<LocalDeployEntity> GetById(Guid id);
+
+	/// <summary>
+	///     Update a local deployment configuration
+	/// </summary>
+	/// <param name="idLocalDeploy"></param>
+	/// <param name="deploy"></param>
+	/// <returns></returns>
+	Task Update(Guid idLocalDeploy, LocalDeployBase deploy);
 }

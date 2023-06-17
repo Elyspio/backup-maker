@@ -8,17 +8,17 @@ namespace BackupMaker.Api.Adapters.Hangfire.Handlers;
 
 public class MongoBackupHandler : IJobHandler<BackupMongoLocalJobData>
 {
-	private readonly ILogger<MongoBackupHandler> _logger;
 	private readonly ILocalDeploymentService _localDeploymentService;
-	private readonly IMongoBackupService _mongoBackupService;
+	private readonly ILogger<MongoBackupHandler> _logger;
+	private readonly IMongoBackupTaskService _mongoBackupTaskService;
 	private readonly IMongoDatabaseService _mongoDatabaseService;
 
-	public MongoBackupHandler(ILogger<MongoBackupHandler> logger, IMongoDatabaseService mongoDatabaseService, ILocalDeploymentService localDeploymentService, IMongoBackupService mongoBackupService)
+	public MongoBackupHandler(ILogger<MongoBackupHandler> logger, IMongoDatabaseService mongoDatabaseService, ILocalDeploymentService localDeploymentService, IMongoBackupTaskService mongoBackupTaskService)
 	{
 		_logger = logger;
 		_mongoDatabaseService = mongoDatabaseService;
 		_localDeploymentService = localDeploymentService;
-		_mongoBackupService = mongoBackupService;
+		_mongoBackupTaskService = mongoBackupTaskService;
 	}
 
 
@@ -26,7 +26,7 @@ public class MongoBackupHandler : IJobHandler<BackupMongoLocalJobData>
 	{
 		var logger = _logger.Enter($"{Log.F(payload)}");
 
-		var backupTask = await _mongoBackupService.GetById(payload.IdMongoBackup);
+		var backupTask = await _mongoBackupTaskService.GetById(payload.IdMongoBackup);
 
 		var archivePath = await _mongoDatabaseService.Backup(backupTask);
 

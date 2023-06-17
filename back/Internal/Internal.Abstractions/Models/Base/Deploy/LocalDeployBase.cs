@@ -1,6 +1,6 @@
 ﻿namespace BackupMaker.Api.Abstractions.Models.Base.Deploy;
 
-public class LocalDeployBase
+public class LocalDeployBase : DeployBase
 {
 	/// <summary>
 	///     Path where files are moved

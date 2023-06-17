@@ -6,11 +6,11 @@ const darkTheme = createTheme({
 		mode: "dark",
 		secondary: {
 			...colors.grey,
-			main: colors.grey["500"],
+			main: colors.lightGreen["200"],
 		},
 		primary: {
 			...colors.blue,
-			main: colors.blue["400"],
+			main: colors.blue["200"],
 		},
 		background: {
 			paper: "#1d1d1d",
@@ -34,8 +34,8 @@ const lightTheme = createTheme({
 	palette: {
 		mode: "light",
 		secondary: {
-			...colors.grey,
-			main: colors.grey["900"],
+			...colors.blueGrey,
+			main: colors.blueGrey["900"],
 		},
 		primary: {
 			...colors.blue,

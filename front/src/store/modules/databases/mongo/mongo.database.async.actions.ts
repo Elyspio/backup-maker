@@ -2,7 +2,7 @@ import { createAsyncActionGenerator, getService } from "@store/utils/utils.actio
 import { AddMongoConnectionRequest } from "@apis/backend/generated";
 import { DatabaseMongoService } from "@services/database.service";
 import { toast } from "react-toastify";
-import { IdConnection } from "@modules/mongo/mongo.database.types";
+import { IdConnection } from "@modules/databases/mongo/mongo.database.types";
 
 const createAsyncThunk = createAsyncActionGenerator("databases/mongo");
 
@@ -23,7 +23,7 @@ export const manageMongoConnections = {
 		const con = state["databases/mongo"].connections[idConnection];
 
 		return toast.promise(databaseMongoService.connections.remove(idConnection), {
-			error: `Could not delate "${con.name}" connection`,
+			error: `Could not delete "${con.name}" connection`,
 			success: `The mongo connection "${con.name}" has been deleted`,
 		});
 	}),

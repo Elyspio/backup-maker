@@ -8,357 +8,1052 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import axios, { AxiosError } from 'axios';
-import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from "axios";
+import axios, { AxiosError } from "axios";
 
-export class DatabaseClient {
-    private instance: AxiosInstance;
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+export class DeploysLocalClient {
+	protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+	private instance: AxiosInstance;
+	private baseUrl: string;
 
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
+	constructor(baseUrl?: string, instance?: AxiosInstance) {
+		this.instance = instance ? instance : axios.create();
 
-        this.instance = instance ? instance : axios.create();
+		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+	}
 
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+	/**
+	 * Get all local deployment configurations
+	 * @return Success
+	 */
+	getLocalDeployments(cancelToken?: CancelToken | undefined): Promise<LocalDeployData[]> {
+		let url_ = this.baseUrl + "/api/deploys/local";
+		url_ = url_.replace(/[?&]$/, "");
 
-    }
+		let options_: AxiosRequestConfig = {
+			method: "GET",
+			url: url_,
+			headers: {
+				Accept: "application/json",
+			},
+			cancelToken,
+		};
 
-    /**
-     * Get informations about databases, collections, sizes for all connections
-     * @return Success
-     */
-    getInfos(  cancelToken?: CancelToken | undefined): Promise<GetConnectionInformationResponse> {
-        let url_ = this.baseUrl + "/api/database/infos";
-        url_ = url_.replace(/[?&]$/, "");
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processGetLocalDeployments(_response);
+			});
+	}
 
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {
-                "Accept": "text/plain"
-            },
-            cancelToken
-        };
+	/**
+	 * Create a new local deployment configuration
+	 * @return No Content
+	 */
+	createLocalDeploy(body: LocalDeployBase, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/deploys/local";
+		url_ = url_.replace(/[?&]$/, "");
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetInfos(_response);
-        });
-    }
+		const content_ = JSON.stringify(body);
 
-    protected processGetInfos(response: AxiosResponse): Promise<GetConnectionInformationResponse> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (let k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            result200 = JSON.parse(resultData200);
-            return Promise.resolve<GetConnectionInformationResponse>(result200);
+		let options_: AxiosRequestConfig = {
+			data: content_,
+			method: "POST",
+			url: url_,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			cancelToken,
+		};
 
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<GetConnectionInformationResponse>(null as any);
-    }
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processCreateLocalDeploy(_response);
+			});
+	}
 
-    /**
-     * Add a new database connection
-     * @return No Content
-     */
-    addConnection(body: AddMongoConnectionRequest , cancelToken?: CancelToken | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/database/connections";
-        url_ = url_.replace(/[?&]$/, "");
+	/**
+	 * Delete a local deployment configuration
+	 * @return No Content
+	 */
+	deleteLocalDeploy(idDeploy: string, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/deploys/local/{idDeploy}";
+		if (idDeploy === undefined || idDeploy === null) throw new Error("The parameter 'idDeploy' must be defined.");
+		url_ = url_.replace("{idDeploy}", encodeURIComponent("" + idDeploy));
+		url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(body);
+		let options_: AxiosRequestConfig = {
+			method: "DELETE",
+			url: url_,
+			headers: {},
+			cancelToken,
+		};
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "POST",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            cancelToken
-        };
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processDeleteLocalDeploy(_response);
+			});
+	}
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processAddConnection(_response);
-        });
-    }
+	/**
+	 * Replace a local deployment configuration
+	 * @param idDeploy Connection's id
+	 * @param body new config
+	 * @return No Content
+	 */
+	updateLocalDeploy(idDeploy: string, body: LocalDeployBase, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/deploys/local/{idDeploy}";
+		if (idDeploy === undefined || idDeploy === null) throw new Error("The parameter 'idDeploy' must be defined.");
+		url_ = url_.replace("{idDeploy}", encodeURIComponent("" + idDeploy));
+		url_ = url_.replace(/[?&]$/, "");
 
-    protected processAddConnection(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (let k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 204) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
+		const content_ = JSON.stringify(body);
 
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<void>(null as any);
-    }
+		let options_: AxiosRequestConfig = {
+			data: content_,
+			method: "PUT",
+			url: url_,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			cancelToken,
+		};
 
-    /**
-     * Get all databases connections available
-     * @return Success
-     */
-    getConnections(  cancelToken?: CancelToken | undefined): Promise<MongoConnectionData[]> {
-        let url_ = this.baseUrl + "/api/database/connections";
-        url_ = url_.replace(/[?&]$/, "");
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processUpdateLocalDeploy(_response);
+			});
+	}
 
-        let options_: AxiosRequestConfig = {
-            method: "GET",
-            url: url_,
-            headers: {
-                "Accept": "text/plain"
-            },
-            cancelToken
-        };
+	protected processGetLocalDeployments(response: AxiosResponse): Promise<LocalDeployData[]> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 200) {
+			const _responseText = response.data;
+			let result200: any = null;
+			let resultData200 = _responseText;
+			result200 = JSON.parse(resultData200);
+			return Promise.resolve<LocalDeployData[]>(result200);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<LocalDeployData[]>(null as any);
+	}
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetConnections(_response);
-        });
-    }
+	protected processCreateLocalDeploy(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
 
-    protected processGetConnections(response: AxiosResponse): Promise<MongoConnectionData[]> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (let k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            result200 = JSON.parse(resultData200);
-            return Promise.resolve<MongoConnectionData[]>(result200);
+	protected processDeleteLocalDeploy(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
 
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<MongoConnectionData[]>(null as any);
-    }
+	protected processUpdateLocalDeploy(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+}
 
-    /**
-     * Replace the connectionString for a connection
-     * @param idConnection Connection's id
-     * @param body new connectionString
-     * @return No Content
-     */
-    updateConnectionString(idConnection: string, body: string , cancelToken?: CancelToken | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/database/connections/{idConnection}/connection-string";
-        if (idConnection === undefined || idConnection === null)
-            throw new Error("The parameter 'idConnection' must be defined.");
-        url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
-        url_ = url_.replace(/[?&]$/, "");
+export class JobsBackupClient {
+	protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+	private instance: AxiosInstance;
+	private baseUrl: string;
 
-        const content_ = JSON.stringify(body);
+	constructor(baseUrl?: string, instance?: AxiosInstance) {
+		this.instance = instance ? instance : axios.create();
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "PUT",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-            },
-            cancelToken
-        };
+		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+	}
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processUpdateConnectionString(_response);
-        });
-    }
+	/**
+	 * @return Success
+	 */
+	getJobs(cancelToken?: CancelToken | undefined): Promise<GetJobsResponse> {
+		let url_ = this.baseUrl + "/api/jobs/backup";
+		url_ = url_.replace(/[?&]$/, "");
 
-    protected processUpdateConnectionString(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (let k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 204) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
+		let options_: AxiosRequestConfig = {
+			method: "GET",
+			url: url_,
+			headers: {
+				Accept: "application/json",
+			},
+			cancelToken,
+		};
 
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<void>(null as any);
-    }
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processGetJobs(_response);
+			});
+	}
 
-    /**
-     * Replace the connectionString for a connection
-     * @param idConnection Connection's id
-     * @return No Content
-     */
-    deleteConnection(idConnection: string , cancelToken?: CancelToken | undefined): Promise<void> {
-        let url_ = this.baseUrl + "/api/database/connections/{idConnection}";
-        if (idConnection === undefined || idConnection === null)
-            throw new Error("The parameter 'idConnection' must be defined.");
-        url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
-        url_ = url_.replace(/[?&]$/, "");
+	/**
+	 * @return No Content
+	 */
+	createBackupMongoLocalJob(body: CreateBackupMongoLocalJobRequest, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/jobs/backup/mongo-local";
+		url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
-            method: "DELETE",
-            url: url_,
-            headers: {
-            },
-            cancelToken
-        };
+		const content_ = JSON.stringify(body);
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processDeleteConnection(_response);
-        });
-    }
+		let options_: AxiosRequestConfig = {
+			data: content_,
+			method: "POST",
+			url: url_,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			cancelToken,
+		};
 
-    protected processDeleteConnection(response: AxiosResponse): Promise<void> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (let k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 204) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processCreateBackupMongoLocalJob(_response);
+			});
+	}
 
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<void>(null as any);
-    }
+	/**
+	 * @return No Content
+	 */
+	startBackupMongoLocalJob(job: string, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/jobs/backup/mongo-local/{job}/start";
+		if (job === undefined || job === null) throw new Error("The parameter 'job' must be defined.");
+		url_ = url_.replace("{job}", encodeURIComponent("" + job));
+		url_ = url_.replace(/[?&]$/, "");
+
+		let options_: AxiosRequestConfig = {
+			method: "PUT",
+			url: url_,
+			headers: {},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processStartBackupMongoLocalJob(_response);
+			});
+	}
+
+	/**
+	 * @return No Content
+	 */
+	stopBackupMongoLocalJob(job: string, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/jobs/backup/mongo-local/{job}";
+		if (job === undefined || job === null) throw new Error("The parameter 'job' must be defined.");
+		url_ = url_.replace("{job}", encodeURIComponent("" + job));
+		url_ = url_.replace(/[?&]$/, "");
+
+		let options_: AxiosRequestConfig = {
+			method: "DELETE",
+			url: url_,
+			headers: {},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processStopBackupMongoLocalJob(_response);
+			});
+	}
+
+	protected processGetJobs(response: AxiosResponse): Promise<GetJobsResponse> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 200) {
+			const _responseText = response.data;
+			let result200: any = null;
+			let resultData200 = _responseText;
+			result200 = JSON.parse(resultData200);
+			return Promise.resolve<GetJobsResponse>(result200);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<GetJobsResponse>(null as any);
+	}
+
+	protected processCreateBackupMongoLocalJob(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+
+	protected processStartBackupMongoLocalJob(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+
+	protected processStopBackupMongoLocalJob(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+}
+
+export class MongoDatabaseClient {
+	protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+	private instance: AxiosInstance;
+	private baseUrl: string;
+
+	constructor(baseUrl?: string, instance?: AxiosInstance) {
+		this.instance = instance ? instance : axios.create();
+
+		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+	}
+
+	/**
+	 * Get informations about databases, collections, sizes for all connections
+	 * @return Success
+	 */
+	getInfos(cancelToken?: CancelToken | undefined): Promise<GetConnectionInformationResponse> {
+		let url_ = this.baseUrl + "/api/database/infos";
+		url_ = url_.replace(/[?&]$/, "");
+
+		let options_: AxiosRequestConfig = {
+			method: "GET",
+			url: url_,
+			headers: {
+				Accept: "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processGetInfos(_response);
+			});
+	}
+
+	/**
+	 * Add a new database connection
+	 * @return No Content
+	 */
+	addConnection(body: AddMongoConnectionRequest, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/database/connections";
+		url_ = url_.replace(/[?&]$/, "");
+
+		const content_ = JSON.stringify(body);
+
+		let options_: AxiosRequestConfig = {
+			data: content_,
+			method: "POST",
+			url: url_,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processAddConnection(_response);
+			});
+	}
+
+	/**
+	 * Get all databases connections available
+	 * @return Success
+	 */
+	getConnections(cancelToken?: CancelToken | undefined): Promise<MongoConnectionData[]> {
+		let url_ = this.baseUrl + "/api/database/connections";
+		url_ = url_.replace(/[?&]$/, "");
+
+		let options_: AxiosRequestConfig = {
+			method: "GET",
+			url: url_,
+			headers: {
+				Accept: "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processGetConnections(_response);
+			});
+	}
+
+	/**
+	 * Replace the connectionString for a connection
+	 * @param idConnection Connection's id
+	 * @param body new connectionString
+	 * @return No Content
+	 */
+	updateConnectionString(idConnection: string, body: string, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/database/connections/{idConnection}/connection-string";
+		if (idConnection === undefined || idConnection === null) throw new Error("The parameter 'idConnection' must be defined.");
+		url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
+		url_ = url_.replace(/[?&]$/, "");
+
+		const content_ = JSON.stringify(body);
+
+		let options_: AxiosRequestConfig = {
+			data: content_,
+			method: "PUT",
+			url: url_,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processUpdateConnectionString(_response);
+			});
+	}
+
+	/**
+	 * Replace the connectionString for a connection
+	 * @param idConnection Connection's id
+	 * @return No Content
+	 */
+	deleteConnection(idConnection: string, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/database/connections/{idConnection}";
+		if (idConnection === undefined || idConnection === null) throw new Error("The parameter 'idConnection' must be defined.");
+		url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
+		url_ = url_.replace(/[?&]$/, "");
+
+		let options_: AxiosRequestConfig = {
+			method: "DELETE",
+			url: url_,
+			headers: {},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processDeleteConnection(_response);
+			});
+	}
+
+	protected processGetInfos(response: AxiosResponse): Promise<GetConnectionInformationResponse> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 200) {
+			const _responseText = response.data;
+			let result200: any = null;
+			let resultData200 = _responseText;
+			result200 = JSON.parse(resultData200);
+			return Promise.resolve<GetConnectionInformationResponse>(result200);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<GetConnectionInformationResponse>(null as any);
+	}
+
+	protected processAddConnection(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+
+	protected processGetConnections(response: AxiosResponse): Promise<MongoConnectionData[]> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 200) {
+			const _responseText = response.data;
+			let result200: any = null;
+			let resultData200 = _responseText;
+			result200 = JSON.parse(resultData200);
+			return Promise.resolve<MongoConnectionData[]>(result200);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<MongoConnectionData[]>(null as any);
+	}
+
+	protected processUpdateConnectionString(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+
+	protected processDeleteConnection(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+}
+
+export class TasksBackupClient {
+	protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+	private instance: AxiosInstance;
+	private baseUrl: string;
+
+	constructor(baseUrl?: string, instance?: AxiosInstance) {
+		this.instance = instance ? instance : axios.create();
+
+		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+	}
+
+	/**
+	 * Get all mongo backup task configurations
+	 * @return Success
+	 */
+	getMongoTasks(cancelToken?: CancelToken | undefined): Promise<MongoBackupTaskData[]> {
+		let url_ = this.baseUrl + "/api/tasks/backup/mongo";
+		url_ = url_.replace(/[?&]$/, "");
+
+		let options_: AxiosRequestConfig = {
+			method: "GET",
+			url: url_,
+			headers: {
+				Accept: "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processGetMongoTasks(_response);
+			});
+	}
+
+	/**
+	 * Create a new mongo backup task configuration
+	 * @return No Content
+	 */
+	createMongoTask(body: MongoBackupTask, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/tasks/backup/mongo";
+		url_ = url_.replace(/[?&]$/, "");
+
+		const content_ = JSON.stringify(body);
+
+		let options_: AxiosRequestConfig = {
+			data: content_,
+			method: "POST",
+			url: url_,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processCreateMongoTask(_response);
+			});
+	}
+
+	/**
+	 * Delete a mongo backup task configurations
+	 * @return No Content
+	 */
+	deleteMongoTask(idTask: string, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/tasks/backup/mongo/{idTask}";
+		if (idTask === undefined || idTask === null) throw new Error("The parameter 'idTask' must be defined.");
+		url_ = url_.replace("{idTask}", encodeURIComponent("" + idTask));
+		url_ = url_.replace(/[?&]$/, "");
+
+		let options_: AxiosRequestConfig = {
+			method: "DELETE",
+			url: url_,
+			headers: {},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processDeleteMongoTask(_response);
+			});
+	}
+
+	protected processGetMongoTasks(response: AxiosResponse): Promise<MongoBackupTaskData[]> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 200) {
+			const _responseText = response.data;
+			let result200: any = null;
+			let resultData200 = _responseText;
+			result200 = JSON.parse(resultData200);
+			return Promise.resolve<MongoBackupTaskData[]>(result200);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<MongoBackupTaskData[]>(null as any);
+	}
+
+	protected processCreateMongoTask(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+
+	protected processDeleteMongoTask(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
 }
 
 export interface AddMongoConnectionRequest {
-    name: string;
-    connectionString: string;
+	name: string;
+	connectionString: string;
+}
+
+export interface BackupMongoLocalJobData {
+	cronInterval: string;
+	idMongoBackup: string;
+	idLocalDeploy: string;
+	id: string;
 }
 
 export interface CollectionInfo {
-    /** Collection's name */
-    name: string;
-    /** Collection documents count */
-    documents: number;
-    sizes: CollectionSizes;
+	/** Collection's name */
+	name: string;
+	/** Collection documents count */
+	documents: number;
+	sizes: CollectionSizes;
 }
 
 /** Collection size in MegaBytes */
 export interface CollectionSizes {
-    /** Sum of BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.DocumentsSize and BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.IndexesSize */
-    totalSize: number;
-    documentsSize: number;
-    indexesSize: { [key: string]: number; };
+	/** Sum of BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.DocumentsSize and BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.IndexesSize */
+	totalSize: number;
+	documentsSize: number;
+	indexesSize: {
+		[key: string]: number;
+	};
+}
+
+export interface CreateBackupMongoLocalJobRequest {
+	cronInterval: string;
+	idMongoBackup: string;
+	idLocalDeploy: string;
 }
 
 export interface DatabaseInfo {
-    /** Database's name */
-    name: string;
-    /** Database's Collections */
-    collections: CollectionInfo[];
+	/** Database's name */
+	name: string;
+	/** Database's Collections */
+	collections: CollectionInfo[];
 }
 
 export interface GetConnectionInformationResponse {
-    data: { [key: string]: DatabaseInfo[]; };
-    errors: { [key: string]: string; };
+	data: {
+		[key: string]: DatabaseInfo[];
+	};
+	errors: {
+		[key: string]: string;
+	};
+}
+
+export interface GetJobsResponse {
+	backupMongoLocalJobs: BackupMongoLocalJobData[];
+}
+
+export interface LocalDeployBase {
+	name: string;
+	/** Path where files are moved */
+	outputPath: string;
+}
+
+export interface LocalDeployData {
+	name: string;
+	/** Path where files are moved */
+	outputPath: string;
+	id: string;
+}
+
+/** Backup job for a mongo connection */
+export interface MongoBackupTask {
+	/** Id of the mongo connection */
+	idConnection: string;
+	/** Mapping of a database to a list of collection to backup */
+	elements: {
+		[key: string]: string[];
+	};
+}
+
+export interface MongoBackupTaskData {
+	/** Id of the mongo connection */
+	idConnection: string;
+	/** Mapping of a database to a list of collection to backup */
+	elements: {
+		[key: string]: string[];
+	};
+	/** Job's id */
+	id: string;
 }
 
 export interface MongoConnectionData {
-    name: string;
-    id: string;
+	name: string;
+	id: string;
 }
 
 export class ApiException extends Error {
-    override message: string;
-    status: number;
-    response: string;
-    headers: { [key: string]: any; };
-    result: any;
+	override message: string;
+	status: number;
+	response: string;
+	headers: {
+		[key: string]: any;
+	};
+	result: any;
+	protected isApiException = true;
 
-    constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
-        super();
+	constructor(
+		message: string,
+		status: number,
+		response: string,
+		headers: {
+			[key: string]: any;
+		},
+		result: any
+	) {
+		super();
 
-        this.message = message;
-        this.status = status;
-        this.response = response;
-        this.headers = headers;
-        this.result = result;
-    }
+		this.message = message;
+		this.status = status;
+		this.response = response;
+		this.headers = headers;
+		this.result = result;
+	}
 
-    protected isApiException = true;
-
-    static isApiException(obj: any): obj is ApiException {
-        return obj.isApiException === true;
-    }
+	static isApiException(obj: any): obj is ApiException {
+		return obj.isApiException === true;
+	}
 }
 
-function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): any {
-    if (result !== null && result !== undefined)
-        throw result;
-    else
-        throw new ApiException(message, status, response, headers, null);
+function throwException(
+	message: string,
+	status: number,
+	response: string,
+	headers: {
+		[key: string]: any;
+	},
+	result?: any
+): any {
+	if (result !== null && result !== undefined) throw result;
+	else throw new ApiException(message, status, response, headers, null);
 }
 
 function isAxiosError(obj: any | undefined): obj is AxiosError {
-    return obj && obj.isAxiosError === true;
+	return obj && obj.isAxiosError === true;
 }

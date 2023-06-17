@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { MongoDatabaseTypes } from "@modules/mongo/mongo.database.types";
-import { getMongoDetails, manageMongoConnections } from "@modules/mongo/mongo.database.async.actions";
+import { MongoDatabaseTypes } from "@modules/databases/mongo/mongo.database.types";
+import { getMongoDetails, manageMongoConnections } from "@modules/databases/mongo/mongo.database.async.actions";
 
 const initialState: MongoDatabaseTypes = {
 	connections: {},

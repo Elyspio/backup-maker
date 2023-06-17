@@ -5,11 +5,13 @@ import { DiKeysService } from "./di.keys.service";
 import { DatabaseMongoService } from "@services/database.service";
 import { Container } from "inversify";
 import { TokenService } from "@services/common/auth/token.service";
+import { DeployService } from "@services/deploy.service";
 
 export const addServices = (container: Container) => {
 	container.bind(AuthenticationService).toSelf();
 	container.bind(TokenService).toSelf();
 	container.bind(DatabaseMongoService).toSelf();
+	container.bind(DeployService).toSelf();
 	container.bind(ThemeService).toSelf();
 	container.bind<LocalStorageService>(DiKeysService.localStorage.jwt).toConstantValue(new LocalStorageService("authentication:jwt"));
 };

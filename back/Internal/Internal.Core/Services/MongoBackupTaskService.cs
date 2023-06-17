@@ -8,13 +8,13 @@ using Microsoft.Extensions.Logging;
 
 namespace BackupMaker.Api.Core.Services;
 
-public class MongoBackupService : IMongoBackupService
+public class MongoBackupTaskService : IMongoBackupTaskService
 {
-	private readonly ILogger<MongoBackupService> _logger;
+	private readonly ILogger<MongoBackupTaskService> _logger;
 	private readonly IMongoBackupRepository _mongoBackupRepository;
 	private readonly MongoBackupTaskAssembler _mongoBackupTaskAssembler;
 
-	public MongoBackupService(IMongoBackupRepository mongoBackupRepository, ILogger<MongoBackupService> logger, MongoBackupTaskAssembler mongoBackupTaskAssembler)
+	public MongoBackupTaskService(IMongoBackupRepository mongoBackupRepository, ILogger<MongoBackupTaskService> logger, MongoBackupTaskAssembler mongoBackupTaskAssembler)
 	{
 		_logger = logger;
 		_mongoBackupRepository = mongoBackupRepository;

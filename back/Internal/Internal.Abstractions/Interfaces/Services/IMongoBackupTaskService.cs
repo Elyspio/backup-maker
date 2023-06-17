@@ -6,7 +6,7 @@ namespace BackupMaker.Api.Abstractions.Interfaces.Services;
 /// <summary>
 ///     Manage <see cref="LocalDeployData" />
 /// </summary>
-public interface IMongoBackupService
+public interface IMongoBackupTaskService
 {
 	/// <summary>
 	///     Get all mongo backup configuration

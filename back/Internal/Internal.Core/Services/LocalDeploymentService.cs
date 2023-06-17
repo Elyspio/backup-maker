@@ -1,6 +1,7 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
+using BackupMaker.Api.Abstractions.Models.Base.Deploy;
 using BackupMaker.Api.Abstractions.Models.Transports;
 using BackupMaker.Api.Core.Assemblers;
 using Microsoft.Extensions.Logging;
@@ -40,7 +41,7 @@ public class LocalDeploymentService : ILocalDeploymentService
 	}
 
 	/// <inheritdoc />
-	public async Task Add(LocalDeployData deploy)
+	public async Task Add(LocalDeployBase deploy)
 	{
 		var logger = _logger.Enter($"{Log.F(deploy)}");
 
@@ -68,6 +69,16 @@ public class LocalDeploymentService : ILocalDeploymentService
 		var archiveName = Path.GetFileName(archivePath);
 
 		await FileHelper.CopyFileAsync(archivePath, Path.Join(deploy.OutputPath, archiveName));
+
+		logger.Exit();
+	}
+
+	/// <inheritdoc />
+	public async Task Update(Guid idLocalDeploy, LocalDeployBase deploy)
+	{
+		var logger = _logger.Enter($"{Log.F(idLocalDeploy)} {Log.F(deploy)}");
+
+		await _localDeploymentRepository.Update(idLocalDeploy, deploy);
 
 		logger.Exit();
 	}

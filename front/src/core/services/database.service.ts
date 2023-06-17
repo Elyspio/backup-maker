@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { BackendApi } from "@apis/backend";
 import { BaseService } from "./common/technical/base.service";
 import { AddMongoConnectionRequest } from "@apis/backend/generated";
-import { IdConnection } from "@modules/mongo/mongo.database.types";
+import { IdConnection } from "@modules/databases/mongo/mongo.database.types";
 
 @injectable()
 export class DatabaseMongoService extends BaseService {

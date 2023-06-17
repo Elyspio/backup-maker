@@ -38,7 +38,8 @@ public class LocalDeployRepository : BaseRepository<LocalDeployEntity>, ILocalDe
 
 		var entity = new LocalDeployEntity
 		{
-			OutputPath = deploy.OutputPath
+			OutputPath = deploy.OutputPath,
+			Name = deploy.Name
 		};
 		await EntityCollection.InsertOneAsync(entity);
 
@@ -65,5 +66,22 @@ public class LocalDeployRepository : BaseRepository<LocalDeployEntity>, ILocalDe
 		logger.Exit($"{Log.F(entity is not null)}");
 
 		return entity;
+	}
+
+	/// <inheritdoc />
+	public async Task Update(Guid idLocalDeploy, LocalDeployBase deploy)
+	{
+		var logger = _logger.Enter($"{Log.F(idLocalDeploy)} {Log.F(deploy)}");
+
+		var entity = new LocalDeployEntity
+		{
+			Id = idLocalDeploy.AsObjectId(),
+			Name = deploy.Name,
+			OutputPath = deploy.OutputPath
+		};
+
+		await EntityCollection.ReplaceOneAsync(d => d.Id == entity.Id, entity);
+
+		logger.Exit();
 	}
 }

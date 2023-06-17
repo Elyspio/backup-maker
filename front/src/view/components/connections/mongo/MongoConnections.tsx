@@ -10,13 +10,14 @@ export function MongoConnections() {
 	const connectionElements = useMemo(() => {
 		return Object.values(connections).map((con) => (
 			<Button
+				color={"secondary"}
 				key={con.id}
 				size={"small"}
 				onClick={() => {
 					dispatch(push(getConnectionRoute("mongo", con), con));
 				}}
 			>
-				{con.name}
+				Mongo/{con.name}
 			</Button>
 		));
 	}, [dispatch, connections]);

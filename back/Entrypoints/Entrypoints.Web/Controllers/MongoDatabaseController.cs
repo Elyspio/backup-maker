@@ -12,12 +12,13 @@ namespace BackupMaker.Api.Entrypoints.Web.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/database")]
-public class DatabaseController : ControllerBase
+[Produces("application/json")]
+public class MongoDatabaseController : ControllerBase
 {
-	private readonly ILogger<DatabaseController> _logger;
+	private readonly ILogger<MongoDatabaseController> _logger;
 	private readonly IMongoDatabaseService _mongoDatabaseService;
 
-	public DatabaseController(IMongoDatabaseService mongoDatabaseService, ILogger<DatabaseController> logger)
+	public MongoDatabaseController(IMongoDatabaseService mongoDatabaseService, ILogger<MongoDatabaseController> logger)
 	{
 		_mongoDatabaseService = mongoDatabaseService;
 		_logger = logger;

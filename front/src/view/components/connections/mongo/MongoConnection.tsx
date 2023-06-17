@@ -6,9 +6,10 @@ import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { AppAccordion } from "@components/utils/accordion/AppAccordion";
 import { DeleteForever, Edit } from "@mui/icons-material";
 import { useModal } from "@hooks/useModal";
-import { DeleteMongoConnection } from "@components/connections/mongo/DeleteMongoConnection";
+import { DeleteEntity } from "@components/entity/DeleteEntity";
 import { AddMongoConnection } from "@components/connections/mongo/AddMongoConnection";
 import { useParams } from "react-router";
+import { manageMongoConnections } from "@modules/databases/mongo/mongo.database.async.actions";
 
 enum ColumnField {
 	Name = "name",
@@ -177,7 +178,14 @@ export function MongoConnection() {
 
 			{connection && (
 				<>
-					<DeleteMongoConnection setClose={deleteModal.setClose} open={deleteModal.open} {...connection} />
+					<DeleteEntity
+						setClose={deleteModal.setClose}
+						open={deleteModal.open}
+						title={"Delete mongo connection"}
+						deleteFn={manageMongoConnections.delete}
+						entity={connection}
+						description={"mongo connection"}
+					/>
 					<AddMongoConnection open={updateModal.open} setClose={updateModal.setClose} update={connection.id} />
 				</>
 			)}
