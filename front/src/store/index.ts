@@ -8,6 +8,7 @@ import { createBrowserHistory } from "history";
 import { createReduxHistoryContext } from "redux-first-history";
 import { deploysReducer } from "@modules/deploys/deploys.reducer";
 import { tasksReducer } from "@modules/tasks/tasks.reducer";
+import { jobsReducer } from "@modules/jobs/jobs.reducer";
 
 const { createReduxHistory, routerMiddleware, routerReducer } = createReduxHistoryContext({ history: createBrowserHistory() });
 
@@ -19,6 +20,7 @@ const store = configureStore({
 		["databases/mongo"]: mongoDatabaseReducer,
 		deploys: deploysReducer,
 		tasks: tasksReducer,
+		jobs: jobsReducer,
 	},
 	devTools: true,
 	middleware: (getDefaultMiddleware) => getDefaultMiddleware({ thunk: { extraArgument: { container } as ExtraArgument } }).prepend(routerMiddleware),
@@ -32,15 +34,10 @@ export type ExtraArgument = {
 
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 
-export type StoreState = {
-	theme: RealStoreState["theme"];
-	authentication: RealStoreState["authentication"];
-	router: RealStoreState["router"];
+export type StoreState = Omit<RealStoreState, "databases/mongo"> & {
 	databases: {
 		mongo: RealStoreState["databases/mongo"];
 	};
-	deploys: RealStoreState["deploys"];
-	tasks: RealStoreState["tasks"];
 };
 
 export const useAppSelector = <T>(selector: (state: StoreState) => T) => {
@@ -54,6 +51,7 @@ export const useAppSelector = <T>(selector: (state: StoreState) => T) => {
 		},
 		deploys: state.deploys,
 		tasks: state.tasks,
+		jobs: state.jobs,
 	});
 };
 

@@ -4,10 +4,10 @@ import { toast } from "react-toastify";
 import { TasksService } from "@services/tasks.service";
 import { IdTask } from "@modules/tasks/tasks.types";
 
-const createAsyncThunk = createAsyncActionGenerator("databases/mongo");
+const createAsyncThunk = createAsyncActionGenerator("tasks");
 
 export const manageMongoTasks = {
-	add: createAsyncThunk("tasks/mongo/add", (arg: MongoBackupTask, { extra }) => {
+	add: createAsyncThunk("mongo/add", (arg: MongoBackupTask, { extra }) => {
 		const tasksService = getService(TasksService, extra);
 
 		return toast.promise(tasksService.mongo.add(arg), {
@@ -15,7 +15,7 @@ export const manageMongoTasks = {
 			success: `The mongo connection "${arg.name}" has been created`,
 		});
 	}),
-	delete: createAsyncThunk("tasks/mongo/delete", (idDeploy: IdTask, { extra, getState }) => {
+	delete: createAsyncThunk("mongo/delete", (idDeploy: IdTask, { extra, getState }) => {
 		const state = getState();
 
 		const tasksService = getService(TasksService, extra);
@@ -27,12 +27,12 @@ export const manageMongoTasks = {
 			success: `The mongo connection "${task.name}" has been deleted`,
 		});
 	}),
-	getAll: createAsyncThunk("tasks/mongo/get-all", (_, { extra }) => {
+	getAll: createAsyncThunk("mongo/get-all", (_, { extra }) => {
 		const tasksService = getService(TasksService, extra);
 
 		return tasksService.mongo.getAll();
 	}),
-	update: createAsyncThunk("tasks/mongo/update", (task: MongoBackupTaskData, { extra }) => {
+	update: createAsyncThunk("mongo/update", (task: MongoBackupTaskData, { extra }) => {
 		const tasksService = getService(TasksService, extra);
 
 		return toast.promise(tasksService.mongo.update(task), {

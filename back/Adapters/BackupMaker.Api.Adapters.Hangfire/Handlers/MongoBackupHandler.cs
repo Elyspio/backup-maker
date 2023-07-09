@@ -6,32 +6,22 @@ using Microsoft.Extensions.Logging;
 
 namespace BackupMaker.Api.Adapters.Hangfire.Handlers;
 
-public class MongoBackupHandler : IJobHandler<BackupMongoLocalJobData>
+public class MongoBackupHandler(ILogger<MongoBackupHandler> logger, IMongoDatabaseService mongoDatabaseService, ILocalDeploymentService localDeploymentService, IMongoBackupTaskService mongoBackupTaskService) : IJobHandler
 {
-	private readonly ILocalDeploymentService _localDeploymentService;
-	private readonly ILogger<MongoBackupHandler> _logger;
-	private readonly IMongoBackupTaskService _mongoBackupTaskService;
-	private readonly IMongoDatabaseService _mongoDatabaseService;
+	private readonly ILocalDeploymentService _localDeploymentService = localDeploymentService;
+	private readonly ILogger<MongoBackupHandler> _logger = logger;
+	private readonly IMongoBackupTaskService _mongoBackupTaskService = mongoBackupTaskService;
+	private readonly IMongoDatabaseService _mongoDatabaseService = mongoDatabaseService;
 
-	public MongoBackupHandler(ILogger<MongoBackupHandler> logger, IMongoDatabaseService mongoDatabaseService, ILocalDeploymentService localDeploymentService, IMongoBackupTaskService mongoBackupTaskService)
+
+	public async Task Process(JobData payload)
 	{
-		_logger = logger;
-		_mongoDatabaseService = mongoDatabaseService;
-		_localDeploymentService = localDeploymentService;
-		_mongoBackupTaskService = mongoBackupTaskService;
-	}
+		using var _ = _logger.Enter($"{Log.F(payload)}");
 
-
-	public async Task Process(BackupMongoLocalJobData payload)
-	{
-		var logger = _logger.Enter($"{Log.F(payload)}");
-
-		var backupTask = await _mongoBackupTaskService.GetById(payload.IdMongoBackup);
-
-		var archivePath = await _mongoDatabaseService.Backup(backupTask);
-
-		await _localDeploymentService.Deploy(payload.IdLocalDeploy, archivePath);
-
-		logger.Exit();
+		// var backupTask = await _mongoBackupTaskService.GetById(payload.IdMongoTask);
+		//
+		// var archivePath = await _mongoDatabaseService.Backup(backupTask);
+		//
+		// await _localDeploymentService.Deploy(payload.IdLocalDeploy, archivePath);
 	}
 }

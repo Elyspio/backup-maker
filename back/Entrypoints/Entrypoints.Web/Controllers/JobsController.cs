@@ -1,53 +1,71 @@
 ﻿using BackupMaker.Api.Abstractions.Interfaces.Services;
+using BackupMaker.Api.Abstractions.Models.Transports.Jobs;
 using BackupMaker.Api.Abstractions.Models.Transports.Requests;
-using BackupMaker.Api.Abstractions.Models.Transports.Responses;
+using BackupMaker.Api.Entrypoints.Web.Controllers.Base;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackupMaker.Api.Entrypoints.Web.Controllers;
 
-[Route("api/jobs/backup")]
+/// <summary>
+///     Entrypoint for <see cref="JobData" />
+/// </summary>
+[Route("api/jobs")]
 [ApiController]
-[Tags("JobsBackup")]
 [Produces("application/json")]
-public class JobsController : ControllerBase
+public class JobsController(ILogger<JobsController> logger, IJobService jobService) : TracingController(logger)
 {
-	private readonly IMongoBackupTaskService _backupTaskService;
+	private readonly IJobService _jobService = jobService;
 
-	private readonly ILogger<JobsController> _logger;
-
-	public JobsController(ILogger<JobsController> logger, IMongoBackupTaskService backupTaskService)
-	{
-		_logger = logger;
-		_backupTaskService = backupTaskService;
-	}
-
+	/// <summary>
+	///     Get all jobs
+	/// </summary>
+	/// <returns></returns>
 	[HttpGet("")]
-	[ProducesResponseType(typeof(GetJobsResponse), StatusCodes.Status200OK)]
+	[ProducesResponseType(typeof(List<JobData>), StatusCodes.Status200OK)]
 	public async Task<IActionResult> GetJobs()
 	{
-		return Ok();
+		var jobs = await _jobService.GetAll();
+		return Ok(jobs);
 	}
 
 
-	[HttpPost("mongo-local")]
+	/// <summary>
+	///     Create a new job
+	/// </summary>
+	/// <param name="job"></param>
+	/// <returns></returns>
+	[HttpPost("")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
-	public async Task<IActionResult> CreateBackupMongoLocalJob(CreateBackupMongoLocalJobRequest job)
+	public async Task<IActionResult> CreateJob(CreateJobRequest job)
 	{
+		await _jobService.Add(job);
 		return NoContent();
 	}
 
 
-	[HttpPut("mongo-local/{job:guid}/start")]
+	/// <summary>
+	///     Trigger a job
+	/// </summary>
+	/// <param name="idJob"></param>
+	/// <returns></returns>
+	[HttpPut("{idJob:guid}")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
-	public async Task<IActionResult> StartBackupMongoLocalJob(Guid job)
+	public async Task<IActionResult> UpdateJob(Guid idJob, CreateJobRequest job)
 	{
+		await _jobService.Update(idJob, job);
 		return NoContent();
 	}
 
-	[HttpDelete("mongo-local/{job:guid}")]
+	/// <summary>
+	///     Delete a job
+	/// </summary>
+	/// <param name="idJob"></param>
+	/// <returns></returns>
+	[HttpDelete("{idJob:guid}/")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
-	public async Task<IActionResult> StopBackupMongoLocalJob(Guid job)
+	public async Task<IActionResult> DeleteJob(Guid idJob)
 	{
+		await _jobService.Delete(idJob);
 		return NoContent();
 	}
 }

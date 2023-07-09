@@ -1,5 +1,6 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Extensions;
 using BackupMaker.Api.Abstractions.Common.Helpers;
+using BackupMaker.Api.Abstractions.Common.Technical;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
 using BackupMaker.Api.Abstractions.Models.Base.Database.Mongo;
@@ -13,27 +14,19 @@ using SharpCompress.Common;
 
 namespace BackupMaker.Api.Core.Services;
 
-internal class MongoDatabaseService : IMongoDatabaseService
+internal class MongoDatabaseService(IMongoDatabaseManager mongoDatabaseManager, IMongoConnectionRepository mongoConnectionRepository, MongoConnectionAssembler mongoConnectionAssembler, ILogger<MongoDatabaseService> logger) : TracingContext(logger),
+	IMongoDatabaseService
 {
-	private readonly ILogger<MongoDatabaseService> _logger;
-	private readonly MongoConnectionAssembler _mongoConnectionAssembler;
-	private readonly IMongoConnectionRepository _mongoConnectionRepository;
+	private readonly ILogger<MongoDatabaseService> _logger = logger;
+	private readonly MongoConnectionAssembler _mongoConnectionAssembler = mongoConnectionAssembler;
+	private readonly IMongoConnectionRepository _mongoConnectionRepository = mongoConnectionRepository;
 
-	private readonly IMongoDatabaseManager _mongoDatabaseManager;
-
-
-	public MongoDatabaseService(IMongoDatabaseManager mongoDatabaseManager, IMongoConnectionRepository mongoConnectionRepository, MongoConnectionAssembler mongoConnectionAssembler, ILogger<MongoDatabaseService> logger)
-	{
-		_mongoDatabaseManager = mongoDatabaseManager;
-		_mongoConnectionRepository = mongoConnectionRepository;
-		_mongoConnectionAssembler = mongoConnectionAssembler;
-		_logger = logger;
-	}
+	private readonly IMongoDatabaseManager _mongoDatabaseManager = mongoDatabaseManager;
 
 
 	public async Task<GetConnectionInformationResponse> GetInfos()
 	{
-		var logger = _logger.Enter();
+		using var _ = LogService();
 
 		var connections = await _mongoConnectionRepository.GetAll();
 
@@ -43,7 +36,6 @@ internal class MongoDatabaseService : IMongoDatabaseService
 		var data = result.Data.ToDictionary(pair => pair.Id, pair => pair.Infos);
 		var errors = result.Exceptions.ToDictionary(pair => pair.Key.Id.AsGuid(), pair => pair.Value.ToString());
 
-		logger.Exit();
 
 		return new()
 		{
@@ -54,7 +46,7 @@ internal class MongoDatabaseService : IMongoDatabaseService
 
 	public async Task<List<MongoConnectionData>> GetConnections()
 	{
-		var logger = _logger.Enter();
+		using var logger = LogService(autoExit: false);
 
 		var connections = await _mongoConnectionRepository.GetAll();
 
@@ -65,36 +57,28 @@ internal class MongoDatabaseService : IMongoDatabaseService
 
 	public async Task AddConnection(string name, string connectionString)
 	{
-		var logger = _logger.Enter($"{Log.F(name)} {Log.F(connectionString)}");
-
+		using var _ = LogService($"{Log.F(name)} {Log.F(connectionString)}");
 
 		await _mongoConnectionRepository.Add(name, connectionString);
-
-
-		logger.Exit();
 	}
 
 	public async Task UpdateConnectionString(Guid idConnection, string connectionString)
 	{
-		var logger = _logger.Enter($"{Log.F(idConnection)} {Log.F(connectionString)}");
+		using var _ = LogService($"{Log.F(idConnection)} {Log.F(connectionString)}");
 
 		await _mongoConnectionRepository.Update(idConnection.AsObjectId(), connectionString);
-
-		logger.Exit();
 	}
 
 	public async Task DeleteConnection(Guid idConnection)
 	{
-		var logger = _logger.Enter($"{Log.F(idConnection)}");
+		using var _ = LogService($"{Log.F(idConnection)}");
 
 		await _mongoConnectionRepository.Delete(idConnection.AsObjectId());
-
-		logger.Exit();
 	}
 
 	public async Task<string> Backup(MongoBackupTask task)
 	{
-		var logger = _logger.Enter($"{Log.F(task.IdConnection)} {Log.F(task.Elements.Keys)}");
+		using var logger = LogService($"{Log.F(task.IdConnection)} {Log.F(task.Elements.Keys)}", autoExit: false);
 
 
 		var connection = await _mongoConnectionRepository.GetById(task.IdConnection);

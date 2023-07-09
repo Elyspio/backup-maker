@@ -2,21 +2,18 @@
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
 
-public static class ServiceCollectionExtensions
+public static class SwaggerExtentions
 {
 	/// <summary>
 	///     Active le versionning dans la génération de la documentation Swagger
 	/// </summary>
 	/// <param name="services"></param>
 	/// <returns></returns>
-	public static IServiceCollection AddSwagger(this IServiceCollection services, IConfiguration configuration)
+	public static IServiceCollection AddAppSwagger(this IServiceCollection services)
 	{
-		// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 		services.AddEndpointsApiExplorer();
 
-		// Set the comments path for the Swagger JSON and UI.
 		var xmlPaths = Directory.GetFiles(AppContext.BaseDirectory).ToList().Where(f => f.EndsWith(".xml"));
-
 
 		services.AddSwaggerGen(options =>
 		{
@@ -25,11 +22,34 @@ public static class ServiceCollectionExtensions
 			options.OperationFilter<SwaggerRemoveVersionFilter>();
 			options.SchemaFilter<NullableSchemaFilter>();
 
+			options.UseAllOfToExtendReferenceSchemas();
+			options.UseAllOfForInheritance();
 			options.CustomOperationIds(e => e.ActionDescriptor.RouteValues["action"]);
 
 			foreach (var xmlPath in xmlPaths) options.IncludeXmlComments(xmlPath);
 		});
 
 		return services;
+	}
+
+	/// <summary>
+	///     Active la gestion de swagger et son interface en gérant le versioning
+	/// </summary>
+	/// <param name="app"></param>
+	/// <returns></returns>
+	public static WebApplication UseAppSwagger(this WebApplication app)
+	{
+		app.UseSwagger(options =>
+		{
+			options.PreSerializeFilters.Add((document, request) =>
+			{
+				if (!request.Headers.Referer.FirstOrDefault()?.StartsWith("https://") == true) return;
+
+				foreach (var openApiServer in document.Servers) openApiServer.Url = openApiServer.Url.Replace("http://", "https://");
+			});
+		});
+		app.UseSwaggerUI();
+
+		return app;
 	}
 }

@@ -2,25 +2,18 @@
 using BackupMaker.Api.Abstractions.Interfaces.Services;
 using BackupMaker.Api.Abstractions.Models.Base.Deploy;
 using BackupMaker.Api.Abstractions.Models.Transports;
+using BackupMaker.Api.Entrypoints.Web.Controllers.Base;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BackupMaker.Api.Entrypoints.Web.Controllers.Tasks;
+namespace BackupMaker.Api.Entrypoints.Web.Controllers.Deploys;
 
 [Route("api/deploys/local/")]
 [ApiController]
 [Tags("DeploysLocal")]
 [Produces("application/json")]
-public class LocalDeployController : ControllerBase
+public class LocalDeployController(ILogger<LocalDeployController> logger, ILocalDeploymentService localDeploymentService) : TracingController(logger)
 {
-	private readonly ILocalDeploymentService _localDeploymentService;
-
-	private readonly ILogger<LocalDeployController> _logger;
-
-	public LocalDeployController(ILogger<LocalDeployController> logger, ILocalDeploymentService localDeploymentService)
-	{
-		_logger = logger;
-		_localDeploymentService = localDeploymentService;
-	}
+	private readonly ILocalDeploymentService _localDeploymentService = localDeploymentService;
 
 	/// <summary>
 	///     Get all local deployment configurations
@@ -30,11 +23,9 @@ public class LocalDeployController : ControllerBase
 	[ProducesResponseType(typeof(List<LocalDeployData>), StatusCodes.Status200OK)]
 	public async Task<IActionResult> GetLocalDeployments()
 	{
-		var logger = _logger.Enter();
+		using var _ = LogController();
 
 		var deployments = await _localDeploymentService.GetAll();
-
-		logger.Exit();
 
 		return Ok(deployments);
 	}
@@ -49,12 +40,9 @@ public class LocalDeployController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> CreateLocalDeploy(LocalDeployBase deploy)
 	{
-		var logger = _logger.Enter($"{Log.F(deploy)}", LogLevel.Information);
+		using var _ = LogController($"{Log.F(deploy)}");
 
 		await _localDeploymentService.Add(deploy);
-
-		logger.Exit();
-
 
 		return NoContent();
 	}
@@ -69,11 +57,9 @@ public class LocalDeployController : ControllerBase
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> DeleteLocalDeploy(Guid idDeploy)
 	{
-		var logger = _logger.Enter($"{Log.F(idDeploy)}", LogLevel.Information);
+		using var _ = LogController($"{Log.F(idDeploy)}");
 
 		await _localDeploymentService.Delete(idDeploy);
-
-		logger.Exit();
 
 		return NoContent();
 	}
@@ -89,11 +75,9 @@ public class LocalDeployController : ControllerBase
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> UpdateLocalDeploy([FromRoute] Guid idDeploy, [FromBody] LocalDeployBase deploy)
 	{
-		var logger = _logger.Enter($"{Log.F(idDeploy)} {Log.F(deploy)}", LogLevel.Information);
+		using var _ = LogController($"{Log.F(idDeploy)} {Log.F(deploy)}");
 
 		await _localDeploymentService.Update(idDeploy, deploy);
-
-		logger.Exit();
 
 		return NoContent();
 	}

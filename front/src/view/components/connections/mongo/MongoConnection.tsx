@@ -10,6 +10,7 @@ import { DeleteEntity } from "@components/entity/DeleteEntity";
 import { AddMongoConnection } from "@components/connections/mongo/AddMongoConnection";
 import { useParams } from "react-router";
 import { manageMongoConnections } from "@modules/databases/mongo/mongo.database.async.actions";
+import { UnableToFindEntity } from "@components/entity/UnableToFindEntity";
 
 enum ColumnField {
 	Name = "name",
@@ -130,17 +131,7 @@ export function MongoConnection() {
 	const deleteModal = useModal(false);
 	const updateModal = useModal(false);
 
-	if (!connection)
-		return (
-			<Stack alignItems={"center"} justifyContent={"center"} height={"100%"} width={"100%"}>
-				<Typography variant={"h4"}>
-					Unable to find the MongoDB connection{" "}
-					<Typography component={"span"} fontSize={"110%"} color={"error"}>
-						"{name}"
-					</Typography>
-				</Typography>
-			</Stack>
-		);
+	if (!connection) return <UnableToFindEntity description={"MongoDB connection"} name={name!} />;
 
 	return (
 		<Stack height={"100%"} className={"MongoConnection"} sx={rootSx}>

@@ -9,10 +9,10 @@ type EntityManagerProps<T> = {
 	AddComponent: (props: AddEntityProps<T>) => React.JSX.Element;
 	name: string;
 	title: string;
-	DetailComponent: () => React.JSX.Element;
+	elements: React.JSX.Element;
 };
 
-export function EntityManager<T>({ name, DetailComponent, AddComponent, title }: EntityManagerProps<T>) {
+export function EntityManager<T>({ name, elements, AddComponent, title }: EntityManagerProps<T>) {
 	const modal = useModal(false);
 
 	const addEntity = useCallback(
@@ -36,9 +36,7 @@ export function EntityManager<T>({ name, DetailComponent, AddComponent, title }:
 						</Tooltip>
 					</Stack>
 				</AppAccordion.Summary>
-				<AppAccordion.Details>
-					<DetailComponent />
-				</AppAccordion.Details>
+				<AppAccordion.Details>{elements}</AppAccordion.Details>
 			</AppAccordion.Frame>
 			<AddComponent open={modal.open} setClose={modal.setClose} />
 		</Stack>

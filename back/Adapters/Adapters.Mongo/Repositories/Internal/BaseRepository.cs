@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using BackupMaker.Api.Abstractions.Common.Technical;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -8,16 +9,16 @@ using MongoDB.Driver;
 
 namespace BackupMaker.Api.Adapters.Mongo.Repositories.Internal;
 
-public abstract class BaseRepository<T>
+public abstract class BaseRepository<T> : TracingContext
 {
-	protected readonly string CollectionName;
-	protected readonly MongoContext context;
-	internal ILogger<BaseRepository<T>> _logger;
+	private readonly string _collectionName;
+	private readonly MongoContext _context;
+	private readonly ILogger _logger;
 
-	protected BaseRepository(IConfiguration configuration, ILogger<BaseRepository<T>> logger)
+	protected BaseRepository(IConfiguration configuration, ILogger logger) : base(logger)
 	{
-		context = new(configuration);
-		CollectionName = typeof(T).Name[..^"Entity".Length];
+		_context = new(configuration);
+		_collectionName = typeof(T).Name[..^"Entity".Length];
 		_logger = logger;
 		var pack = new ConventionPack
 		{
@@ -28,7 +29,7 @@ public abstract class BaseRepository<T>
 		BsonSerializer.RegisterSerializationProvider(new EnumAsStringSerializationProvider());
 	}
 
-	protected IMongoCollection<T> EntityCollection => context.MongoDatabase.GetCollection<T>(CollectionName);
+	protected IMongoCollection<T> EntityCollection => _context.MongoDatabase.GetCollection<T>(_collectionName);
 
 
 	protected void CreateIndexIfMissing(ICollection<string> properties, bool unique = false)
@@ -53,9 +54,9 @@ public abstract class BaseRepository<T>
 
 		if (!foundIndex)
 		{
-			_logger.LogWarning($"Property {CollectionName}.{indexName} is not indexed, creating one");
+			_logger.LogWarning($"Property {_collectionName}.{indexName} is not indexed, creating one");
 			EntityCollection.Indexes.CreateOne(indexModel);
-			_logger.LogWarning($"Property {CollectionName}.{indexName} is now indexed");
+			_logger.LogWarning($"Property {_collectionName}.{indexName} is now indexed");
 		}
 	}
 }

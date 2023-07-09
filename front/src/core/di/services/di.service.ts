@@ -7,6 +7,7 @@ import { Container } from "inversify";
 import { TokenService } from "@services/common/auth/token.service";
 import { DeployService } from "@services/deploy.service";
 import { TasksService } from "@services/tasks.service";
+import { JobsService } from "@services/jobs.service";
 
 export const addServices = (container: Container) => {
 	container.bind(AuthenticationService).toSelf();
@@ -17,4 +18,5 @@ export const addServices = (container: Container) => {
 	container.bind(DatabaseMongoService).toSelf();
 	container.bind(DeployService).toSelf();
 	container.bind(TasksService).toSelf();
+	container.bind(JobsService).toSelf();
 };

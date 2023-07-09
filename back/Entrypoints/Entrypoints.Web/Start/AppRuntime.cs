@@ -1,16 +1,18 @@
 ﻿using BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
-using Hangfire;
 
 namespace BackupMaker.Api.Entrypoints.Web.Start;
 
-public static class ApplicationServer
+public static class AppRuntime
 {
 	public static WebApplication Initialize(this WebApplication app)
 	{
-		app.UseSwaggerWithVersioning();
-		app.UseHangfireDashboard();
-		if (app.Environment.IsDevelopment()) app.UseDeveloperExceptionPage();
+		// Allow CORS
+		app.UseCors();
 
+		app.UseAppSwagger();
+
+
+		// Start Dependency Injection
 		app.UseAdvancedDependencyInjection();
 
 		// Setup authentication
@@ -24,6 +26,7 @@ public static class ApplicationServer
 
 		// Start SPA serving
 		app.UseRouting();
+
 		app.UseStaticFiles();
 
 		app.MapWhen(ctx => !ctx.Request.Path.StartsWithSegments("/api"), appBuilder =>

@@ -22,19 +22,15 @@ public class MongoBackupRepository : BaseRepository<MongoBackupTaskEntity>, IMon
 	/// <inheritdoc />
 	public async Task<List<MongoBackupTaskEntity>> GetAll()
 	{
-		var logger = _logger.Enter();
+		using var _ = LogAdapter();
 
-		var deploys = await EntityCollection.AsQueryable().ToListAsync();
-
-		logger.Exit();
-
-		return deploys;
+		return await EntityCollection.AsQueryable().ToListAsync();
 	}
 
 	/// <inheritdoc />
 	public async Task Add(MongoBackupTask deploy)
 	{
-		var logger = _logger.Enter($"{Log.F(deploy)}");
+		using var _ = LogAdapter($"{Log.F(deploy)}");
 
 		var entity = new MongoBackupTaskEntity
 		{
@@ -43,24 +39,20 @@ public class MongoBackupRepository : BaseRepository<MongoBackupTaskEntity>, IMon
 			Elements = deploy.Elements
 		};
 		await EntityCollection.InsertOneAsync(entity);
-
-		logger.Exit();
 	}
 
 	/// <inheritdoc />
 	public async Task Delete(Guid id)
 	{
-		var logger = _logger.Enter($"{Log.F(id)}");
+		using var _ = LogAdapter($"{Log.F(id)}");
 
 		await EntityCollection.DeleteOneAsync(backup => backup.Id == id.AsObjectId());
-
-		logger.Exit();
 	}
 
 	/// <inheritdoc />
 	public async Task<MongoBackupTaskEntity> GetById(Guid id)
 	{
-		var logger = _logger.Enter($"{Log.F(id)}");
+		using var logger = LogAdapter($"{Log.F(id)}", autoExit: false);
 
 		var entity = await EntityCollection.AsQueryable().FirstOrDefaultAsync(backup => backup.Id == id.AsObjectId());
 
@@ -72,7 +64,7 @@ public class MongoBackupRepository : BaseRepository<MongoBackupTaskEntity>, IMon
 	/// <inheritdoc />
 	public async Task Update(Guid id, MongoBackupTask task)
 	{
-		var logger = _logger.Enter($"{Log.F(id)} {Log.F(task)}");
+		using var _ = LogAdapter($"{Log.F(id)} {Log.F(task)}");
 
 		var entity = new MongoBackupTaskEntity
 		{
@@ -83,7 +75,5 @@ public class MongoBackupRepository : BaseRepository<MongoBackupTaskEntity>, IMon
 		};
 
 		await EntityCollection.ReplaceOneAsync(backup => backup.Id == entity.Id, entity);
-
-		logger.Exit();
 	}
 }

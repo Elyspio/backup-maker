@@ -1,8 +1,8 @@
 import React from "react";
 import { EntityManager } from "@components/entity/EntityManager";
-import { LocalDeploys } from "@components/deploys/local/LocalDeploys";
 import { AddLocalDeploy } from "@components/deploys/local/AddLocalDeploy";
+import { EntityList } from "@components/entity/EntityList";
 
 export function Deploys() {
-	return <EntityManager name={"Deploys"} title={"Add a new deployment connection"} AddComponent={AddLocalDeploy} DetailComponent={LocalDeploys} />;
+	return <EntityManager name={"Deploys"} title={"Add a new deployment connection"} AddComponent={AddLocalDeploy} elements={<EntityList entity={"deploy"} />} />;
 }

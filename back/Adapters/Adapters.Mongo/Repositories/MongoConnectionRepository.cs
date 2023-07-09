@@ -11,15 +11,12 @@ using MongoDB.Driver.Linq;
 
 namespace BackupMaker.Api.Adapters.Mongo.Repositories;
 
-public class MongoConnectionRepository : BaseRepository<MongoConnectionEntity>, IMongoConnectionRepository
+public class MongoConnectionRepository(IConfiguration configuration, ILogger<MongoConnectionRepository> logger) : BaseRepository<MongoConnectionEntity>(configuration, logger), IMongoConnectionRepository
 {
-	public MongoConnectionRepository(IConfiguration configuration, ILogger<MongoConnectionRepository> logger) : base(configuration, logger)
-	{
-		_logger = logger;
-	}
-
 	public async Task<MongoConnectionEntity> Add(string name, string connectionString)
 	{
+		using var _ = LogAdapter($"{Log.F(name)} {Log.F(connectionString)}");
+
 		var entity = new MongoConnectionEntity
 		{
 			Name = name,
@@ -32,7 +29,7 @@ public class MongoConnectionRepository : BaseRepository<MongoConnectionEntity>, 
 
 	public async Task<List<MongoConnectionEntity>> GetAll()
 	{
-		var logger = _logger.Enter();
+		using var logger = LogAdapter(autoExit: false);
 
 		var entities = await EntityCollection.AsQueryable().ToListAsync();
 
@@ -43,15 +40,11 @@ public class MongoConnectionRepository : BaseRepository<MongoConnectionEntity>, 
 
 	public async Task<MongoConnectionEntity> Update(ObjectId idDatabase, string connectionString)
 	{
-		var logger = _logger.Enter($"{Log.F(idDatabase)} {Log.F(connectionString)}");
+		using var _ = LogAdapter($"{Log.F(idDatabase)} {Log.F(connectionString)}");
 
 		var update = Builders<MongoConnectionEntity>.Update.Set(db => db.ConnectionString, connectionString);
 
-		var entity = await EntityCollection.FindOneAndUpdateAsync(db => db.Id == idDatabase, update);
-
-		logger.Exit();
-
-		return entity;
+		return await EntityCollection.FindOneAndUpdateAsync(db => db.Id == idDatabase, update);
 	}
 
 	public async Task Delete(ObjectId idConnection)
@@ -61,7 +54,7 @@ public class MongoConnectionRepository : BaseRepository<MongoConnectionEntity>, 
 
 	public async Task<MongoConnectionEntity> GetById(Guid idConnection)
 	{
-		var logger = _logger.Enter($"{Log.F(idConnection)}");
+		using var logger = LogAdapter($"{Log.F(idConnection)}", autoExit: false);
 
 		var connection = await EntityCollection.AsQueryable().FirstOrDefaultAsync(con => con.Id == idConnection.AsObjectId());
 

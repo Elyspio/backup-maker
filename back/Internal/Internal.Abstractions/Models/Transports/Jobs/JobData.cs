@@ -2,7 +2,7 @@
 
 namespace BackupMaker.Api.Abstractions.Models.Transports.Jobs;
 
-public class BackupMongoLocalJobData : CreateBackupMongoLocalJobRequest
+public class JobData : CreateJobRequest
 {
-	public Guid Id { get; set; }
+	public required Guid Id { get; set; }
 }

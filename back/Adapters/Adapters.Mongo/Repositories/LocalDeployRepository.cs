@@ -15,18 +15,16 @@ namespace BackupMaker.Api.Adapters.Mongo.Repositories;
 public class LocalDeployRepository : BaseRepository<LocalDeployEntity>, ILocalDeploymentRepository
 {
 	/// <inheritdoc />
-	public LocalDeployRepository(IConfiguration configuration, ILogger<BaseRepository<LocalDeployEntity>> logger) : base(configuration, logger)
+	public LocalDeployRepository(IConfiguration configuration, ILogger<LocalDeployRepository> logger) : base(configuration, logger)
 	{
 	}
 
 	/// <inheritdoc />
 	public async Task<List<LocalDeployEntity>> GetAll()
 	{
-		var logger = _logger.Enter();
+		using var _ = LogAdapter();
 
 		var deploys = await EntityCollection.AsQueryable().ToListAsync();
-
-		logger.Exit();
 
 		return deploys;
 	}
@@ -34,7 +32,7 @@ public class LocalDeployRepository : BaseRepository<LocalDeployEntity>, ILocalDe
 	/// <inheritdoc />
 	public async Task Add(LocalDeployBase deploy)
 	{
-		var logger = _logger.Enter($"{Log.F(deploy)}");
+		using var _ = LogAdapter($"{Log.F(deploy)}");
 
 		var entity = new LocalDeployEntity
 		{
@@ -42,24 +40,20 @@ public class LocalDeployRepository : BaseRepository<LocalDeployEntity>, ILocalDe
 			Name = deploy.Name
 		};
 		await EntityCollection.InsertOneAsync(entity);
-
-		logger.Exit();
 	}
 
 	/// <inheritdoc />
 	public async Task Delete(Guid id)
 	{
-		var logger = _logger.Enter($"{Log.F(id)}");
+		using var _ = LogAdapter($"{Log.F(id)}");
 
 		await EntityCollection.DeleteOneAsync(deploy => deploy.Id == id.AsObjectId());
-
-		logger.Exit();
 	}
 
 	/// <inheritdoc />
 	public async Task<LocalDeployEntity> GetById(Guid id)
 	{
-		var logger = _logger.Enter($"{Log.F(id)}");
+		using var logger = LogAdapter($"{Log.F(id)}", autoExit: false);
 
 		var entity = await EntityCollection.AsQueryable().FirstOrDefaultAsync(deploy => deploy.Id == id.AsObjectId());
 
@@ -71,7 +65,7 @@ public class LocalDeployRepository : BaseRepository<LocalDeployEntity>, ILocalDe
 	/// <inheritdoc />
 	public async Task Update(Guid idLocalDeploy, LocalDeployBase deploy)
 	{
-		var logger = _logger.Enter($"{Log.F(idLocalDeploy)} {Log.F(deploy)}");
+		using var _ = LogAdapter($"{Log.F(idLocalDeploy)} {Log.F(deploy)}");
 
 		var entity = new LocalDeployEntity
 		{
@@ -81,7 +75,5 @@ public class LocalDeployRepository : BaseRepository<LocalDeployEntity>, ILocalDe
 		};
 
 		await EntityCollection.ReplaceOneAsync(d => d.Id == entity.Id, entity);
-
-		logger.Exit();
 	}
 }

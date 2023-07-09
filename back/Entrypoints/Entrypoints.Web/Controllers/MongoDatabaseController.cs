@@ -3,6 +3,7 @@ using BackupMaker.Api.Abstractions.Interfaces.Services;
 using BackupMaker.Api.Abstractions.Models.Transports;
 using BackupMaker.Api.Abstractions.Models.Transports.Requests;
 using BackupMaker.Api.Abstractions.Models.Transports.Responses;
+using BackupMaker.Api.Entrypoints.Web.Controllers.Base;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackupMaker.Api.Entrypoints.Web.Controllers;
@@ -13,17 +14,9 @@ namespace BackupMaker.Api.Entrypoints.Web.Controllers;
 [ApiController]
 [Route("api/database")]
 [Produces("application/json")]
-public class MongoDatabaseController : ControllerBase
+public class MongoDatabaseController(IMongoDatabaseService mongoDatabaseService, ILogger<MongoDatabaseController> logger) : TracingController(logger)
 {
-	private readonly ILogger<MongoDatabaseController> _logger;
-	private readonly IMongoDatabaseService _mongoDatabaseService;
-
-	public MongoDatabaseController(IMongoDatabaseService mongoDatabaseService, ILogger<MongoDatabaseController> logger)
-	{
-		_mongoDatabaseService = mongoDatabaseService;
-		_logger = logger;
-	}
-
+	private readonly IMongoDatabaseService _mongoDatabaseService = mongoDatabaseService;
 
 	/// <summary>
 	///     Get informations about databases, collections, sizes for all connections
@@ -33,11 +26,10 @@ public class MongoDatabaseController : ControllerBase
 	[ProducesResponseType(typeof(GetConnectionInformationResponse), 200)]
 	public async Task<IActionResult> GetInfos()
 	{
-		var logger = _logger.Enter("", LogLevel.Information);
+		using var _ = LogController();
 
 		var connections = await _mongoDatabaseService.GetInfos();
 
-		logger.Exit();
 
 		return Ok(connections);
 	}
@@ -51,11 +43,9 @@ public class MongoDatabaseController : ControllerBase
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> AddConnection([FromBody] AddMongoConnectionRequest req)
 	{
-		var logger = _logger.Enter($"{Log.F(req)}", LogLevel.Information);
+		using var _ = LogController($"{Log.F(req)}");
 
 		await _mongoDatabaseService.AddConnection(req.Name, req.ConnectionString);
-
-		logger.Exit();
 
 		return NoContent();
 	}
@@ -68,7 +58,7 @@ public class MongoDatabaseController : ControllerBase
 	[ProducesResponseType(typeof(List<MongoConnectionData>), StatusCodes.Status200OK)]
 	public async Task<IActionResult> GetConnections()
 	{
-		var logger = _logger.Enter();
+		using var logger = LogController(autoExit: false);
 
 		var connections = await _mongoDatabaseService.GetConnections();
 
@@ -88,11 +78,9 @@ public class MongoDatabaseController : ControllerBase
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> UpdateConnectionString([FromRoute] Guid idConnection, [FromBody] string connectionString)
 	{
-		var logger = _logger.Enter($"{Log.F(idConnection)} {Log.F(connectionString)}", LogLevel.Information);
+		using var _ = LogController($"{Log.F(idConnection)} {Log.F(connectionString)}");
 
 		await _mongoDatabaseService.UpdateConnectionString(idConnection, connectionString);
-
-		logger.Exit();
 
 		return NoContent();
 	}
@@ -106,11 +94,9 @@ public class MongoDatabaseController : ControllerBase
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> DeleteConnection([FromRoute] Guid idConnection)
 	{
-		var logger = _logger.Enter($"{Log.F(idConnection)}", LogLevel.Information);
+		using var _ = LogController($"{Log.F(idConnection)}");
 
 		await _mongoDatabaseService.DeleteConnection(idConnection);
-
-		logger.Exit();
 
 		return NoContent();
 	}

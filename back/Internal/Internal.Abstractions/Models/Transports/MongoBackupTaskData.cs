@@ -5,7 +5,7 @@ namespace BackupMaker.Api.Abstractions.Models.Transports;
 public class MongoBackupTaskData : MongoBackupTask
 {
 	/// <summary>
-	///     Job's id
+	///     JobDetail's id
 	/// </summary>
 	public Guid Id { get; set; }
 }

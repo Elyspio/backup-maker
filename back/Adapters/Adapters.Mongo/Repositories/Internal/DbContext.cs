@@ -10,14 +10,11 @@ public class MongoContext
 {
 	public MongoContext(IConfiguration configuration)
 	{
-		var connectionUri = new MongoUrl(configuration["Database"]);
+		var (client, url) = MongoClientFactory.Create(configuration["Database"]);
 
-		var client = new MongoClient(connectionUri);
+		Console.WriteLine($"Connecting to Database '{url.DatabaseName}'");
 
-
-		Console.WriteLine($"Connecting to Database '{connectionUri.DatabaseName}'");
-
-		MongoDatabase = client.GetDatabase(connectionUri.DatabaseName);
+		MongoDatabase = client.GetDatabase(url.DatabaseName);
 
 		var pack = new ConventionPack
 		{

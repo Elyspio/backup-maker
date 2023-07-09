@@ -3,16 +3,10 @@ using BackupMaker.Api.Abstractions.Interfaces.Services;
 
 namespace BackupMaker.Api.Core.Services;
 
-internal class AuthenticationService : IAuthenticationService
+internal class AuthenticationService(IAuthenticationClient authenticationApi, IUsersClient usersApi) : IAuthenticationService
 {
-	private readonly IAuthenticationClient authenticationApi;
-	private readonly IUsersClient usersApi;
-
-	public AuthenticationService(IAuthenticationClient authenticationApi, IUsersClient usersApi)
-	{
-		this.authenticationApi = authenticationApi;
-		this.usersApi = usersApi;
-	}
+	private readonly IAuthenticationClient authenticationApi = authenticationApi;
+	private readonly IUsersClient usersApi = usersApi;
 
 	public async Task<bool> IsLogged(string token)
 	{

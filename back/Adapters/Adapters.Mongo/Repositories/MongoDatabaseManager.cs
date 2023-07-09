@@ -1,7 +1,9 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Extensions;
 using BackupMaker.Api.Abstractions.Common.Helpers;
+using BackupMaker.Api.Abstractions.Common.Technical;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info;
+using BackupMaker.Api.Adapters.Mongo.Repositories.Internal;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -10,24 +12,20 @@ using System.Text;
 
 namespace BackupMaker.Api.Adapters.Mongo.Repositories;
 
-internal class MongoDatabaseManager : IMongoDatabaseManager
+internal class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger) : TracingContext(logger), IMongoDatabaseManager
 {
-	private readonly ILogger<MongoDatabaseManager> _logger;
-
-	public MongoDatabaseManager(ILogger<MongoDatabaseManager> logger)
-	{
-		_logger = logger;
-	}
-
 	public async Task<List<DatabaseInfo>> GetDatabases(string connectionString)
 	{
-		var client = new MongoClient(connectionString);
+		using var _ = LogAdapter();
 
+		var client = MongoClientFactory.Create(connectionString).Client;
 
 		var databasesName = await (await client.ListDatabaseNamesAsync()).ToListAsync();
 
 		var databasesResult = await databasesName.Parallelize(async databaseName =>
 		{
+			using var __ = CreateInnerActivity($"MongoDatabaseManager.GetDatabases {Log.F(databaseName)}");
+
 			var database = client.GetDatabase(databaseName);
 
 			var collections = await GetCollectionOnlyNames(database);
@@ -48,7 +46,7 @@ internal class MongoDatabaseManager : IMongoDatabaseManager
 
 	public async Task<string> Backup(string connectionString, Dictionary<string, List<string>> elements)
 	{
-		var logger = _logger.Enter($"{Log.F(connectionString)} {Log.F(elements)}");
+		using var logger = LogAdapter($"{Log.F(elements)}", autoExit: false);
 
 
 		var tempDir = Path.Join(Path.GetTempPath(), "backup-maker", DateTime.Now.ToString("yy-MMM-dd.hh-mm-ss"));
@@ -84,6 +82,8 @@ internal class MongoDatabaseManager : IMongoDatabaseManager
 
 	private async Task<(string stdout, string stderr, int exitCode)> Dump(string command)
 	{
+		using var _ = LogAdapter();
+
 		// Create a new process instance
 		var process = new Process();
 
@@ -146,6 +146,8 @@ internal class MongoDatabaseManager : IMongoDatabaseManager
 	/// <returns></returns>
 	private async Task<CollectionInfo> GetCollectionInfo(IMongoDatabase database, string collectionName)
 	{
+		using var _ = LogAdapter($"{database.DatabaseNamespace} {Log.F(collectionName)}");
+
 		var scale = Math.Pow(1024, 2);
 		var stats = await database.RunCommandAsync(new BsonDocumentCommand<BsonDocument>(new()
 		{
@@ -169,6 +171,8 @@ internal class MongoDatabaseManager : IMongoDatabaseManager
 	/// <returns></returns>
 	private async Task<List<string>> GetCollectionOnlyNames(IMongoDatabase database)
 	{
+		using var _ = LogAdapter($"database={database.DatabaseNamespace.DatabaseName}");
+
 		var storages = await (await database.ListCollectionsAsync()).ToListAsync();
 
 		return storages.Where(s => s["type"] == "collection").Select(s => s["name"].AsString).ToList();

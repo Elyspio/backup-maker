@@ -240,7 +240,7 @@ export class DeploysLocalClient {
 	}
 }
 
-export class JobsBackupClient {
+export class JobsClient {
 	protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 	private instance: AxiosInstance;
 	private baseUrl: string;
@@ -252,10 +252,11 @@ export class JobsBackupClient {
 	}
 
 	/**
+	 * Get all jobs
 	 * @return Success
 	 */
-	getJobs(cancelToken?: CancelToken | undefined): Promise<GetJobsResponse> {
-		let url_ = this.baseUrl + "/api/jobs/backup";
+	getJobs(cancelToken?: CancelToken | undefined): Promise<JobData[]> {
+		let url_ = this.baseUrl + "/api/jobs";
 		url_ = url_.replace(/[?&]$/, "");
 
 		let options_: AxiosRequestConfig = {
@@ -282,10 +283,11 @@ export class JobsBackupClient {
 	}
 
 	/**
+	 * Create a new job
 	 * @return No Content
 	 */
-	createBackupMongoLocalJob(body: CreateBackupMongoLocalJobRequest, cancelToken?: CancelToken | undefined): Promise<void> {
-		let url_ = this.baseUrl + "/api/jobs/backup/mongo-local";
+	createJob(body: CreateJobRequest, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/jobs";
 		url_ = url_.replace(/[?&]$/, "");
 
 		const content_ = JSON.stringify(body);
@@ -310,23 +312,29 @@ export class JobsBackupClient {
 				}
 			})
 			.then((_response: AxiosResponse) => {
-				return this.processCreateBackupMongoLocalJob(_response);
+				return this.processCreateJob(_response);
 			});
 	}
 
 	/**
+	 * Trigger a job
 	 * @return No Content
 	 */
-	startBackupMongoLocalJob(job: string, cancelToken?: CancelToken | undefined): Promise<void> {
-		let url_ = this.baseUrl + "/api/jobs/backup/mongo-local/{job}/start";
-		if (job === undefined || job === null) throw new Error("The parameter 'job' must be defined.");
-		url_ = url_.replace("{job}", encodeURIComponent("" + job));
+	updateJob(idJob: string, body: CreateJobRequest, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/jobs/{idJob}";
+		if (idJob === undefined || idJob === null) throw new Error("The parameter 'idJob' must be defined.");
+		url_ = url_.replace("{idJob}", encodeURIComponent("" + idJob));
 		url_ = url_.replace(/[?&]$/, "");
 
+		const content_ = JSON.stringify(body);
+
 		let options_: AxiosRequestConfig = {
+			data: content_,
 			method: "PUT",
 			url: url_,
-			headers: {},
+			headers: {
+				"Content-Type": "application/json",
+			},
 			cancelToken,
 		};
 
@@ -340,17 +348,18 @@ export class JobsBackupClient {
 				}
 			})
 			.then((_response: AxiosResponse) => {
-				return this.processStartBackupMongoLocalJob(_response);
+				return this.processUpdateJob(_response);
 			});
 	}
 
 	/**
+	 * Delete a job
 	 * @return No Content
 	 */
-	stopBackupMongoLocalJob(job: string, cancelToken?: CancelToken | undefined): Promise<void> {
-		let url_ = this.baseUrl + "/api/jobs/backup/mongo-local/{job}";
-		if (job === undefined || job === null) throw new Error("The parameter 'job' must be defined.");
-		url_ = url_.replace("{job}", encodeURIComponent("" + job));
+	deleteJob(idJob: string, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/jobs/{idJob}";
+		if (idJob === undefined || idJob === null) throw new Error("The parameter 'idJob' must be defined.");
+		url_ = url_.replace("{idJob}", encodeURIComponent("" + idJob));
 		url_ = url_.replace(/[?&]$/, "");
 
 		let options_: AxiosRequestConfig = {
@@ -370,11 +379,11 @@ export class JobsBackupClient {
 				}
 			})
 			.then((_response: AxiosResponse) => {
-				return this.processStopBackupMongoLocalJob(_response);
+				return this.processDeleteJob(_response);
 			});
 	}
 
-	protected processGetJobs(response: AxiosResponse): Promise<GetJobsResponse> {
+	protected processGetJobs(response: AxiosResponse): Promise<JobData[]> {
 		const status = response.status;
 		let _headers: any = {};
 		if (response.headers && typeof response.headers === "object") {
@@ -389,15 +398,15 @@ export class JobsBackupClient {
 			let result200: any = null;
 			let resultData200 = _responseText;
 			result200 = JSON.parse(resultData200);
-			return Promise.resolve<GetJobsResponse>(result200);
+			return Promise.resolve<JobData[]>(result200);
 		} else if (status !== 200 && status !== 204) {
 			const _responseText = response.data;
 			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
 		}
-		return Promise.resolve<GetJobsResponse>(null as any);
+		return Promise.resolve<JobData[]>(null as any);
 	}
 
-	protected processCreateBackupMongoLocalJob(response: AxiosResponse): Promise<void> {
+	protected processCreateJob(response: AxiosResponse): Promise<void> {
 		const status = response.status;
 		let _headers: any = {};
 		if (response.headers && typeof response.headers === "object") {
@@ -417,7 +426,7 @@ export class JobsBackupClient {
 		return Promise.resolve<void>(null as any);
 	}
 
-	protected processStartBackupMongoLocalJob(response: AxiosResponse): Promise<void> {
+	protected processUpdateJob(response: AxiosResponse): Promise<void> {
 		const status = response.status;
 		let _headers: any = {};
 		if (response.headers && typeof response.headers === "object") {
@@ -437,7 +446,7 @@ export class JobsBackupClient {
 		return Promise.resolve<void>(null as any);
 	}
 
-	protected processStopBackupMongoLocalJob(response: AxiosResponse): Promise<void> {
+	protected processDeleteJob(response: AxiosResponse): Promise<void> {
 		const status = response.status;
 		let _headers: any = {};
 		if (response.headers && typeof response.headers === "object") {
@@ -742,7 +751,7 @@ export class MongoDatabaseClient {
 	}
 }
 
-export class TasksBackupClient {
+export class TasksClient {
 	protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 	private instance: AxiosInstance;
 	private baseUrl: string;
@@ -974,11 +983,12 @@ export interface AddMongoConnectionRequest {
 	connectionString: string;
 }
 
-export interface BackupMongoLocalJobData {
-	cronInterval: string;
-	idMongoBackup: string;
-	idLocalDeploy: string;
-	id: string;
+export enum Backup {
+	Mongo = "Mongo",
+}
+
+export interface BaseBackupTask {
+	name: string;
 }
 
 export interface CollectionInfo {
@@ -986,6 +996,7 @@ export interface CollectionInfo {
 	name: string;
 	/** Collection documents count */
 	documents: number;
+	/** Collection size info */
 	sizes: CollectionSizes;
 }
 
@@ -999,10 +1010,16 @@ export interface CollectionSizes {
 	};
 }
 
-export interface CreateBackupMongoLocalJobRequest {
+export interface JobBase {
+	name: string;
 	cronInterval: string;
-	idMongoBackup: string;
-	idLocalDeploy: string;
+	deployType: Deploy;
+	backupType: Backup;
+}
+
+export interface CreateJobRequest extends JobBase {
+	idDeploy: string;
+	idBackup: string;
 }
 
 export interface DatabaseInfo {
@@ -1010,6 +1027,14 @@ export interface DatabaseInfo {
 	name: string;
 	/** Database's Collections */
 	collections: CollectionInfo[];
+}
+
+export enum Deploy {
+	Local = "Local",
+}
+
+export interface DeployBase {
+	name: string;
 }
 
 export interface GetConnectionInformationResponse {
@@ -1021,26 +1046,31 @@ export interface GetConnectionInformationResponse {
 	};
 }
 
-export interface GetJobsResponse {
-	backupMongoLocalJobs: BackupMongoLocalJobData[];
-}
-
-export interface LocalDeployBase {
-	name: string;
-	/** Path where files are moved */
-	outputPath: string;
-}
-
-export interface LocalDeployData {
-	name: string;
-	/** Path where files are moved */
-	outputPath: string;
+export interface JobData extends CreateJobRequest {
 	id: string;
+}
+
+export interface JobEntity extends JobBase {
+	id: ObjectId;
+	idDeploy: ObjectId;
+	idBackup: ObjectId;
+}
+
+export interface LocalDeployBase extends DeployBase {
+	/** Path where files are moved */
+	outputPath: string;
+}
+
+export interface LocalDeployData extends LocalDeployBase {
+	id: string;
+}
+
+export interface LocalDeployEntity extends LocalDeployBase {
+	id: ObjectId;
 }
 
 /** Backup job for a mongo connection */
-export interface MongoBackupTask {
-	name: string;
+export interface MongoBackupTask extends BaseBackupTask {
 	/** Id of the mongo connection */
 	idConnection: string;
 	/** Mapping of a database to a list of collection to backup */
@@ -1049,21 +1079,34 @@ export interface MongoBackupTask {
 	};
 }
 
-export interface MongoBackupTaskData {
-	name: string;
-	/** Id of the mongo connection */
-	idConnection: string;
-	/** Mapping of a database to a list of collection to backup */
-	elements: {
-		[key: string]: string[];
-	};
-	/** Job's id */
+export interface MongoBackupTaskData extends MongoBackupTask {
+	/** JobDetail's id */
 	id: string;
 }
 
-export interface MongoConnectionData {
+export interface MongoBackupTaskEntity extends MongoBackupTask {
+	id: ObjectId;
+}
+
+export interface MongoConnectionBase {
 	name: string;
+}
+
+export interface MongoConnectionData extends MongoConnectionBase {
 	id: string;
+}
+
+export interface MongoConnectionEntity extends MongoConnectionBase {
+	id: ObjectId;
+	connectionString: string;
+}
+
+export interface ObjectId {
+	readonly timestamp?: number;
+	readonly machine?: number;
+	readonly pid?: number;
+	readonly increment?: number;
+	readonly creationTime?: string;
 }
 
 export class ApiException extends Error {

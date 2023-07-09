@@ -19,8 +19,8 @@ export function MongoTaskDetail({ task, connection }: MongoTaskDetailProps) {
 			Object.entries(deepClone(task.elements) as MongoBackupTaskData["elements"])
 				.sort(([databaseA], [databaseB]) => databaseA.localeCompare(databaseB))
 				.map(([database, collections]) => (
-					<Stack key={database} direction={"row"} flexWrap={"wrap"} alignItems={"center"} spacing={2}>
-						<Typography color={"secondary"} variant={"overline"} fontSize={"95%"} minWidth={(maxDatabaseNameLength + 3) * 10}>
+					<Stack key={database} direction={"row"} alignItems={"center"} spacing={2}>
+						<Typography color={"secondary"} variant={"overline"} fontSize={"85%"} minWidth={(maxDatabaseNameLength + 3) * 10}>
 							{database} :
 						</Typography>
 						<Stack direction={"row"} spacing={2} flexWrap={"wrap"}>
@@ -38,10 +38,10 @@ export function MongoTaskDetail({ task, connection }: MongoTaskDetailProps) {
 	return (
 		<Stack spacing={1}>
 			<Stack alignItems={"center"} my={2} spacing={1} direction={"row"}>
-				<Typography fontSize={"95%"} variant={"overline"}>
+				<Typography color={"secondary"} fontSize={"85%"} variant={"overline"}>
 					Connection :
 				</Typography>
-				<Typography color={"primary"} sx={{ opacity: 0.9 }} fontSize={"110%"}>
+				<Typography fontFamily={"consolas"} fontSize={"110%"}>
 					{connection.name}
 				</Typography>
 			</Stack>
