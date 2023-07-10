@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Filters;
 
+/// <inheritdoc />, Intercepts <see cref="HttpException"/> to returns HTTP codes from exceptions
 public class HttpExceptionFilter : ExceptionFilterAttribute
 {
+	/// <inheritdoc />
 	public override void OnException(ExceptionContext context)
 	{
 		if (context.Exception is HttpException ex)

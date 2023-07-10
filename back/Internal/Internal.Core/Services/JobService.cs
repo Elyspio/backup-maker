@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BackupMaker.Api.Core.Services;
 
-/// <inheritdoc />
+/// <inheritdoc cref="IJobService" />
 public class JobService(IJobRepository jobRepository, ILogger<JobService> logger, JobAssembler jobAssembler) : TracingContext(logger), IJobService
 {
 	private readonly JobAssembler _jobAssembler = jobAssembler;

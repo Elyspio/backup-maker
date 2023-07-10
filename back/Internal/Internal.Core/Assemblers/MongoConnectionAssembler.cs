@@ -5,13 +5,16 @@ using Mapster;
 
 namespace BackupMaker.Api.Core.Assemblers;
 
+/// <inheritdoc />
 public class MongoConnectionAssembler : BaseAssembler<MongoConnectionData, MongoConnectionEntity>
 {
+	/// <inheritdoc />
 	public override MongoConnectionEntity Convert(MongoConnectionData obj)
 	{
 		throw new NotImplementedException();
 	}
 
+	/// <inheritdoc />
 	public override MongoConnectionData Convert(MongoConnectionEntity obj)
 	{
 		return obj.Adapt<MongoConnectionData>();

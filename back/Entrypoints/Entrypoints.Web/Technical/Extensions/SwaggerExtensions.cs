@@ -2,10 +2,14 @@
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
 
+
+/// <summary>
+/// Swagger Extensions methods for <see cref="IServiceCollection"/> 
+/// </summary>
 public static class SwaggerExtentions
 {
 	/// <summary>
-	///     Active le versionning dans la génération de la documentation Swagger
+	/// Activate swagger support
 	/// </summary>
 	/// <param name="services"></param>
 	/// <returns></returns>

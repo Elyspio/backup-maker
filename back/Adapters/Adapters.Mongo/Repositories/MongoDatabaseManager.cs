@@ -3,7 +3,7 @@ using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Common.Technical;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info;
-using BackupMaker.Api.Adapters.Mongo.Repositories.Internal;
+using BackupMaker.Api.Adapters.Mongo.Technical;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -12,6 +12,7 @@ using System.Text;
 
 namespace BackupMaker.Api.Adapters.Mongo.Repositories;
 
+/// <inheritdoc cref="IMongoDatabaseManager" />
 internal class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger) : TracingContext(logger), IMongoDatabaseManager
 {
 	public async Task<List<DatabaseInfo>> GetDatabases(string connectionString)

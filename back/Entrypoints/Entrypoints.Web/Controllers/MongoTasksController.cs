@@ -9,10 +9,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BackupMaker.Api.Entrypoints.Web.Controllers;
 
-[Route("api/tasks/backup")]
+/// <summary>
+///		Entrypoint for <see cref="MongoBackupTaskData" />
+/// </summary>
+/// <param name="logger"></param>
+/// <param name="backupTaskService"></param>
+[Route("api/tasks/backup/mongo")]
 [ApiController]
 [Produces("application/json")]
-public class TasksController(ILogger<JobsController> logger, IMongoBackupTaskService backupTaskService) : TracingController(logger)
+public class MongoTasksController(ILogger<JobsController> logger, IMongoBackupTaskService backupTaskService) : TracingController(logger)
 {
 	private readonly IMongoBackupTaskService _backupTaskService = backupTaskService;
 
@@ -20,7 +25,7 @@ public class TasksController(ILogger<JobsController> logger, IMongoBackupTaskSer
 	///     Get all mongo backup task configurations
 	/// </summary>
 	/// <returns></returns>
-	[HttpGet("mongo")]
+	[HttpGet("")]
 	[ProducesResponseType(typeof(List<MongoBackupTaskData>), StatusCodes.Status200OK)]
 	public async Task<IActionResult> GetMongoTasks()
 	{
@@ -37,7 +42,7 @@ public class TasksController(ILogger<JobsController> logger, IMongoBackupTaskSer
 	///     Create a new mongo backup task configuration
 	/// </summary>
 	/// <returns></returns>
-	[HttpPost("mongo")]
+	[HttpPost("")]
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
 	[Authorize(BackupMakerRole.Admin)]
 	public async Task<IActionResult> CreateMongoTask(MongoBackupTask task)
@@ -53,7 +58,7 @@ public class TasksController(ILogger<JobsController> logger, IMongoBackupTaskSer
 	///     Update a  mongo backup task configuration
 	/// </summary>
 	/// <returns></returns>
-	[HttpPut("mongo/{idTask:guid}")]
+	[HttpPut("{idTask:guid}")]
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
 	[Authorize(BackupMakerRole.Admin)]
 	public async Task<IActionResult> UpdateMongoTask(Guid idTask, MongoBackupTask task)
@@ -69,7 +74,7 @@ public class TasksController(ILogger<JobsController> logger, IMongoBackupTaskSer
 	///     Delete a mongo backup task configurations
 	/// </summary>
 	/// <returns></returns>
-	[HttpDelete("mongo/{idTask:guid}")]
+	[HttpDelete("{idTask:guid}")]
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
 	[Authorize(BackupMakerRole.Admin)]
 	public async Task<IActionResult> DeleteMongoTask(Guid idTask)

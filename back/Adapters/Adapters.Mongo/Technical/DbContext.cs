@@ -4,10 +4,17 @@ using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Driver;
 
-namespace BackupMaker.Api.Adapters.Mongo.Repositories.Internal;
+namespace BackupMaker.Api.Adapters.Mongo.Technical;
 
+/// <summary>
+/// Manage app mongo connection
+/// </summary>
 public class MongoContext
 {
+	/// <summary>
+	/// Default constructor
+	/// </summary>
+	/// <param name="configuration"></param>
 	public MongoContext(IConfiguration configuration)
 	{
 		var (client, url) = MongoClientFactory.Create(configuration["Database"]);

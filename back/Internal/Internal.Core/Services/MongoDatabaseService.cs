@@ -14,8 +14,8 @@ using SharpCompress.Common;
 
 namespace BackupMaker.Api.Core.Services;
 
-internal class MongoDatabaseService(IMongoDatabaseManager mongoDatabaseManager, IMongoConnectionRepository mongoConnectionRepository, MongoConnectionAssembler mongoConnectionAssembler, ILogger<MongoDatabaseService> logger) : TracingContext(logger),
-	IMongoDatabaseService
+/// <inheritdoc cref="IMongoDatabaseService" />
+internal class MongoDatabaseService(IMongoDatabaseManager mongoDatabaseManager, IMongoConnectionRepository mongoConnectionRepository, MongoConnectionAssembler mongoConnectionAssembler, ILogger<MongoDatabaseService> logger) : TracingContext(logger), IMongoDatabaseService
 {
 	private readonly ILogger<MongoDatabaseService> _logger = logger;
 	private readonly MongoConnectionAssembler _mongoConnectionAssembler = mongoConnectionAssembler;

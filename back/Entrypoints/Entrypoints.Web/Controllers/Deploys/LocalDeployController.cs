@@ -9,6 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BackupMaker.Api.Entrypoints.Web.Controllers.Deploys;
 
+/// <summary>
+/// Manage local deployments
+/// </summary>
+/// <param name="logger"></param>
+/// <param name="localDeploymentService"></param>
 [Route("api/deploys/local/")]
 [ApiController]
 [Tags("DeploysLocal")]

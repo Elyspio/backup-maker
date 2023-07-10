@@ -47,9 +47,10 @@ public class JobsController(ILogger<JobsController> logger, IJobService jobServi
 
 
 	/// <summary>
-	///     Trigger a job
+	///     Update a job
 	/// </summary>
 	/// <param name="idJob"></param>
+	/// <param name="job"></param>
 	/// <returns></returns>
 	[HttpPut("{idJob:guid}")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]

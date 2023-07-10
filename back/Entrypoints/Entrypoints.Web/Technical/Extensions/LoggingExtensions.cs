@@ -2,8 +2,17 @@
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
 
+
+/// <summary>
+/// Logging Extensions methods for <see cref="IServiceCollection"/> 
+/// </summary>
 public static class LoggingExtensions
 {
+	/// <summary>
+	/// Activate logging
+	/// </summary>
+	/// <param name="host"></param>
+	/// <returns></returns>
 	public static ConfigureHostBuilder AddLogging(this ConfigureHostBuilder host)
 	{
 		// Setup Logging

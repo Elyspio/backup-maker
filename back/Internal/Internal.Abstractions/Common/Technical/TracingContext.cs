@@ -7,6 +7,9 @@ using System.Runtime.CompilerServices;
 namespace BackupMaker.Api.Abstractions.Common.Technical;
 
 
+/// <summary>
+/// Empty Interface to facilitate DI integration
+/// </summary>
 public interface ITracingContext
 {
 	

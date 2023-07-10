@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BackupMaker.Api.Core.Services;
 
-/// <inheritdoc />
+/// <inheritdoc cref="IMongoBackupTaskService" />
 public class MongoBackupTaskService(IMongoBackupRepository mongoBackupRepository, ILogger<MongoBackupTaskService> logger, MongoBackupTaskAssembler mongoBackupTaskAssembler) : TracingContext(logger), IMongoBackupTaskService
 {
 	private readonly ILogger<MongoBackupTaskService> _logger = logger;

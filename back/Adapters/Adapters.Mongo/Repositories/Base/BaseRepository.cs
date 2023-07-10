@@ -1,20 +1,29 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Technical;
+using BackupMaker.Api.Adapters.Mongo.Technical;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Conventions;
-using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
-namespace BackupMaker.Api.Adapters.Mongo.Repositories.Internal;
+namespace BackupMaker.Api.Adapters.Mongo.Repositories.Base;
 
+/// <summary>
+///		Manage entity in MongoDB
+/// </summary>
+/// <typeparam name="T">Entity implementation</typeparam>
 public abstract class BaseRepository<T> : TracingContext
 {
 	private readonly string _collectionName;
 	private readonly MongoContext _context;
 	private readonly ILogger _logger;
 
+	/// <summary>
+	/// Default constructor
+	/// </summary>
+	/// <param name="configuration"></param>
+	/// <param name="logger"></param>
 	protected BaseRepository(IConfiguration configuration, ILogger logger) : base(logger)
 	{
 		_context = new(configuration);
@@ -29,9 +38,17 @@ public abstract class BaseRepository<T> : TracingContext
 		BsonSerializer.RegisterSerializationProvider(new EnumAsStringSerializationProvider());
 	}
 
+	/// <summary>
+	///	Implementation of the collection
+	/// </summary>
 	protected IMongoCollection<T> EntityCollection => _context.MongoDatabase.GetCollection<T>(_collectionName);
 
 
+	/// <summary>
+	/// Create an index for this collection
+	/// </summary>
+	/// <param name="properties"></param>
+	/// <param name="unique"></param>
 	protected void CreateIndexIfMissing(ICollection<string> properties, bool unique = false)
 	{
 		var indexName = string.Join("-", properties);
@@ -58,25 +75,5 @@ public abstract class BaseRepository<T> : TracingContext
 			EntityCollection.Indexes.CreateOne(indexModel);
 			_logger.LogWarning($"Property {_collectionName}.{indexName} is now indexed");
 		}
-	}
-}
-
-public class EnumAsStringSerializationProvider : BsonSerializationProviderBase
-{
-	public override IBsonSerializer GetSerializer(Type type, IBsonSerializerRegistry serializerRegistry)
-	{
-		if (!type.IsEnum) return null;
-
-		var enumSerializerType = typeof(EnumSerializer<>).MakeGenericType(type);
-		var enumSerializerConstructor = enumSerializerType.GetConstructor(new[]
-		{
-			typeof(BsonType)
-		});
-		var enumSerializer = (IBsonSerializer) enumSerializerConstructor.Invoke(new object[]
-		{
-			BsonType.String
-		});
-
-		return enumSerializer;
 	}
 }

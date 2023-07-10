@@ -2,8 +2,16 @@
 
 namespace BackupMaker.Api.Entrypoints.Web.Start;
 
+/// <summary>
+/// Application Initializer
+/// </summary>
 public static class AppRuntime
 {
+	/// <summary>
+	/// Initialize runtime middlewares
+	/// </summary>
+	/// <param name="app"></param>
+	/// <returns></returns>
 	public static WebApplication Initialize(this WebApplication app)
 	{
 		// Allow CORS

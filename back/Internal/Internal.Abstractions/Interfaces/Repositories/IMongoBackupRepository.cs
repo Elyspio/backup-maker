@@ -36,5 +36,11 @@ public interface IMongoBackupRepository
 	/// <returns></returns>
 	Task<MongoBackupTaskEntity> GetById(Guid id);
 
+	/// <summary>
+	///     Update a mongo backup configuration
+	/// </summary>
+	/// <param name="id"></param>
+	/// <param name="task"></param>
+	/// <returns></returns>
 	Task Update(Guid id, MongoBackupTask task);
 }

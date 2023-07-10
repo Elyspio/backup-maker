@@ -3,7 +3,7 @@ using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Models.Base.Deploy;
 using BackupMaker.Api.Abstractions.Models.Entities;
-using BackupMaker.Api.Adapters.Mongo.Repositories.Internal;
+using BackupMaker.Api.Adapters.Mongo.Repositories.Base;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;

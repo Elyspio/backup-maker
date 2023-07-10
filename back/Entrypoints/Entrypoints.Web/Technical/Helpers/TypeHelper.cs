@@ -6,6 +6,9 @@ using System.Text.Json.Serialization;
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Helpers;
 
+/// <summary>
+/// 
+/// </summary>
 public static class TypeHelper
 {
 	private static readonly JsonSerializerOptions options = new()

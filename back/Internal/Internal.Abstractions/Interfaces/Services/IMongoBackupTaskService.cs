@@ -4,43 +4,47 @@ using BackupMaker.Api.Abstractions.Models.Transports;
 namespace BackupMaker.Api.Abstractions.Interfaces.Services;
 
 /// <summary>
-///     Manage <see cref="LocalDeployData" />
+/// An interface for managing the backup tasks pertaining to MongoDB.
 /// </summary>
+/// <remarks>
+/// The primary responsibilities of this interface are to provide an 
+/// abstraction for performing various operations such as fetching,
+/// adding, deleting, and updating MongoDB backup configurations.
+/// </remarks>
 public interface IMongoBackupTaskService
 {
 	/// <summary>
-	///     Get all mongo backup configuration
+	/// Asynchronously retrieves all MongoDB backup configurations.
 	/// </summary>
-	/// <returns></returns>
+	/// <returns>A task that results in a list of MongoDB backup configurations.</returns>
 	Task<List<MongoBackupTaskData>> GetAll();
 
 	/// <summary>
-	///     Add a new mongo backup configuration
+	/// Asynchronously adds a new MongoDB backup configuration.
 	/// </summary>
-	/// <param name="task"></param>
-	/// <returns></returns>
+	/// <param name="task">The MongoDB backup task to add.</param>
+	/// <returns>A task representing the asynchronous operation.</returns>
 	Task Add(MongoBackupTask task);
 
-
 	/// <summary>
-	///     Delete a mongo backup configuration
+	/// Asynchronously deletes a MongoDB backup configuration.
 	/// </summary>
-	/// <param name="id">Id of the configuration</param>
-	/// <returns></returns>
+	/// <param name="id">The unique identifier of the MongoDB backup configuration to delete.</param>
+	/// <returns>A task representing the asynchronous operation.</returns>
 	Task Delete(Guid id);
 
 	/// <summary>
-	///     Get a mongo backup configuration
+	/// Asynchronously retrieves a MongoDB backup configuration.
 	/// </summary>
-	/// <param name="id">Mongo task's id</param>
-	/// <returns></returns>
+	/// <param name="id">The unique identifier of the MongoDB backup task.</param>
+	/// <returns>A task that results in a MongoDB backup configuration.</returns>
 	Task<MongoBackupTaskData> GetById(Guid id);
 
 	/// <summary>
-	///     Replace a mongo backup configuration
+	/// Asynchronously updates a MongoDB backup configuration.
 	/// </summary>
-	/// <param name="id">Id of the configuration</param>
-	/// <param name="task">New configuration</param>
-	/// <returns></returns>
+	/// <param name="id">The unique identifier of the MongoDB backup configuration to update.</param>
+	/// <param name="task">The new MongoDB backup task.</param>
+	/// <returns>A task representing the asynchronous operation.</returns>
 	Task Update(Guid id, MongoBackupTask task);
 }

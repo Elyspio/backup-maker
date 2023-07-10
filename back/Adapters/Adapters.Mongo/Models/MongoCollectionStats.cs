@@ -1,12 +1,14 @@
 ﻿// Root myDeserializedClass = JsonSerializer.Deserialize<Root>(myJsonResponse);
 
 using MongoDB.Bson.Serialization.Attributes;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace BackupMaker.Api.Adapters.Mongo.Models;
 
 [BsonIgnoreExtraElements]
-public record BlockManager(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record BlockManager(
 	[property: JsonPropertyName("allocations requiring file extension")]
 	double AllocationsRequiringFileExtension,
 	[property: JsonPropertyName("blocks allocated")]
@@ -30,7 +32,8 @@ public record BlockManager(
 );
 
 [BsonIgnoreExtraElements]
-public record Btree(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record Btree(
 	[property: JsonPropertyName("btree checkpoint generation")]
 	double BtreeCheckpointGeneration,
 	[property: JsonPropertyName("btree clean tree checkpoint expiration time")]
@@ -82,7 +85,8 @@ public record Btree(
 );
 
 [BsonIgnoreExtraElements]
-public record Cache(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record Cache(
 	[property: JsonPropertyName("bytes currently in the cache")]
 	double BytesCurrentlyInTheCache,
 	[property: JsonPropertyName("bytes dirty in the cache cumulative")]
@@ -206,7 +210,8 @@ public record Cache(
 );
 
 [BsonIgnoreExtraElements]
-public record CacheWalk(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record CacheWalk(
 	[property: JsonPropertyName("Average difference between current eviction generation when the page was last considered")]
 	double AverageDifferenceBetweenCurrentEvictionGenerationWhenThePageWasLastConsidered,
 	[property: JsonPropertyName("Average on-disk page image size seen")]
@@ -252,7 +257,8 @@ public record CacheWalk(
 );
 
 [BsonIgnoreExtraElements]
-public record CheckpointCleanup(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record CheckpointCleanup(
 	[property: JsonPropertyName("pages added for eviction")]
 	double PagesAddedForEviction,
 	[property: JsonPropertyName("pages removed")]
@@ -264,7 +270,8 @@ public record CheckpointCleanup(
 );
 
 [BsonIgnoreExtraElements]
-public record ClusterTime(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record ClusterTime(
 	[property: JsonPropertyName("clusterTime")]
 	DateTime ClusterTimeValue,
 	[property: JsonPropertyName("signature")]
@@ -272,7 +279,8 @@ public record ClusterTime(
 );
 
 [BsonIgnoreExtraElements]
-public record Compression(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record Compression(
 	[property: JsonPropertyName("compressed page maximum internal page size prior to compression")]
 	double CompressedPageMaximumInternalPageSizePriorToCompression,
 	[property: JsonPropertyName("compressed page maximum leaf page size prior to compression ")]
@@ -288,7 +296,8 @@ public record Compression(
 );
 
 [BsonIgnoreExtraElements]
-public record Cursor(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record Cursor(
 	[property: JsonPropertyName("Total number of entries skipped by cursor next calls")]
 	double TotalNumberOfEntriesSkippedByCursorNextCalls,
 	[property: JsonPropertyName("Total number of entries skipped by cursor prev calls")]
@@ -358,41 +367,12 @@ public record Cursor(
 	double UpdateValueSizeChange
 );
 
-[BsonIgnoreExtraElements]
-public record Id(
-	[property: JsonPropertyName("metadata")]
-	Metadata Metadata,
-	[property: JsonPropertyName("creationString")]
-	string CreationString,
-	[property: JsonPropertyName("type")] string Type,
-	[property: JsonPropertyName("uri")] string Uri,
-	[property: JsonPropertyName("LSM")] LSM LSM,
-	[property: JsonPropertyName("block-manager")]
-	BlockManager BlockManager,
-	[property: JsonPropertyName("btree")] Btree Btree,
-	[property: JsonPropertyName("cache")] Cache Cache,
-	[property: JsonPropertyName("cache_walk")]
-	CacheWalk CacheWalk,
-	[property: JsonPropertyName("checkpoint-cleanup")]
-	CheckpointCleanup CheckpointCleanup,
-	[property: JsonPropertyName("compression")]
-	Compression Compression,
-	[property: JsonPropertyName("cursor")] Cursor Cursor,
-	[property: JsonPropertyName("reconciliation")]
-	Reconciliation Reconciliation,
-	[property: JsonPropertyName("session")]
-	Session Session,
-	[property: JsonPropertyName("transaction")]
-	Transaction Transaction
-);
+
 
 [BsonIgnoreExtraElements]
-public record IndexDetails(
-	[property: JsonPropertyName("_id_")] Id Id
-);
-
-[BsonIgnoreExtraElements]
-public record LSM(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+internal record LSM(
 	[property: JsonPropertyName("bloom filter false positives")]
 	double BloomFilterFalsePositives,
 	[property: JsonPropertyName("bloom filter hits")]
@@ -420,13 +400,16 @@ public record LSM(
 );
 
 [BsonIgnoreExtraElements]
-public record Metadata(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record Metadata(
 	[property: JsonPropertyName("formatVersion")]
 	double FormatVersion
 );
 
 [BsonIgnoreExtraElements]
-public record Reconciliation(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+internal record Reconciliation(
 	[property: JsonPropertyName("approximate byte size of timestamps in pages written")]
 	double ApproximateByteSizeOfTimestampsInPagesWritten,
 	[property: JsonPropertyName("approximate byte size of transaction IDs in pages written")]
@@ -504,7 +487,8 @@ public record Reconciliation(
 );
 
 [BsonIgnoreExtraElements]
-public record MongoCollectionStats(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record MongoCollectionStats(
 	[property: JsonPropertyName("ns")] string Ns,
 	[property: JsonPropertyName("size")] double Size,
 	[property: JsonPropertyName("count")] double Count,
@@ -539,7 +523,8 @@ public record MongoCollectionStats(
 );
 
 [BsonIgnoreExtraElements]
-public record Session(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record Session(
 	[property: JsonPropertyName("object compaction")]
 	double ObjectCompaction,
 	[property: JsonPropertyName("tiered operations dequeued and processed")]
@@ -551,13 +536,15 @@ public record Session(
 );
 
 [BsonIgnoreExtraElements]
-public record Signature(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record Signature(
 	[property: JsonPropertyName("hash")] string Hash,
 	[property: JsonPropertyName("keyId")] long KeyId
 );
 
 [BsonIgnoreExtraElements]
-public record Transaction(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record Transaction(
 	[property: JsonPropertyName("race to read prepared update retry")]
 	double RaceToReadPreparedUpdateRetry,
 	[property: JsonPropertyName("rollback to stable history store records with stop timestamps older than newer records")]
@@ -587,7 +574,8 @@ public record Transaction(
 );
 
 [BsonIgnoreExtraElements]
-public record WiredTiger(
+[SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
+internal record WiredTiger(
 	[property: JsonPropertyName("metadata")]
 	Metadata Metadata,
 	[property: JsonPropertyName("creationString")]

@@ -2,7 +2,7 @@
 using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Models.Entities;
-using BackupMaker.Api.Adapters.Mongo.Repositories.Internal;
+using BackupMaker.Api.Adapters.Mongo.Repositories.Base;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -11,8 +11,10 @@ using MongoDB.Driver.Linq;
 
 namespace BackupMaker.Api.Adapters.Mongo.Repositories;
 
+/// <inheritdoc cref="IMongoConnectionRepository" />
 public class MongoConnectionRepository(IConfiguration configuration, ILogger<MongoConnectionRepository> logger) : BaseRepository<MongoConnectionEntity>(configuration, logger), IMongoConnectionRepository
 {
+	/// <inheritdoc />
 	public async Task<MongoConnectionEntity> Add(string name, string connectionString)
 	{
 		using var _ = LogAdapter($"{Log.F(name)} {Log.F(connectionString)}");
@@ -27,6 +29,7 @@ public class MongoConnectionRepository(IConfiguration configuration, ILogger<Mon
 		return entity;
 	}
 
+	/// <inheritdoc />
 	public async Task<List<MongoConnectionEntity>> GetAll()
 	{
 		using var logger = LogAdapter(autoExit: false);
@@ -38,6 +41,7 @@ public class MongoConnectionRepository(IConfiguration configuration, ILogger<Mon
 		return entities;
 	}
 
+	/// <inheritdoc />
 	public async Task<MongoConnectionEntity> Update(ObjectId idDatabase, string connectionString)
 	{
 		using var _ = LogAdapter($"{Log.F(idDatabase)} {Log.F(connectionString)}");
@@ -47,11 +51,13 @@ public class MongoConnectionRepository(IConfiguration configuration, ILogger<Mon
 		return await EntityCollection.FindOneAndUpdateAsync(db => db.Id == idDatabase, update);
 	}
 
+	/// <inheritdoc />
 	public async Task Delete(ObjectId idConnection)
 	{
 		await EntityCollection.DeleteOneAsync(connection => connection.Id == idConnection);
 	}
 
+	/// <inheritdoc />
 	public async Task<MongoConnectionEntity> GetById(Guid idConnection)
 	{
 		using var logger = LogAdapter($"{Log.F(idConnection)}", autoExit: false);

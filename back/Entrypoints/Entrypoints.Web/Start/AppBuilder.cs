@@ -7,8 +7,15 @@ using BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
 
 namespace BackupMaker.Api.Entrypoints.Web.Start;
 
+/// <summary>
+/// Application builder
+/// </summary>
 public class AppBuilder
 {
+	/// <summary>
+	/// Create builder from command args
+	/// </summary>
+	/// <param name="args"></param>
 	public AppBuilder(string[] args)
 	{
 		var builder = WebApplication.CreateBuilder(args);
@@ -36,5 +43,8 @@ public class AppBuilder
 		Application = builder.Build();
 	}
 
+	/// <summary>
+	/// Built application
+	/// </summary>
 	public WebApplication Application { get; }
 }

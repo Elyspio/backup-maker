@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical;
 
+/// <inheritdoc />
 public class ControllerDocumentationConvention : IControllerModelConvention
 {
-	void IControllerModelConvention.Apply(ControllerModel controller)
+	void IControllerModelConvention.Apply(ControllerModel? controller)
 	{
 		if (controller == null) return;
 

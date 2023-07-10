@@ -5,6 +5,9 @@ using System.Text.Json.Serialization;
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
 
+/// <summary>
+/// Api Extensions methods for <see cref="IServiceCollection"/> 
+/// </summary>
 public static class ApiExtentions
 {
 	/// <summary>

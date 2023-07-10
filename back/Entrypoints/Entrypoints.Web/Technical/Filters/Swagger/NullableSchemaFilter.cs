@@ -13,6 +13,7 @@ public class NullableSchemaFilter : ISchemaFilter
 {
 	private readonly NullabilityInfoContext _nullabilityContext = new();
 
+	/// <inheritdoc />
 	public void Apply(OpenApiSchema schema, SchemaFilterContext context)
 	{
 		var members = RemoveIgnoredProperties(context.Type.GetProperties());

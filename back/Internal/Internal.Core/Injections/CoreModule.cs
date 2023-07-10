@@ -7,8 +7,12 @@ using MongoDB.Bson;
 
 namespace BackupMaker.Api.Core.Injections;
 
+/// <summary>
+/// Core module responsible for configuring and registering services 
+/// </summary>
 public class CoreModule : IDotnetModule
 {
+	/// <inheritdoc />
 	public void Load(IServiceCollection services, IConfiguration configuration)
 	{
 		var nsp = typeof(CoreModule).Namespace!;

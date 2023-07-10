@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace BackupMaker.Api.Core.Services;
 
-/// <inheritdoc />
+/// <inheritdoc cref="ILocalDeploymentService" />
 public class LocalDeploymentService(ILocalDeploymentRepository localDeploymentRepository, ILogger<LocalDeploymentService> logger, LocalDeployAssembler localDeployAssembler) : TracingContext(logger), ILocalDeploymentService
 {
 	private readonly LocalDeployAssembler _localDeployAssembler = localDeployAssembler;
@@ -43,6 +43,7 @@ public class LocalDeploymentService(ILocalDeploymentRepository localDeploymentRe
 		await _localDeploymentRepository.Delete(id);
 	}
 
+	/// <inheritdoc />
 	public async Task Deploy(Guid idLocalDeploy, string archivePath)
 	{
 		using var _ = LogService($"{Log.F(idLocalDeploy)} {Log.F(archivePath)}");

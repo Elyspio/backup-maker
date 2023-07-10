@@ -15,6 +15,7 @@ public class SwaggerSetNullableOperationFilter : IOperationFilter
 {
 	private readonly NullabilityInfoContext _nullabilityContext = new();
 
+	/// <inheritdoc />
 	public void Apply(OpenApiOperation operation, OperationFilterContext context)
 	{
 		var contextParams = GetNullableInfos(context.MethodInfo);
