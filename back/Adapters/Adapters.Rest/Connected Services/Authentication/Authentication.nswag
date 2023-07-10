@@ -3,7 +3,7 @@
   "defaultVariables": null,
   "documentGenerator": {
     "fromDocument": {
-      "url": "http://localhost:4001/swagger/swagger.json",
+      "url": "http://localhost:4001/swagger/v1/swagger.json",
       "output": "Authentication.nswag.json",
       "newLineBehavior": "Auto"
     }
@@ -90,7 +90,6 @@
       "typeNameGeneratorType": null,
       "propertyNameGeneratorType": null,
       "enumNameGeneratorType": null,
-      "checksumCacheEnabled": false,
       "serviceHost": null,
       "serviceSchemes": null,
       "output": "Authentication.cs",

@@ -1,7 +1,9 @@
-﻿using BackupMaker.Api.Abstractions.Interfaces.Services;
+﻿using Adapters.Authentication;
+using BackupMaker.Api.Abstractions.Interfaces.Services;
 using BackupMaker.Api.Abstractions.Models.Transports.Jobs;
 using BackupMaker.Api.Abstractions.Models.Transports.Requests;
 using BackupMaker.Api.Entrypoints.Web.Controllers.Base;
+using BackupMaker.Api.Entrypoints.Web.Technical.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackupMaker.Api.Entrypoints.Web.Controllers;
@@ -36,6 +38,7 @@ public class JobsController(ILogger<JobsController> logger, IJobService jobServi
 	/// <returns></returns>
 	[HttpPost("")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[Authorize(BackupMakerRole.Admin)]
 	public async Task<IActionResult> CreateJob(CreateJobRequest job)
 	{
 		await _jobService.Add(job);
@@ -50,6 +53,7 @@ public class JobsController(ILogger<JobsController> logger, IJobService jobServi
 	/// <returns></returns>
 	[HttpPut("{idJob:guid}")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[Authorize(BackupMakerRole.Admin)]
 	public async Task<IActionResult> UpdateJob(Guid idJob, CreateJobRequest job)
 	{
 		await _jobService.Update(idJob, job);
@@ -62,6 +66,7 @@ public class JobsController(ILogger<JobsController> logger, IJobService jobServi
 	/// <param name="idJob"></param>
 	/// <returns></returns>
 	[HttpDelete("{idJob:guid}/")]
+	[Authorize(BackupMakerRole.Admin)]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> DeleteJob(Guid idJob)
 	{

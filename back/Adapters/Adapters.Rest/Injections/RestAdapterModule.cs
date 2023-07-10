@@ -1,4 +1,5 @@
-﻿using BackupMaker.Api.Abstractions.Interfaces.Injections;
+﻿using Adapters.Authentication;
+using BackupMaker.Api.Abstractions.Interfaces.Injections;
 using BackupMaker.Api.Adapters.Rest.Configs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,12 +8,11 @@ namespace BackupMaker.Api.Adapters.Rest.Injections;
 
 public class RestAdapterModule : IDotnetModule
 {
+	/// <inheritdoc />
 	public void Load(IServiceCollection services, IConfiguration configuration)
 	{
-		var conf = new EndpointConfig();
-		configuration.GetSection(EndpointConfig.Section).Bind(conf);
+		var conf = configuration.GetSection(EndpointConfig.Section).Get<EndpointConfig>()!;
 
-		// services.AddHttpClient<IUsersClient, UsersClient>(client => { client.BaseAddress = new(conf.Authentication); });
-		// services.AddHttpClient<IAuthenticationClient, AuthenticationClient>(client => { client.BaseAddress = new(conf.Authentication); });
+		services.AddHttpClient<IJwtClient, JwtClient>(client => { client.BaseAddress = new(conf.Authentication); });
 	}
 }

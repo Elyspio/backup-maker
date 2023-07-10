@@ -13,7 +13,6 @@ public class AppBuilder
 	{
 		var builder = WebApplication.CreateBuilder(args);
 
-		builder.Configuration.AddJsonFile("appsettings.json", false, true);
 		builder.Configuration.AddJsonFile("appsettings.docker.json", true, true);
 
 		builder.Services.AddModule<HangfireAdapterModule>(builder.Configuration);

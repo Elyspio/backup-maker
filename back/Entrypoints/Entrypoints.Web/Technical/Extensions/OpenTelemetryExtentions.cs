@@ -4,6 +4,7 @@ using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using System.Diagnostics;
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
 
@@ -11,15 +12,23 @@ public static class OpenTelemetryExtentions
 {
 	public static IServiceCollection AddAppOpenTelemetry(this IServiceCollection services, IConfiguration configuration)
 	{
-		services.AddOptions<OtlpExporterOptions>().Configure(opts => { opts.Endpoint = new(configuration["OpenTelemetry:Url"]!); });
 
-		var sources = AssemblyHelper.GetClassWithInterface<Program, TracingContext>().ToArray();
+		var sources = AssemblyHelper.GetClassWithInterface<Program, ITracingContext>().ToArray();
 
+
+		services.AddOptions<OtlpExporterOptions>().Configure((opts) =>
+		{
+			opts.Endpoint = new Uri(configuration["OpenTelemetry:Url"]!);
+		});
+		
+		services.AddOpenTelemetryEventLogging();
+		
 		services.AddOpenTelemetry()
-			.ConfigureResource(conf => conf.AddService(configuration["OpenTelemetry:Service"]!))
+			.ConfigureResource(conf => conf.AddService(configuration["OpenTelemetry:Service"]!).AddTelemetrySdk())
 			.WithTracing(tracingBuilder =>
 			{
 				tracingBuilder
+					.SetErrorStatusOnException()
 					.AddSource(sources)
 					// Configure exporters
 					.AddOtlpExporter()
@@ -31,11 +40,14 @@ public static class OpenTelemetryExtentions
 			{
 				metricBuilder
 					.AddMeter(sources)
-					.AddOtlpExporter()
+					.AddOtlpExporter()					
 					.AddHttpClientInstrumentation()
 					.AddAspNetCoreInstrumentation();
 			});
 
+		
+		
+		
 		return services;
 	}
 }

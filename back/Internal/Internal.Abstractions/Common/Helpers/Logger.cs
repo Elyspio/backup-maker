@@ -60,7 +60,7 @@ public static class Log
 			_autoExit = autoExit;
 			_method = method;
 			_logger = logger;
-			_traceId = activity?.RootId;
+			_traceId = activity?.RootId ?? activity?.Id;
 			_className = className;
 
 			Enter();

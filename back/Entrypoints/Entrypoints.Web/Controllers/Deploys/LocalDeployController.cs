@@ -1,8 +1,10 @@
-﻿using BackupMaker.Api.Abstractions.Common.Helpers;
+﻿using Adapters.Authentication;
+using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
 using BackupMaker.Api.Abstractions.Models.Base.Deploy;
 using BackupMaker.Api.Abstractions.Models.Transports;
 using BackupMaker.Api.Entrypoints.Web.Controllers.Base;
+using BackupMaker.Api.Entrypoints.Web.Technical.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackupMaker.Api.Entrypoints.Web.Controllers.Deploys;
@@ -38,6 +40,7 @@ public class LocalDeployController(ILogger<LocalDeployController> logger, ILocal
 	/// <returns></returns>
 	[HttpPost("")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[Authorize(BackupMakerRole.Admin)]
 	public async Task<IActionResult> CreateLocalDeploy(LocalDeployBase deploy)
 	{
 		using var _ = LogController($"{Log.F(deploy)}");
@@ -53,6 +56,7 @@ public class LocalDeployController(ILogger<LocalDeployController> logger, ILocal
 	/// </summary>
 	/// <param name="idDeploy"></param>
 	/// <returns></returns>
+	[Authorize(BackupMakerRole.Admin)]
 	[HttpDelete("{idDeploy:guid}")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> DeleteLocalDeploy(Guid idDeploy)
@@ -72,6 +76,7 @@ public class LocalDeployController(ILogger<LocalDeployController> logger, ILocal
 	/// <param name="deploy">new config</param>
 	/// <returns></returns>
 	[HttpPut("{idDeploy:guid}")]
+	[Authorize(BackupMakerRole.Admin)]
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> UpdateLocalDeploy([FromRoute] Guid idDeploy, [FromBody] LocalDeployBase deploy)
 	{

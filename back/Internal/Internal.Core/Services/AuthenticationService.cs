@@ -1,20 +1,63 @@
 ﻿using Adapters.Authentication;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace BackupMaker.Api.Core.Services;
 
-internal class AuthenticationService(IAuthenticationClient authenticationApi, IUsersClient usersApi) : IAuthenticationService
+internal class AuthenticationService : IAuthenticationService
 {
-	private readonly IAuthenticationClient authenticationApi = authenticationApi;
-	private readonly IUsersClient usersApi = usersApi;
+	private readonly IJwtClient _jwtClient;
+	private readonly SecurityKey _publicKey;
 
-	public async Task<bool> IsLogged(string token)
+	public AuthenticationService(IJwtClient jwtClient)
 	{
-		return await authenticationApi.ValidToken2Async(token);
+		_jwtClient = jwtClient;
+		_publicKey = GetPublicKey().Result;
 	}
 
-	public async Task<string> GetUsername(string token)
+
+	public bool ValidateJwt(string? token, out JwtSecurityToken? validatedToken)
 	{
-		return await usersApi.GetUserInfoAsync(Kind.Username, token);
+		validatedToken = null;
+
+		if (string.IsNullOrWhiteSpace(token))
+			return false;
+
+
+		token = token[("Bearer".Length + 1)..];
+
+		var tokenHandler = new JwtSecurityTokenHandler();
+
+		try
+		{
+			tokenHandler.ValidateToken(token, new()
+			{
+				ValidateIssuerSigningKey = true,
+				IssuerSigningKey = _publicKey,
+				ValidateIssuer = false,
+				ValidateAudience = false,
+				ClockSkew = TimeSpan.Zero
+			}, out var securityToken);
+
+			validatedToken = (JwtSecurityToken?) securityToken;
+
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private async Task<SecurityKey> GetPublicKey()
+	{
+		var key = (await _jwtClient.GetValidationKeyAsync()).Data;
+		var rsa = RSA.Create();
+
+		rsa.ImportFromPem(key);
+
+		return new RsaSecurityKey(rsa);
 	}
 }

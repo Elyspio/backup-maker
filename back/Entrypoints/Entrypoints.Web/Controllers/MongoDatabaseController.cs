@@ -1,9 +1,11 @@
+using Adapters.Authentication;
 using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
 using BackupMaker.Api.Abstractions.Models.Transports;
 using BackupMaker.Api.Abstractions.Models.Transports.Requests;
 using BackupMaker.Api.Abstractions.Models.Transports.Responses;
 using BackupMaker.Api.Entrypoints.Web.Controllers.Base;
+using BackupMaker.Api.Entrypoints.Web.Technical.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackupMaker.Api.Entrypoints.Web.Controllers;
@@ -35,22 +37,6 @@ public class MongoDatabaseController(IMongoDatabaseService mongoDatabaseService,
 	}
 
 	/// <summary>
-	///     Add a new database connection
-	/// </summary>
-	/// <param name="req"></param>
-	/// <returns></returns>
-	[HttpPost("connections")]
-	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
-	public async Task<IActionResult> AddConnection([FromBody] AddMongoConnectionRequest req)
-	{
-		using var _ = LogController($"{Log.F(req)}");
-
-		await _mongoDatabaseService.AddConnection(req.Name, req.ConnectionString);
-
-		return NoContent();
-	}
-
-	/// <summary>
 	///     Get all databases connections available
 	/// </summary>
 	/// <returns></returns>
@@ -69,6 +55,24 @@ public class MongoDatabaseController(IMongoDatabaseService mongoDatabaseService,
 
 
 	/// <summary>
+	///     Add a new database connection
+	/// </summary>
+	/// <param name="req"></param>
+	/// <returns></returns>
+	[HttpPost("connections")]
+	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+	[Authorize(BackupMakerRole.Admin)]
+	public async Task<IActionResult> AddConnection([FromBody] AddMongoConnectionRequest req)
+	{
+		using var _ = LogController($"{Log.F(req)}");
+
+		await _mongoDatabaseService.AddConnection(req.Name, req.ConnectionString);
+
+		return NoContent();
+	}
+
+
+	/// <summary>
 	///     Replace the connectionString for a connection
 	/// </summary>
 	/// <param name="idConnection">Connection's id</param>
@@ -76,6 +80,7 @@ public class MongoDatabaseController(IMongoDatabaseService mongoDatabaseService,
 	/// <returns></returns>
 	[HttpPut("connections/{idConnection:guid}/connection-string")]
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+	[Authorize(BackupMakerRole.Admin)]
 	public async Task<IActionResult> UpdateConnectionString([FromRoute] Guid idConnection, [FromBody] string connectionString)
 	{
 		using var _ = LogController($"{Log.F(idConnection)} {Log.F(connectionString)}");
@@ -92,6 +97,7 @@ public class MongoDatabaseController(IMongoDatabaseService mongoDatabaseService,
 	/// <returns></returns>
 	[HttpDelete("connections/{idConnection:guid}")]
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+	[Authorize(BackupMakerRole.Admin)]
 	public async Task<IActionResult> DeleteConnection([FromRoute] Guid idConnection)
 	{
 		using var _ = LogController($"{Log.F(idConnection)}");

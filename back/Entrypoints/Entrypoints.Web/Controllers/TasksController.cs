@@ -1,8 +1,10 @@
-﻿using BackupMaker.Api.Abstractions.Common.Helpers;
+﻿using Adapters.Authentication;
+using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
 using BackupMaker.Api.Abstractions.Models.Base.Database.Mongo;
 using BackupMaker.Api.Abstractions.Models.Transports;
 using BackupMaker.Api.Entrypoints.Web.Controllers.Base;
+using BackupMaker.Api.Entrypoints.Web.Technical.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackupMaker.Api.Entrypoints.Web.Controllers;
@@ -37,6 +39,7 @@ public class TasksController(ILogger<JobsController> logger, IMongoBackupTaskSer
 	/// <returns></returns>
 	[HttpPost("mongo")]
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+	[Authorize(BackupMakerRole.Admin)]
 	public async Task<IActionResult> CreateMongoTask(MongoBackupTask task)
 	{
 		using var _ = LogController($"{Log.F(task)}");
@@ -52,6 +55,7 @@ public class TasksController(ILogger<JobsController> logger, IMongoBackupTaskSer
 	/// <returns></returns>
 	[HttpPut("mongo/{idTask:guid}")]
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+	[Authorize(BackupMakerRole.Admin)]
 	public async Task<IActionResult> UpdateMongoTask(Guid idTask, MongoBackupTask task)
 	{
 		using var _ = LogController($"{Log.F(idTask)} {Log.F(task)}");
@@ -67,6 +71,7 @@ public class TasksController(ILogger<JobsController> logger, IMongoBackupTaskSer
 	/// <returns></returns>
 	[HttpDelete("mongo/{idTask:guid}")]
 	[ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+	[Authorize(BackupMakerRole.Admin)]
 	public async Task<IActionResult> DeleteMongoTask(Guid idTask)
 	{
 		using var _ = LogController(Log.F(idTask));

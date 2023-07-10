@@ -1,7 +1,8 @@
-﻿namespace BackupMaker.Api.Abstractions.Interfaces.Services;
+﻿using System.IdentityModel.Tokens.Jwt;
+
+namespace BackupMaker.Api.Abstractions.Interfaces.Services;
 
 public interface IAuthenticationService
 {
-	Task<bool> IsLogged(string token);
-	Task<string> GetUsername(string token);
+	bool ValidateJwt(string? token, out JwtSecurityToken? validatedToken);
 }

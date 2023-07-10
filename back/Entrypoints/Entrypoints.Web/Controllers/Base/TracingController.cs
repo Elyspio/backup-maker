@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace BackupMaker.Api.Entrypoints.Web.Controllers.Base;
 
-public class TracingController : ControllerBase
+public class TracingController : ControllerBase, ITracingContext
 {
 	private static readonly Dictionary<string, ActivitySource> _sources = new();
 	private readonly ILogger _logger;

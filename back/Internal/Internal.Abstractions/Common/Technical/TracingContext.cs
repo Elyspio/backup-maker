@@ -6,10 +6,16 @@ using System.Runtime.CompilerServices;
 
 namespace BackupMaker.Api.Abstractions.Common.Technical;
 
+
+public interface ITracingContext
+{
+	
+}
+
 /// <summary>
 /// Tracing context for Services and Adapters
 /// </summary>
-public class TracingContext
+public class TracingContext: ITracingContext
 {
 	private static readonly ConcurrentDictionary<string, ActivitySource> Sources = new();
 	private readonly ILogger _logger;
