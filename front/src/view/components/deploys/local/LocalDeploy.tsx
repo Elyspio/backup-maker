@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useAppSelector } from "@store";
-import { Stack, Typography } from "@mui/material";
+import { Stack } from "@mui/material";
 import { DeleteForever, Edit } from "@mui/icons-material";
 import { useModal } from "@hooks/useModal";
 import { DeleteEntity } from "@components/entity/DeleteEntity";
@@ -13,6 +13,8 @@ import { usePermissions } from "@hooks/usePermissions";
 import { BackupMakerRole } from "@apis/authentication/generated";
 import { IconWithTooltip } from "@components/utils/tooltip/IconWithTooltip";
 import { EntitySubProperty } from "@components/entity/EntitySubProperty";
+import { slugifyRoute } from "@/config/routes";
+import { EntityTitle } from "@components/entity/EntityTitle";
 
 interface LocalDeployProps {
 	readonly?: boolean;
@@ -24,28 +26,24 @@ export function LocalDeploy({ readonly, idDeploy }: LocalDeployProps) {
 		locals: s.deploys.local,
 	}));
 
-	const { name } = useParams<{
-		name: string;
+	const { slug } = useParams<{
+		slug: string;
 	}>();
 
-	const deploy = useMemo(() => Object.values(locals).find((deploy) => deploy.name === name || deploy.id === idDeploy), [idDeploy, locals, name]);
+	const deploy = useMemo(() => Object.values(locals).find((local) => slugifyRoute(local.name) === slug || local.id === idDeploy), [idDeploy, locals, slug]);
 
 	const deleteModal = useModal(false);
 	const updateModal = useModal(false);
 
 	const isAdmin = usePermissions(BackupMakerRole.Admin);
 
-	if (!deploy) return <UnableToFindEntity description={"local deployment configuration"} name={name!} />;
+	if (!deploy) return <UnableToFindEntity description={"local deployment configuration"} name={slug!} />;
 
 	return (
 		<Stack>
 			<Stack direction={"row"} spacing={2} alignItems={"center"} width={"100%"}>
-				<Typography fontSize={"100%"} variant={"overline"}>
-					Deploy :
-				</Typography>
-				<Typography color={"primary"} sx={{ opacity: 0.9 }} fontSize={"110%"}>
-					Local/{deploy.name}
-				</Typography>
+				<EntityTitle name={"Deploy"} value={`Local/${deploy.name}`} />
+
 				{!readonly && (
 					<>
 						<IconWithTooltip

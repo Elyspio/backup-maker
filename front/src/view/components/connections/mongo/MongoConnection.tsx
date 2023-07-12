@@ -14,6 +14,7 @@ import { UnableToFindEntity } from "@components/entity/UnableToFindEntity";
 import { IconWithTooltip } from "@components/utils/tooltip/IconWithTooltip";
 import { usePermissions } from "@hooks/usePermissions";
 import { BackupMakerRole } from "@apis/authentication/generated";
+import { slugifyRoute } from "@/config/routes";
 
 enum ColumnField {
 	Name = "name",
@@ -101,11 +102,11 @@ export function MongoConnection() {
 		};
 	});
 
-	const { name } = useParams<{
-		name: string;
+	const { slug } = useParams<{
+		slug: string;
 	}>();
 
-	const connection = useMemo(() => Object.values(connections).find((con) => con.name === name), [connections, name]);
+	const connection = useMemo(() => Object.values(connections).find((con) => slugifyRoute(con.name) === slug), [connections, slug]);
 
 	const detail = useMemo(() => (connection ? details[connection?.id] : null), [details, connection]);
 
@@ -136,7 +137,7 @@ export function MongoConnection() {
 
 	const isAdmin = usePermissions(BackupMakerRole.Admin);
 
-	if (!connection) return <UnableToFindEntity description={"MongoDB connection"} name={name!} />;
+	if (!connection) return <UnableToFindEntity description={"MongoDB connection"} name={slug!} />;
 
 	return (
 		<Stack height={"100%"} className={"MongoConnection"} sx={rootSx}>

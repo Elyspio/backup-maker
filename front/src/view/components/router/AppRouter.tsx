@@ -14,15 +14,15 @@ import { FtpDeploy } from "@components/deploys/ftp/FtpDeploy";
 
 export function AppRouter() {
 	return (
-		<Stack direction={"row"} spacing={3} width={"100%"} height={"100%"}>
-			<Stack spacing={2} px={2}>
+		<Stack direction={"row"} width={"100%"} height={"100%"}>
+			<Stack mx={2} spacing={2} px={2} sx={{ overflowY: "auto" }} width={"300px"}>
 				<Connections />
 				<Deploys />
 				<Tasks />
 				<Jobs />
 			</Stack>
 
-			<Box bgcolor={"background.paper"} p={2} width={"100%"}>
+			<Box bgcolor={"background.paper"} p={2} width={"100%"} overflow={"auto"}>
 				<Routes>
 					<Route path={AppRoutes.mongoConnection} element={<MongoConnection />} />
 					<Route path={AppRoutes.mongoTask} element={<MongoTask />} />

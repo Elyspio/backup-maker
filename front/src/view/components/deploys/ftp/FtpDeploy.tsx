@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useAppSelector } from "@store";
-import { Stack, Typography } from "@mui/material";
+import { Stack } from "@mui/material";
 import { DeleteForever, Edit } from "@mui/icons-material";
 import { useModal } from "@hooks/useModal";
 import { DeleteEntity } from "@components/entity/DeleteEntity";
@@ -13,6 +13,8 @@ import { BackupMakerRole } from "@apis/authentication/generated";
 import { IconWithTooltip } from "@components/utils/tooltip/IconWithTooltip";
 import { EntitySubProperty } from "@components/entity/EntitySubProperty";
 import { AddFtpDeploy } from "@components/deploys/ftp/AddFtpDeploy";
+import { slugifyRoute } from "@/config/routes";
+import { EntityTitle } from "@components/entity/EntityTitle";
 
 interface LocalDeployProps {
 	readonly?: boolean;
@@ -24,28 +26,24 @@ export function FtpDeploy({ readonly, idDeploy }: LocalDeployProps) {
 		ftps: s.deploys.ftp,
 	}));
 
-	const { name } = useParams<{
-		name: string;
+	const { slug } = useParams<{
+		slug: string;
 	}>();
 
-	const deploy = useMemo(() => Object.values(ftps).find((ftp) => ftp.name === name || ftp.id === idDeploy), [idDeploy, ftps, name]);
+	const deploy = useMemo(() => Object.values(ftps).find((ftp) => slugifyRoute(ftp.name) === slug || ftp.id === idDeploy), [idDeploy, ftps, slug]);
 
 	const deleteModal = useModal(false);
 	const updateModal = useModal(false);
 
 	const isAdmin = usePermissions(BackupMakerRole.Admin);
 
-	if (!deploy) return <UnableToFindEntity description={"FTP deployment configuration"} name={name!} />;
+	if (!deploy) return <UnableToFindEntity description={"FTP deployment configuration"} name={slug!} />;
 
 	return (
 		<Stack>
 			<Stack direction={"row"} spacing={2} alignItems={"center"} width={"100%"}>
-				<Typography fontSize={"100%"} variant={"overline"}>
-					Deploy :
-				</Typography>
-				<Typography color={"primary"} sx={{ opacity: 0.9 }} fontSize={"110%"}>
-					FTP/{deploy.name}
-				</Typography>
+				<EntityTitle name={"Deploy"} value={`FTP/${deploy.name}`} />
+
 				{!readonly && (
 					<>
 						<IconWithTooltip

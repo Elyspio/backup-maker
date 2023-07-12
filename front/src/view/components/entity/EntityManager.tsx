@@ -35,7 +35,7 @@ export function EntityManager<T>({ name, elements, AddComponent, title }: Entity
 
 	return (
 		<Stack spacing={2}>
-			<AppAccordion.Frame>
+			<AppAccordion.Frame sx={{ width: "205px" }}>
 				<AppAccordion.Summary>
 					<Stack direction={"row"} justifyContent={"space-between"} width={150} alignItems={"center"}>
 						<Typography>{name}</Typography>

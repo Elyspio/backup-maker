@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useAppSelector } from "@store";
-import { Stack, Typography } from "@mui/material";
+import { Stack } from "@mui/material";
 import { DeleteForever, Edit } from "@mui/icons-material";
 import { useModal } from "@hooks/useModal";
 import { DeleteEntity } from "@components/entity/DeleteEntity";
@@ -13,6 +13,8 @@ import { IdTask } from "@modules/tasks/tasks.types";
 import { IconWithTooltip } from "@components/utils/tooltip/IconWithTooltip";
 import { usePermissions } from "@hooks/usePermissions";
 import { BackupMakerRole } from "@apis/authentication/generated";
+import { slugifyRoute } from "@/config/routes";
+import { EntityTitle } from "@components/entity/EntityTitle";
 
 interface MongoTaskProps {
 	readonly?: boolean;
@@ -25,11 +27,11 @@ export function MongoTask({ readonly, idTask }: MongoTaskProps) {
 		connections: s.databases.mongo.connections,
 	}));
 
-	const { name } = useParams<{
-		name: string;
+	const { slug } = useParams<{
+		slug: string;
 	}>();
 
-	const task = useMemo(() => Object.values(mongoTasks).find((t) => t.name === name || t.id === idTask), [idTask, mongoTasks, name]);
+	const task = useMemo(() => Object.values(mongoTasks).find((t) => slugifyRoute(t.name) === slug || t.id === idTask), [idTask, mongoTasks, slug]);
 
 	const connection = useMemo(() => Object.values(connections).find((con) => con.id === task?.idConnection), [connections, task?.idConnection]);
 
@@ -38,19 +40,15 @@ export function MongoTask({ readonly, idTask }: MongoTaskProps) {
 
 	const isAdmin = usePermissions(BackupMakerRole.Admin);
 
-	if (!task) return <UnableToFindEntity description={"task configuration"} name={name!} />;
+	if (!task) return <UnableToFindEntity description={"task configuration"} name={slug!} />;
 
-	if (!connection) return <UnableToFindEntity description={"mongo connection"} name={name!} />;
+	if (!connection) return <UnableToFindEntity description={"mongo connection"} name={slug!} />;
 
 	return (
 		<Stack>
 			<Stack direction={"row"} spacing={2} alignItems={"center"} width={"100%"}>
-				<Typography fontSize={"100%"} variant={"overline"}>
-					Tasks :
-				</Typography>
-				<Typography color={"primary"} sx={{ opacity: 0.9 }} fontSize={"110%"}>
-					Mongo/{task.name}
-				</Typography>
+				<EntityTitle name={"Backup"} value={`Mongo/${task.name}`} />
+
 				{!readonly && (
 					<>
 						<IconWithTooltip disabled={!isAdmin} title={"Update the mongo task"} disabledTitle={"You must be an admin"} onClick={updateModal.setOpen} color={"warning"}>

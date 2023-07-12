@@ -53,7 +53,12 @@ export function AddDeploy({ open, setClose, update }: AddEntityProps<IdConnectio
 						<Button size={"large"} onClick={setOpen(JobDeploy.Local)} variant={"outlined"} color={"inherit"}>
 							Local
 						</Button>
-						<Divider sx={{ height: 30, width: "1px" }} />
+						<Divider
+							sx={{
+								height: 30,
+								width: "1px",
+							}}
+						/>
 						<Button size={"large"} onClick={setOpen(JobDeploy.Ftp)} variant={"outlined"} color={"inherit"}>
 							FTP
 						</Button>

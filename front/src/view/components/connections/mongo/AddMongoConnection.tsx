@@ -50,7 +50,7 @@ export function AddMongoConnection({ open, setClose, update }: AddEntityProps<Id
 			<DialogActions>
 				<Stack direction={"row"} spacing={3}>
 					<Button color={"primary"} variant={"outlined"} onClick={createNewConnection}>
-						Add
+						{update ? "Update" : "Add"}
 					</Button>
 					<Button color={"inherit"} variant={"outlined"} onClick={setClose}>
 						Cancel

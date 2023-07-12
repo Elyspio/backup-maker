@@ -95,7 +95,7 @@ export function AddMongoTask({ open, setClose, update }: AddEntityProps<IdConnec
 			<DialogActions>
 				<Stack direction={"row"} spacing={3}>
 					<Button color={"primary"} variant={"outlined"} onClick={createNewMongoTask} disabled={!name || !idConnection || Object.values(elements).length === 0}>
-						Add
+						{update ? "Update" : "Add"}
 					</Button>
 					<Button color={"inherit"} variant={"outlined"} onClick={setClose}>
 						Cancel

@@ -41,11 +41,7 @@ export function AddLocalDeploy({ open, setClose, update }: AddEntityProps<IdConn
 
 	return (
 		<Dialog open={open} onClose={setClose} maxWidth={"xs"} fullWidth>
-			<DialogTitle>
-				{" "}
-				align={"center"}
-				{update ? "Update" : "Create"} a local deployment configuration
-			</DialogTitle>
+			<DialogTitle>{update ? "Update" : "Create"} a local deployment configuration</DialogTitle>
 			<DialogContent dividers>
 				<Stack spacing={3} p={3}>
 					<TextField onChange={updateField("name")} disabled={!!update} value={name} label={"Name"} />
@@ -55,7 +51,7 @@ export function AddLocalDeploy({ open, setClose, update }: AddEntityProps<IdConn
 			<DialogActions>
 				<Stack direction={"row"} spacing={3}>
 					<Button color={"primary"} variant={"outlined"} onClick={createNewLocalDeploy}>
-						Add
+						{update ? "Update" : "Add"}
 					</Button>
 					<Button color={"inherit"} variant={"outlined"} onClick={setClose}>
 						Cancel

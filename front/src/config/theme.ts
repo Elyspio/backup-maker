@@ -1,7 +1,7 @@
-import { createTheme, Theme } from "@mui/material/styles";
+import { createTheme, Theme, ThemeOptions } from "@mui/material/styles";
 import * as colors from "@mui/material/colors";
 import { grey } from "@mui/material/colors";
-import { darkScrollbar, ThemeOptions } from "@mui/material";
+import darkScrollbar from "@mui/material/darkScrollbar";
 
 const scrollbarTheme = (mode: Themes) => ({
 	...darkScrollbar(

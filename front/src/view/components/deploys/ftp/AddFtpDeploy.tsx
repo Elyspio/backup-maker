@@ -86,19 +86,18 @@ export function AddFtpDeploy({ open, setClose, update }: AddEntityProps<IdConnec
 					<TextField onChange={updateTextField("name")} disabled={!!update} value={name} label={"Deployment's Name"} />
 					<TextField onChange={updateTextField("outputPath")} value={outputPath} label={"Output Path"} />
 					<Stack direction={"row"} spacing={2}>
-						<TextField onChange={updateTextField("host")} disabled={!!update} value={host} label={"Server Host"} fullWidth />
-						<TextField onChange={updateTextField("port")} disabled={!!update} value={port} label={"Server Port"} type={"number"} />
+						<TextField onChange={updateTextField("host")} value={host} label={"Server Host"} fullWidth />
+						<TextField onChange={updateTextField("port")} value={port} label={"Server Port"} type={"number"} />
 					</Stack>
 					<Stack direction={"row"} spacing={2}>
-						<TextField onChange={updateTextField("username")} disabled={!!update} value={username} label={"Server Username"} fullWidth />
-						<TextField onChange={updateTextField("password")} disabled={!!update} value={password} label={"Server Password"} type={"password"} fullWidth />
+						<TextField onChange={updateTextField("username")} value={username} label={"Server Username"} fullWidth />
+						<TextField onChange={updateTextField("password")} value={password} label={"Server Password"} type={"password"} fullWidth />
 					</Stack>
 
 					<Autocomplete
 						fullWidth
 						value={encryption}
 						onChange={updateAutocomplete}
-						disabled={!!update}
 						renderInput={(params) => <TextField {...params} label="Server Encryption" />}
 						options={Object.keys(FtpEncryption) as FtpEncryption[]}
 					/>
@@ -107,7 +106,7 @@ export function AddFtpDeploy({ open, setClose, update }: AddEntityProps<IdConnec
 			<DialogActions>
 				<Stack direction={"row"} spacing={3}>
 					<Button color={"primary"} variant={"outlined"} onClick={createOrUpdateLocalDeploy}>
-						Add
+						{update ? "Update" : "Add"}
 					</Button>
 					<Button color={"inherit"} variant={"outlined"} onClick={setClose}>
 						Cancel

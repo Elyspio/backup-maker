@@ -1235,7 +1235,9 @@ export interface CollectionSizes {
 	/** Sum of BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.DocumentsSize and BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.IndexesSize */
 	totalSize: number;
 	documentsSize: number;
-	indexesSize: { [key: string]: number };
+	indexesSize: {
+		[key: string]: number;
+	};
 }
 
 /** JobBase is an abstract class that represents a foundational job structure for various types of jobs. */
@@ -1314,9 +1316,13 @@ export enum FtpEncryption {
 /** Represents the response containing the information about the connections. */
 export interface GetConnectionInformationResponse {
 	/** The key is the connection's unique identifier, and the value is a list of database information. */
-	data: { [key: string]: DatabaseInfo[] };
+	data: {
+		[key: string]: DatabaseInfo[];
+	};
 	/** The key is the operation's unique identifier, and the value is the error message. */
-	errors: { [key: string]: string };
+	errors: {
+		[key: string]: string;
+	};
 }
 
 /** Represents the type of backups that this job can handle. */
@@ -1369,7 +1375,9 @@ export interface MongoBackupTaskBase extends BaseBackupTask {
 	/** Id of the mongo connection */
 	idConnection: string;
 	/** Mapping of a database to a list of collection to backup */
-	elements: { [key: string]: string[] };
+	elements: {
+		[key: string]: string[];
+	};
 }
 
 /** Represents a data model used for MongoDB backup task-related operations. */
@@ -1416,11 +1424,21 @@ export class ApiException extends Error {
 	override message: string;
 	status: number;
 	response: string;
-	headers: { [key: string]: any };
+	headers: {
+		[key: string]: any;
+	};
 	result: any;
 	protected isApiException = true;
 
-	constructor(message: string, status: number, response: string, headers: { [key: string]: any }, result: any) {
+	constructor(
+		message: string,
+		status: number,
+		response: string,
+		headers: {
+			[key: string]: any;
+		},
+		result: any
+	) {
 		super();
 
 		this.message = message;
@@ -1435,7 +1453,15 @@ export class ApiException extends Error {
 	}
 }
 
-function throwException(message: string, status: number, response: string, headers: { [key: string]: any }, result?: any): any {
+function throwException(
+	message: string,
+	status: number,
+	response: string,
+	headers: {
+		[key: string]: any;
+	},
+	result?: any
+): any {
 	if (result !== null && result !== undefined) throw result;
 	else throw new ApiException(message, status, response, headers, null);
 }

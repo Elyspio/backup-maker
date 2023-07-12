@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using BackupMaker.Api.Abstractions.Common.Helpers.Json;
 
 namespace BackupMaker.Api.Abstractions.Models.Base.Database.Mongo;
 
@@ -8,17 +8,14 @@ namespace BackupMaker.Api.Abstractions.Models.Base.Database.Mongo;
 public class MongoConnectionBase
 {
 	/// <summary>
-	///     Gets or sets the name for the MongoConnectionBase object. This property is required.
+	///     The name for the MongoConnectionBase object. This property is required.
 	/// </summary>
 	/// <value>The name of the MongoConnectionBase.</value>
 	public required string Name { get; set; }
 
 	/// <summary>
-	///     Gets or sets the Connection String for the MongoDB connection entity.
+	///     The Connection String for the MongoDB connection entity.
 	/// </summary>
-	/// <value>
-	///     This property gets/sets the value of the `ConnectionString` field.
-	/// </value>
-	[JsonIgnore]
+	[JsonConverters.Password]
 	public required string ConnectionString { get; set; }
 }

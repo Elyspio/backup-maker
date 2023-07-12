@@ -8,7 +8,7 @@ namespace BackupMaker.Api.Abstractions.Common.Helpers.Json;
 public static class JsonConverters
 {
 	/// <summary>
-	///     Mark the property as password and replace content with stars on serialisations
+	///     Mark the property as password and replace content with stars on serialisation
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
 	public class Password : Attribute;
