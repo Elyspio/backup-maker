@@ -1,28 +1,25 @@
 import React, { useCallback, useMemo } from "react";
-import { Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
+import { Autocomplete, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "@store";
 import { IdConnection } from "@modules/databases/mongo/mongo.database.types";
 import { usePropsState } from "@hooks/usePropsState";
-import { Backup, Deploy, JobData } from "@apis/backend/generated";
+import { JobBackup, JobData, JobDeploy } from "@apis/backend/generated";
 import { DeployState } from "@modules/deploys/deploys.types";
 import { TasksState } from "@modules/tasks/tasks.types";
 import { manageJobs } from "@modules/jobs/jobs.async.actions";
-
-export interface AddEntityProps<T> {
-	open: boolean;
-	setClose: () => void;
-	update?: T;
-}
+import cronstrue from "cronstrue";
+import { AddEntityProps } from "@components/entity/EntityManager";
 
 const enumToField: {
-	deploy: Record<Deploy, keyof DeployState>;
-	backup: Record<Backup, keyof TasksState>;
+	deploy: Record<JobDeploy, keyof DeployState>;
+	backup: Record<JobBackup, keyof TasksState>;
 } = {
 	deploy: {
-		[Deploy.Local]: "locals",
+		[JobDeploy.Ftp]: "ftp",
+		[JobDeploy.Local]: "local",
 	},
 	backup: {
-		[Backup.Mongo]: "mongo",
+		[JobBackup.Mongo]: "mongo",
 	},
 };
 
@@ -36,20 +33,25 @@ export function AddJob({ open, setClose, update }: AddEntityProps<IdConnection>)
 	const dispatch = useAppDispatch();
 
 	const [name, setName] = usePropsState(previousValue?.name ?? "");
-	const [cronInterval, setCronInterval] = usePropsState(previousValue?.cronInterval ?? "");
+	const [cronInterval, setCronInterval] = usePropsState(previousValue?.cronInterval ?? "* * * * *");
 	const [deployType, setDeployType] = usePropsState(previousValue?.deployType ?? "Local");
 	const [idDeploy, setIdDeploy] = usePropsState(previousValue?.idDeploy ?? null);
 	const [backupType, setBackupType] = usePropsState(previousValue?.backupType ?? "Mongo");
 	const [idBackup, setIdBackup] = usePropsState(previousValue?.idBackup ?? null);
 
-	const updateName = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			setName(e.target.value);
+	const updateStringField = useCallback(
+		(prop: keyof Pick<JobData, "name" | "cronInterval">) => (e: React.ChangeEvent<HTMLInputElement>) => {
+			const setters: Record<typeof prop, React.Dispatch<React.SetStateAction<any>>> = {
+				name: setName,
+				cronInterval: setCronInterval,
+			};
+
+			setters[prop](e.target.value);
 		},
-		[setName]
+		[setCronInterval, setName]
 	);
 
-	const updateField = useCallback(
+	const updateAutoCompleteField = useCallback(
 		(type: keyof Omit<JobData, "id" | "name" | "cronInterval">) => (_: React.SyntheticEvent, val: any | null) => {
 			const setters: Record<typeof type, React.Dispatch<React.SetStateAction<any>>> = {
 				backupType: setBackupType,
@@ -89,25 +91,33 @@ export function AddJob({ open, setClose, update }: AddEntityProps<IdConnection>)
 	const deploymentsAvailable = useMemo(() => deploys[enumToField.deploy[deployType]], [deploys, deployType]);
 	const tasksAvailable = useMemo(() => tasks[enumToField.backup[backupType]], [tasks, backupType]);
 
+	const cronNextOccurence = useMemo(() => {
+		try {
+			return cronstrue.toString(cronInterval, { use24HourTimeFormat: true });
+		} catch (e) {
+			return null;
+		}
+	}, [cronInterval]);
+
 	return (
 		<Dialog open={open} onClose={setClose} maxWidth={"xs"} fullWidth>
-			<DialogTitle>{update ? "Update" : "Create"} a job</DialogTitle>
+			<DialogTitle align={"center"}>{update ? "Update" : "Create"} a job</DialogTitle>
 			<DialogContent dividers>
 				<Stack spacing={3} p={3}>
-					<TextField onChange={updateName} disabled={!!update} value={name} label={"Name"} />
+					<TextField onChange={updateStringField("name")} disabled={!!update} value={name} label={"Name"} />
 					<Stack direction={"row"} spacing={2}>
 						<Autocomplete
 							fullWidth
 							value={deployType}
 							disableClearable={true}
-							onChange={updateField("deployType")}
+							onChange={updateAutoCompleteField("deployType")}
 							renderInput={(params) => <TextField color={"secondary"} {...params} label="Deployment type" />}
-							options={Object.values(Deploy)}
+							options={Object.values(JobDeploy)}
 						/>
 						<Autocomplete
 							fullWidth
 							value={idDeploy ?? null}
-							onChange={updateField("idDeploy")}
+							onChange={updateAutoCompleteField("idDeploy")}
 							getOptionLabel={(option) => deploymentsAvailable[option].name}
 							renderInput={(params) => <TextField {...params} label="Deployement name" />}
 							options={Object.keys(deploymentsAvailable)}
@@ -119,26 +129,38 @@ export function AddJob({ open, setClose, update }: AddEntityProps<IdConnection>)
 							fullWidth
 							value={backupType}
 							disableClearable={true}
-							onChange={updateField("backupType")}
+							onChange={updateAutoCompleteField("backupType")}
 							renderInput={(params) => <TextField color={"secondary"} {...params} label="Task type" />}
-							options={Object.values(Backup)}
+							options={Object.values(JobBackup)}
 						/>
 
 						<Autocomplete
 							fullWidth
 							value={idBackup ?? null}
-							onChange={updateField("idBackup")}
+							onChange={updateAutoCompleteField("idBackup")}
 							getOptionLabel={(option) => tasksAvailable[option].name}
 							renderInput={(params) => <TextField {...params} label="Task name" />}
 							options={Object.keys(tasksAvailable)}
 						/>
+					</Stack>
+
+					<Stack direction={"row"} spacing={2} alignItems={"center"}>
+						<TextField
+							label={"Cron expression"}
+							value={cronInterval}
+							onChange={updateStringField("cronInterval")}
+							helperText={"minute | hour | day (month) | month | day (week) "}
+						/>
+						<Box pb={"22px"}>
+							<Typography>{cronNextOccurence}</Typography>
+						</Box>
 					</Stack>
 				</Stack>
 			</DialogContent>
 			<DialogActions>
 				<Stack direction={"row"} spacing={3}>
 					<Button color={"primary"} variant={"outlined"} disabled={![name, idBackup, idDeploy].every(Boolean)} onClick={createNewLocalDeploy}>
-						Add
+						{update ? "Update" : "Add"}
 					</Button>
 					<Button color={"inherit"} variant={"outlined"} onClick={setClose}>
 						Cancel

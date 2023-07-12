@@ -1,5 +1,5 @@
 import { createAsyncActionGenerator, getService } from "@store/utils/utils.actions";
-import { MongoBackupTask, MongoBackupTaskData } from "@apis/backend/generated";
+import { MongoBackupTaskBase, MongoBackupTaskData } from "@apis/backend/generated";
 import { toast } from "react-toastify";
 import { TasksService } from "@services/tasks.service";
 import { IdTask } from "@modules/tasks/tasks.types";
@@ -7,7 +7,7 @@ import { IdTask } from "@modules/tasks/tasks.types";
 const createAsyncThunk = createAsyncActionGenerator("tasks");
 
 export const manageMongoTasks = {
-	add: createAsyncThunk("mongo/add", (arg: MongoBackupTask, { extra }) => {
+	add: createAsyncThunk("mongo/add", (arg: MongoBackupTaskBase, { extra }) => {
 		const tasksService = getService(TasksService, extra);
 
 		return toast.promise(tasksService.mongo.add(arg), {

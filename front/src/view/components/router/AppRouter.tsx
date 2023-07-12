@@ -10,6 +10,7 @@ import { Tasks } from "@components/tasks/Tasks";
 import { Jobs } from "@components/jobs/Jobs";
 import { MongoTask } from "@components/tasks/mongo/MongoTask";
 import { JobDetail } from "@components/jobs/JobDetail";
+import { FtpDeploy } from "@components/deploys/ftp/FtpDeploy";
 
 export function AppRouter() {
 	return (
@@ -26,6 +27,7 @@ export function AppRouter() {
 					<Route path={AppRoutes.mongoConnection} element={<MongoConnection />} />
 					<Route path={AppRoutes.mongoTask} element={<MongoTask />} />
 					<Route path={AppRoutes.localDeploy} element={<LocalDeploy />} />
+					<Route path={AppRoutes.ftpDeploy} element={<FtpDeploy />} />
 					<Route path={AppRoutes.job} element={<JobDetail />} />
 				</Routes>
 			</Box>

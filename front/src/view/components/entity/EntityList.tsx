@@ -5,7 +5,7 @@ import { Button, Stack } from "@mui/material";
 import { push } from "redux-first-history";
 
 export interface EntityListProps {
-	entity: "jobs" | "backup" | "deploy" | "connection";
+	entity: "jobs" | "backup" | "deploy/local" | "deploy/ftp" | "connection";
 }
 
 interface EntityParam {
@@ -43,13 +43,23 @@ export function EntityList({ entity }: EntityListProps) {
 						})
 					),
 				];
-			case "deploy":
+			case "deploy/local":
 				return [
-					...Object.values(deploys.locals).map(
+					...Object.values(deploys.local).map(
 						(deploy): EntityParam => ({
 							id: deploy.id,
 							name: `local/${deploy.name}`,
 							route: getDeployRoute("local", deploy),
+						})
+					),
+				];
+			case "deploy/ftp":
+				return [
+					...Object.values(deploys.ftp).map(
+						(deploy): EntityParam => ({
+							id: deploy.id,
+							name: `FTP/${deploy.name}`,
+							route: getDeployRoute("ftp", deploy),
 						})
 					),
 				];

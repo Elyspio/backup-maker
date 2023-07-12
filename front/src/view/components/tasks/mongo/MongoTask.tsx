@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useAppSelector } from "@store";
-import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { DeleteForever, Edit } from "@mui/icons-material";
 import { useModal } from "@hooks/useModal";
 import { DeleteEntity } from "@components/entity/DeleteEntity";
@@ -10,6 +10,9 @@ import { AddMongoTask } from "@components/tasks/mongo/AddMongoTask";
 import { MongoTaskDetail } from "@components/tasks/mongo/MongoTaskDetail";
 import { UnableToFindEntity } from "@components/entity/UnableToFindEntity";
 import { IdTask } from "@modules/tasks/tasks.types";
+import { IconWithTooltip } from "@components/utils/tooltip/IconWithTooltip";
+import { usePermissions } from "@hooks/usePermissions";
+import { BackupMakerRole } from "@apis/authentication/generated";
 
 interface MongoTaskProps {
 	readonly?: boolean;
@@ -33,6 +36,8 @@ export function MongoTask({ readonly, idTask }: MongoTaskProps) {
 	const deleteModal = useModal(false);
 	const updateModal = useModal(false);
 
+	const isAdmin = usePermissions(BackupMakerRole.Admin);
+
 	if (!task) return <UnableToFindEntity description={"task configuration"} name={name!} />;
 
 	if (!connection) return <UnableToFindEntity description={"mongo connection"} name={name!} />;
@@ -48,16 +53,12 @@ export function MongoTask({ readonly, idTask }: MongoTaskProps) {
 				</Typography>
 				{!readonly && (
 					<>
-						<Tooltip title={"Update the mongo task"}>
-							<IconButton color={"warning"} onClick={updateModal.setOpen}>
-								<Edit />
-							</IconButton>
-						</Tooltip>
-						<Tooltip title={"Delete the mongo task"}>
-							<IconButton color={"error"} onClick={deleteModal.setOpen}>
-								<DeleteForever />
-							</IconButton>
-						</Tooltip>
+						<IconWithTooltip disabled={!isAdmin} title={"Update the mongo task"} disabledTitle={"You must be an admin"} onClick={updateModal.setOpen} color={"warning"}>
+							<Edit />
+						</IconWithTooltip>
+						<IconWithTooltip disabled={!isAdmin} title={"Delete the mongo task"} disabledTitle={"You must be an admin"} onClick={deleteModal.setOpen} color={"error"}>
+							<DeleteForever />
+						</IconWithTooltip>
 					</>
 				)}
 			</Stack>

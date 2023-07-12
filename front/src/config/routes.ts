@@ -1,8 +1,10 @@
 import { JobData, LocalDeployData, MongoBackupTaskData, MongoConnectionData } from "@apis/backend/generated";
+import { DeployState } from "@modules/deploys/deploys.types";
 
 export enum AppRoutes {
 	mongoConnection = "connections/mongo/:name",
 	localDeploy = "deploys/local/:name",
+	ftpDeploy = "deploys/ftp/:name",
 	mongoTask = "tasks/mongo/:name",
 	job = "jobs/:name",
 }
@@ -11,7 +13,7 @@ export function getConnectionRoute(type: "mongo", con: Pick<MongoConnectionData,
 	return `/backup/connections/${type}/${con.name}`;
 }
 
-export function getDeployRoute(type: "local", deploy: Pick<LocalDeployData, "name">) {
+export function getDeployRoute(type: keyof DeployState, deploy: Pick<LocalDeployData, "name">) {
 	return `/backup/deploys/${type}/${deploy.name}`;
 }
 

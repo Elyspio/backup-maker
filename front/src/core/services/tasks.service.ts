@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { BackendApi } from "@apis/backend";
 import { BaseService } from "./common/technical/base.service";
-import { MongoBackupTask, MongoBackupTaskData } from "@apis/backend/generated";
+import { MongoBackupTaskBase, MongoBackupTaskData } from "@apis/backend/generated";
 import { IdConnection } from "@modules/databases/mongo/mongo.database.types";
 
 @injectable()
@@ -10,7 +10,7 @@ export class TasksService extends BaseService {
 	private backendApiClient!: BackendApi;
 
 	public readonly mongo = {
-		add: (task: MongoBackupTask) => {
+		add: (task: MongoBackupTaskBase) => {
 			return this.backendApiClient.tasks.createMongoTask(task);
 		},
 		getAll: () => {

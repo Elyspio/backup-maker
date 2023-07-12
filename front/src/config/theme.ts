@@ -1,5 +1,45 @@
 import { createTheme, Theme } from "@mui/material/styles";
 import * as colors from "@mui/material/colors";
+import { grey } from "@mui/material/colors";
+import { darkScrollbar, ThemeOptions } from "@mui/material";
+
+const scrollbarTheme = (mode: Themes) => ({
+	...darkScrollbar(
+		mode === "light"
+			? {
+					track: grey[200],
+					thumb: grey[400],
+					active: grey[400],
+			  }
+			: undefined
+	),
+	//scrollbarWidth for Firefox
+	scrollbarWidth: "thin",
+});
+
+const getComponents = (mode: Themes): ThemeOptions["components"] => ({
+	MuiPaper: {
+		styleOverrides: {
+			root: {
+				"&.MuiPaper-root": {
+					backgroundImage: "unset !important",
+				},
+			},
+		},
+	},
+	MuiTextField: {
+		defaultProps: {
+			variant: "standard",
+		},
+	},
+	MuiCssBaseline: {
+		styleOverrides: {
+			html: {
+				...scrollbarTheme(mode),
+			},
+		},
+	},
+});
 
 const darkTheme = createTheme({
 	palette: {
@@ -17,17 +57,7 @@ const darkTheme = createTheme({
 			default: "#181818",
 		},
 	},
-	components: {
-		MuiPaper: {
-			styleOverrides: {
-				root: {
-					"&.MuiPaper-root": {
-						backgroundImage: "unset !important",
-					},
-				},
-			},
-		},
-	},
+	components: getComponents("dark"),
 });
 
 const lightTheme = createTheme({
@@ -46,17 +76,7 @@ const lightTheme = createTheme({
 			default: "#e6e6e6",
 		},
 	},
-	components: {
-		MuiPaper: {
-			styleOverrides: {
-				root: {
-					"&.MuiPaper-root": {
-						backgroundImage: "unset !important",
-					},
-				},
-			},
-		},
-	},
+	components: getComponents("light"),
 });
 
 export const themes = {

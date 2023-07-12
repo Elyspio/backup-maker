@@ -2,11 +2,11 @@ import { useAppSelector } from "@store";
 import React, { useCallback, useMemo } from "react";
 import { Checkbox, FormControlLabel, Stack, Typography } from "@mui/material";
 import { IdConnection } from "@modules/databases/mongo/mongo.database.types";
-import { DatabaseInfo, MongoBackupTask } from "@apis/backend/generated";
+import { DatabaseInfo, MongoBackupTaskBase } from "@apis/backend/generated";
 
 type MongoBackupElementsProps = {
 	idConnection: IdConnection;
-	elements: MongoBackupTask["elements"];
+	elements: MongoBackupTaskBase["elements"];
 	onChange: (database: DatabaseInfo["name"], collection: string, state: boolean) => void;
 };
 

@@ -1,7 +1,8 @@
-import { LocalDeployData } from "@apis/backend/generated";
+import { FtpDeployData, LocalDeployData } from "@apis/backend/generated";
 
 export type DeployState = {
-	locals: Record<IdDeployment, LocalDeployData>;
+	local: Record<IdDeployment, LocalDeployData>;
+	ftp: Record<IdDeployment, FtpDeployData>;
 };
 
 export type IdDeployment = LocalDeployData["id"];

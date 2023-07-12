@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { useAppSelector } from "@store";
 import { CollectionInfo, CollectionSizes } from "@apis/backend/generated";
-import { IconButton, Stack, SxProps, Tooltip, Typography } from "@mui/material";
+import { Stack, SxProps, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { AppAccordion } from "@components/utils/accordion/AppAccordion";
 import { DeleteForever, Edit } from "@mui/icons-material";
@@ -11,6 +11,9 @@ import { AddMongoConnection } from "@components/connections/mongo/AddMongoConnec
 import { useParams } from "react-router";
 import { manageMongoConnections } from "@modules/databases/mongo/mongo.database.async.actions";
 import { UnableToFindEntity } from "@components/entity/UnableToFindEntity";
+import { IconWithTooltip } from "@components/utils/tooltip/IconWithTooltip";
+import { usePermissions } from "@hooks/usePermissions";
+import { BackupMakerRole } from "@apis/authentication/generated";
 
 enum ColumnField {
 	Name = "name",
@@ -131,6 +134,8 @@ export function MongoConnection() {
 	const deleteModal = useModal(false);
 	const updateModal = useModal(false);
 
+	const isAdmin = usePermissions(BackupMakerRole.Admin);
+
 	if (!connection) return <UnableToFindEntity description={"MongoDB connection"} name={name!} />;
 
 	return (
@@ -142,16 +147,13 @@ export function MongoConnection() {
 				<Typography color={"primary"} sx={{ opacity: 0.9 }} fontSize={"110%"}>
 					Mongo/{connection.name}
 				</Typography>
-				<Tooltip title={"Update the connection"}>
-					<IconButton color={"warning"} onClick={updateModal.setOpen}>
-						<Edit />
-					</IconButton>
-				</Tooltip>
-				<Tooltip title={"Delete the connection"}>
-					<IconButton color={"error"} onClick={deleteModal.setOpen}>
-						<DeleteForever />
-					</IconButton>
-				</Tooltip>
+
+				<IconWithTooltip disabled={!isAdmin} title={"Update the connection"} disabledTitle={"You must be an admin"} onClick={updateModal.setOpen} color={"warning"}>
+					<Edit />
+				</IconWithTooltip>
+				<IconWithTooltip disabled={!isAdmin} title={"Delete the connection"} disabledTitle={"You must be an admin"} onClick={deleteModal.setOpen} color={"error"}>
+					<DeleteForever />
+				</IconWithTooltip>
 			</Stack>
 
 			{detail && (

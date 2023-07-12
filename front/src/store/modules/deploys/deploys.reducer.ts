@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import { DeployState } from "@modules/deploys/deploys.types";
-import { manageLocalDeploy } from "@modules/deploys/deploys.async.actions";
+import { manageFtpDeploy, manageLocalDeploy } from "@modules/deploys/deploys.async.actions";
 
 const initialState: DeployState = {
-	locals: {},
+	local: {},
+	ftp: {},
 };
 
 const slice = createSlice({
@@ -14,7 +15,13 @@ const slice = createSlice({
 	extraReducers: (builder) => {
 		builder.addCase(manageLocalDeploy.getAll.fulfilled, (state, action) => {
 			for (const deploy of action.payload) {
-				state.locals[deploy.id] = deploy;
+				state.local[deploy.id] = deploy;
+			}
+		});
+
+		builder.addCase(manageFtpDeploy.getAll.fulfilled, (state, action) => {
+			for (const deploy of action.payload) {
+				state.ftp[deploy.id] = deploy;
 			}
 		});
 	},

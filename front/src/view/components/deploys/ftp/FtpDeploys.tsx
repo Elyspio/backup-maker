@@ -4,7 +4,7 @@ import { Button, Stack } from "@mui/material";
 import { push } from "redux-first-history";
 import { getDeployRoute } from "@/config/routes";
 
-export function LocalDeploys() {
+export function FtpDeploys() {
 	const deployments = useAppSelector((s) => s.deploys.local);
 
 	const dispatch = useAppDispatch();
@@ -15,10 +15,10 @@ export function LocalDeploys() {
 				key={deploy.id}
 				size={"small"}
 				onClick={() => {
-					dispatch(push(getDeployRoute("local", deploy), deploy));
+					dispatch(push(getDeployRoute("ftp", deploy), deploy));
 				}}
 			>
-				Local/{deploy.name}
+				FTP/{deploy.name}
 			</Button>
 		));
 	}, [dispatch, deployments]);

@@ -11,6 +11,8 @@ import { AddJob } from "@components/jobs/AddJob";
 import { LocalDeploy } from "@components/deploys/local/LocalDeploy";
 import { MongoTask } from "@components/tasks/mongo/MongoTask";
 import Divider from "@mui/material/Divider";
+import cronstrue from "cronstrue";
+import { EntitySubProperty } from "@components/entity/EntitySubProperty";
 
 export function JobDetail() {
 	const { jobs, tasks, deploys } = useAppSelector((s) => ({
@@ -31,8 +33,8 @@ export function JobDetail() {
 	);
 
 	const deploy = useMemo(
-		() => Object.values(job?.deployType === "Local" ? deploys.locals : {}).find((deploy) => deploy.id === job?.idDeploy),
-		[deploys.locals, job?.deployType, job?.idDeploy]
+		() => Object.values(job?.deployType === "Local" ? deploys.local : {}).find((deploy) => deploy.id === job?.idDeploy),
+		[deploys.local, job?.deployType, job?.idDeploy]
 	);
 
 	const deleteModal = useModal(false);
@@ -65,6 +67,8 @@ export function JobDetail() {
 
 			{job && (
 				<Stack spacing={2} pt={2}>
+					<EntitySubProperty name={"Cron Interval"} value={cronstrue.toString(job.cronInterval)} />
+
 					<Divider />
 					{job.backupType === "Mongo" && <MongoTask idTask={job.idBackup} readonly />}
 					<Divider />

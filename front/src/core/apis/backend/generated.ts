@@ -11,6 +11,235 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from "axios";
 import axios, { AxiosError } from "axios";
 
+export class DeploysFtpClient {
+	protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+	private instance: AxiosInstance;
+	private baseUrl: string;
+
+	constructor(baseUrl?: string, instance?: AxiosInstance) {
+		this.instance = instance ? instance : axios.create();
+
+		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+	}
+
+	/**
+	 * Get all FTP deployment configurations²
+	 * @return Success
+	 */
+	getFtpDeployment(cancelToken?: CancelToken | undefined): Promise<FtpDeployData[]> {
+		let url_ = this.baseUrl + "/api/deploys/ftp";
+		url_ = url_.replace(/[?&]$/, "");
+
+		let options_: AxiosRequestConfig = {
+			method: "GET",
+			url: url_,
+			headers: {
+				Accept: "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processGetFtpDeployment(_response);
+			});
+	}
+
+	/**
+	 * Create a new FTP deployment configuration
+	 * @return No Content
+	 */
+	createFtpDeploy(body: FtpDeployBase, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/deploys/ftp";
+		url_ = url_.replace(/[?&]$/, "");
+
+		const content_ = JSON.stringify(body);
+
+		let options_: AxiosRequestConfig = {
+			data: content_,
+			method: "POST",
+			url: url_,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processCreateFtpDeploy(_response);
+			});
+	}
+
+	/**
+	 * Delete a FTP deployment configuration
+	 * @return No Content
+	 */
+	deleteFtpDeploy(idDeploy: string, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/deploys/ftp/{idDeploy}";
+		if (idDeploy === undefined || idDeploy === null) throw new Error("The parameter 'idDeploy' must be defined.");
+		url_ = url_.replace("{idDeploy}", encodeURIComponent("" + idDeploy));
+		url_ = url_.replace(/[?&]$/, "");
+
+		let options_: AxiosRequestConfig = {
+			method: "DELETE",
+			url: url_,
+			headers: {},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processDeleteFtpDeploy(_response);
+			});
+	}
+
+	/**
+	 * Replace a FTP deployment configuration
+	 * @param idDeploy Connection's id
+	 * @param body new config
+	 * @return No Content
+	 */
+	updateFtpDeploy(idDeploy: string, body: FtpDeployData, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/deploys/ftp/{idDeploy}";
+		if (idDeploy === undefined || idDeploy === null) throw new Error("The parameter 'idDeploy' must be defined.");
+		url_ = url_.replace("{idDeploy}", encodeURIComponent("" + idDeploy));
+		url_ = url_.replace(/[?&]$/, "");
+
+		const content_ = JSON.stringify(body);
+
+		let options_: AxiosRequestConfig = {
+			data: content_,
+			method: "PUT",
+			url: url_,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processUpdateFtpDeploy(_response);
+			});
+	}
+
+	protected processGetFtpDeployment(response: AxiosResponse): Promise<FtpDeployData[]> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 200) {
+			const _responseText = response.data;
+			let result200: any = null;
+			let resultData200 = _responseText;
+			result200 = JSON.parse(resultData200);
+			return Promise.resolve<FtpDeployData[]>(result200);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<FtpDeployData[]>(null as any);
+	}
+
+	protected processCreateFtpDeploy(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+
+	protected processDeleteFtpDeploy(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+
+	protected processUpdateFtpDeploy(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+}
+
 export class DeploysLocalClient {
 	protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 	private instance: AxiosInstance;
@@ -317,7 +546,7 @@ export class JobsClient {
 	}
 
 	/**
-	 * Trigger a job
+	 * Update a job
 	 * @return No Content
 	 */
 	updateJob(idJob: string, body: CreateJobRequest, cancelToken?: CancelToken | undefined): Promise<void> {
@@ -467,291 +696,7 @@ export class JobsClient {
 	}
 }
 
-export class MongoDatabaseClient {
-	protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-	private instance: AxiosInstance;
-	private baseUrl: string;
-
-	constructor(baseUrl?: string, instance?: AxiosInstance) {
-		this.instance = instance ? instance : axios.create();
-
-		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
-	}
-
-	/**
-	 * Get informations about databases, collections, sizes for all connections
-	 * @return Success
-	 */
-	getInfos(cancelToken?: CancelToken | undefined): Promise<GetConnectionInformationResponse> {
-		let url_ = this.baseUrl + "/api/database/infos";
-		url_ = url_.replace(/[?&]$/, "");
-
-		let options_: AxiosRequestConfig = {
-			method: "GET",
-			url: url_,
-			headers: {
-				Accept: "application/json",
-			},
-			cancelToken,
-		};
-
-		return this.instance
-			.request(options_)
-			.catch((_error: any) => {
-				if (isAxiosError(_error) && _error.response) {
-					return _error.response;
-				} else {
-					throw _error;
-				}
-			})
-			.then((_response: AxiosResponse) => {
-				return this.processGetInfos(_response);
-			});
-	}
-
-	/**
-	 * Add a new database connection
-	 * @return No Content
-	 */
-	addConnection(body: AddMongoConnectionRequest, cancelToken?: CancelToken | undefined): Promise<void> {
-		let url_ = this.baseUrl + "/api/database/connections";
-		url_ = url_.replace(/[?&]$/, "");
-
-		const content_ = JSON.stringify(body);
-
-		let options_: AxiosRequestConfig = {
-			data: content_,
-			method: "POST",
-			url: url_,
-			headers: {
-				"Content-Type": "application/json",
-			},
-			cancelToken,
-		};
-
-		return this.instance
-			.request(options_)
-			.catch((_error: any) => {
-				if (isAxiosError(_error) && _error.response) {
-					return _error.response;
-				} else {
-					throw _error;
-				}
-			})
-			.then((_response: AxiosResponse) => {
-				return this.processAddConnection(_response);
-			});
-	}
-
-	/**
-	 * Get all databases connections available
-	 * @return Success
-	 */
-	getConnections(cancelToken?: CancelToken | undefined): Promise<MongoConnectionData[]> {
-		let url_ = this.baseUrl + "/api/database/connections";
-		url_ = url_.replace(/[?&]$/, "");
-
-		let options_: AxiosRequestConfig = {
-			method: "GET",
-			url: url_,
-			headers: {
-				Accept: "application/json",
-			},
-			cancelToken,
-		};
-
-		return this.instance
-			.request(options_)
-			.catch((_error: any) => {
-				if (isAxiosError(_error) && _error.response) {
-					return _error.response;
-				} else {
-					throw _error;
-				}
-			})
-			.then((_response: AxiosResponse) => {
-				return this.processGetConnections(_response);
-			});
-	}
-
-	/**
-	 * Replace the connectionString for a connection
-	 * @param idConnection Connection's id
-	 * @param body new connectionString
-	 * @return No Content
-	 */
-	updateConnectionString(idConnection: string, body: string, cancelToken?: CancelToken | undefined): Promise<void> {
-		let url_ = this.baseUrl + "/api/database/connections/{idConnection}/connection-string";
-		if (idConnection === undefined || idConnection === null) throw new Error("The parameter 'idConnection' must be defined.");
-		url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
-		url_ = url_.replace(/[?&]$/, "");
-
-		const content_ = JSON.stringify(body);
-
-		let options_: AxiosRequestConfig = {
-			data: content_,
-			method: "PUT",
-			url: url_,
-			headers: {
-				"Content-Type": "application/json",
-			},
-			cancelToken,
-		};
-
-		return this.instance
-			.request(options_)
-			.catch((_error: any) => {
-				if (isAxiosError(_error) && _error.response) {
-					return _error.response;
-				} else {
-					throw _error;
-				}
-			})
-			.then((_response: AxiosResponse) => {
-				return this.processUpdateConnectionString(_response);
-			});
-	}
-
-	/**
-	 * Replace the connectionString for a connection
-	 * @param idConnection Connection's id
-	 * @return No Content
-	 */
-	deleteConnection(idConnection: string, cancelToken?: CancelToken | undefined): Promise<void> {
-		let url_ = this.baseUrl + "/api/database/connections/{idConnection}";
-		if (idConnection === undefined || idConnection === null) throw new Error("The parameter 'idConnection' must be defined.");
-		url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
-		url_ = url_.replace(/[?&]$/, "");
-
-		let options_: AxiosRequestConfig = {
-			method: "DELETE",
-			url: url_,
-			headers: {},
-			cancelToken,
-		};
-
-		return this.instance
-			.request(options_)
-			.catch((_error: any) => {
-				if (isAxiosError(_error) && _error.response) {
-					return _error.response;
-				} else {
-					throw _error;
-				}
-			})
-			.then((_response: AxiosResponse) => {
-				return this.processDeleteConnection(_response);
-			});
-	}
-
-	protected processGetInfos(response: AxiosResponse): Promise<GetConnectionInformationResponse> {
-		const status = response.status;
-		let _headers: any = {};
-		if (response.headers && typeof response.headers === "object") {
-			for (let k in response.headers) {
-				if (response.headers.hasOwnProperty(k)) {
-					_headers[k] = response.headers[k];
-				}
-			}
-		}
-		if (status === 200) {
-			const _responseText = response.data;
-			let result200: any = null;
-			let resultData200 = _responseText;
-			result200 = JSON.parse(resultData200);
-			return Promise.resolve<GetConnectionInformationResponse>(result200);
-		} else if (status !== 200 && status !== 204) {
-			const _responseText = response.data;
-			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-		}
-		return Promise.resolve<GetConnectionInformationResponse>(null as any);
-	}
-
-	protected processAddConnection(response: AxiosResponse): Promise<void> {
-		const status = response.status;
-		let _headers: any = {};
-		if (response.headers && typeof response.headers === "object") {
-			for (let k in response.headers) {
-				if (response.headers.hasOwnProperty(k)) {
-					_headers[k] = response.headers[k];
-				}
-			}
-		}
-		if (status === 204) {
-			const _responseText = response.data;
-			return Promise.resolve<void>(null as any);
-		} else if (status !== 200 && status !== 204) {
-			const _responseText = response.data;
-			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-		}
-		return Promise.resolve<void>(null as any);
-	}
-
-	protected processGetConnections(response: AxiosResponse): Promise<MongoConnectionData[]> {
-		const status = response.status;
-		let _headers: any = {};
-		if (response.headers && typeof response.headers === "object") {
-			for (let k in response.headers) {
-				if (response.headers.hasOwnProperty(k)) {
-					_headers[k] = response.headers[k];
-				}
-			}
-		}
-		if (status === 200) {
-			const _responseText = response.data;
-			let result200: any = null;
-			let resultData200 = _responseText;
-			result200 = JSON.parse(resultData200);
-			return Promise.resolve<MongoConnectionData[]>(result200);
-		} else if (status !== 200 && status !== 204) {
-			const _responseText = response.data;
-			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-		}
-		return Promise.resolve<MongoConnectionData[]>(null as any);
-	}
-
-	protected processUpdateConnectionString(response: AxiosResponse): Promise<void> {
-		const status = response.status;
-		let _headers: any = {};
-		if (response.headers && typeof response.headers === "object") {
-			for (let k in response.headers) {
-				if (response.headers.hasOwnProperty(k)) {
-					_headers[k] = response.headers[k];
-				}
-			}
-		}
-		if (status === 204) {
-			const _responseText = response.data;
-			return Promise.resolve<void>(null as any);
-		} else if (status !== 200 && status !== 204) {
-			const _responseText = response.data;
-			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-		}
-		return Promise.resolve<void>(null as any);
-	}
-
-	protected processDeleteConnection(response: AxiosResponse): Promise<void> {
-		const status = response.status;
-		let _headers: any = {};
-		if (response.headers && typeof response.headers === "object") {
-			for (let k in response.headers) {
-				if (response.headers.hasOwnProperty(k)) {
-					_headers[k] = response.headers[k];
-				}
-			}
-		}
-		if (status === 204) {
-			const _responseText = response.data;
-			return Promise.resolve<void>(null as any);
-		} else if (status !== 200 && status !== 204) {
-			const _responseText = response.data;
-			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-		}
-		return Promise.resolve<void>(null as any);
-	}
-}
-
-export class TasksClient {
+export class MongoBackupClient {
 	protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 	private instance: AxiosInstance;
 	private baseUrl: string;
@@ -797,7 +742,7 @@ export class TasksClient {
 	 * Create a new mongo backup task configuration
 	 * @return No Content
 	 */
-	createMongoTask(body: MongoBackupTask, cancelToken?: CancelToken | undefined): Promise<void> {
+	createMongoTask(body: MongoBackupTaskBase, cancelToken?: CancelToken | undefined): Promise<void> {
 		let url_ = this.baseUrl + "/api/tasks/backup/mongo";
 		url_ = url_.replace(/[?&]$/, "");
 
@@ -831,7 +776,7 @@ export class TasksClient {
 	 * Update a  mongo backup task configuration
 	 * @return No Content
 	 */
-	updateMongoTask(idTask: string, body: MongoBackupTask, cancelToken?: CancelToken | undefined): Promise<void> {
+	updateMongoTask(idTask: string, body: MongoBackupTaskBase, cancelToken?: CancelToken | undefined): Promise<void> {
 		let url_ = this.baseUrl + "/api/tasks/backup/mongo/{idTask}";
 		if (idTask === undefined || idTask === null) throw new Error("The parameter 'idTask' must be defined.");
 		url_ = url_.replace("{idTask}", encodeURIComponent("" + idTask));
@@ -978,16 +923,301 @@ export class TasksClient {
 	}
 }
 
+export class MongoDatabaseClient {
+	protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+	private instance: AxiosInstance;
+	private baseUrl: string;
+
+	constructor(baseUrl?: string, instance?: AxiosInstance) {
+		this.instance = instance ? instance : axios.create();
+
+		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+	}
+
+	/**
+	 * Get informations about databases, collections, sizes for all connections
+	 * @return Success
+	 */
+	getInfos(cancelToken?: CancelToken | undefined): Promise<GetConnectionInformationResponse> {
+		let url_ = this.baseUrl + "/api/database/infos";
+		url_ = url_.replace(/[?&]$/, "");
+
+		let options_: AxiosRequestConfig = {
+			method: "GET",
+			url: url_,
+			headers: {
+				Accept: "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processGetInfos(_response);
+			});
+	}
+
+	/**
+	 * Get all databases connections available
+	 * @return Success
+	 */
+	getConnections(cancelToken?: CancelToken | undefined): Promise<MongoConnectionData[]> {
+		let url_ = this.baseUrl + "/api/database/connections";
+		url_ = url_.replace(/[?&]$/, "");
+
+		let options_: AxiosRequestConfig = {
+			method: "GET",
+			url: url_,
+			headers: {
+				Accept: "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processGetConnections(_response);
+			});
+	}
+
+	/**
+	 * Add a new database connection
+	 * @return No Content
+	 */
+	addConnection(body: AddMongoConnectionRequest, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/database/connections";
+		url_ = url_.replace(/[?&]$/, "");
+
+		const content_ = JSON.stringify(body);
+
+		let options_: AxiosRequestConfig = {
+			data: content_,
+			method: "POST",
+			url: url_,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processAddConnection(_response);
+			});
+	}
+
+	/**
+	 * Replace the connectionString for a connection
+	 * @param idConnection Connection's id
+	 * @param body new connectionString
+	 * @return No Content
+	 */
+	updateConnectionString(idConnection: string, body: string, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/database/connections/{idConnection}/connection-string";
+		if (idConnection === undefined || idConnection === null) throw new Error("The parameter 'idConnection' must be defined.");
+		url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
+		url_ = url_.replace(/[?&]$/, "");
+
+		const content_ = JSON.stringify(body);
+
+		let options_: AxiosRequestConfig = {
+			data: content_,
+			method: "PUT",
+			url: url_,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processUpdateConnectionString(_response);
+			});
+	}
+
+	/**
+	 * Replace the connectionString for a connection
+	 * @param idConnection Connection's id
+	 * @return No Content
+	 */
+	deleteConnection(idConnection: string, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/database/connections/{idConnection}";
+		if (idConnection === undefined || idConnection === null) throw new Error("The parameter 'idConnection' must be defined.");
+		url_ = url_.replace("{idConnection}", encodeURIComponent("" + idConnection));
+		url_ = url_.replace(/[?&]$/, "");
+
+		let options_: AxiosRequestConfig = {
+			method: "DELETE",
+			url: url_,
+			headers: {},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processDeleteConnection(_response);
+			});
+	}
+
+	protected processGetInfos(response: AxiosResponse): Promise<GetConnectionInformationResponse> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 200) {
+			const _responseText = response.data;
+			let result200: any = null;
+			let resultData200 = _responseText;
+			result200 = JSON.parse(resultData200);
+			return Promise.resolve<GetConnectionInformationResponse>(result200);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<GetConnectionInformationResponse>(null as any);
+	}
+
+	protected processGetConnections(response: AxiosResponse): Promise<MongoConnectionData[]> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 200) {
+			const _responseText = response.data;
+			let result200: any = null;
+			let resultData200 = _responseText;
+			result200 = JSON.parse(resultData200);
+			return Promise.resolve<MongoConnectionData[]>(result200);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<MongoConnectionData[]>(null as any);
+	}
+
+	protected processAddConnection(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+
+	protected processUpdateConnectionString(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+
+	protected processDeleteConnection(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
+}
+
+/** Represents a request to add a new MongoDB connection. */
 export interface AddMongoConnectionRequest {
+	/** The name for the new MongoDB connection. */
 	name: string;
+	/** The connection string for the new MongoDB connection. */
 	connectionString: string;
 }
 
-export enum Backup {
-	Mongo = "Mongo",
-}
-
+/** The BaseBackupTask class is an abstract class to be inherited by any backup task. */
 export interface BaseBackupTask {
+	/** Gets or sets a name for the BaseBackupTask object. This property is required. */
 	name: string;
 }
 
@@ -1005,20 +1235,27 @@ export interface CollectionSizes {
 	/** Sum of BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.DocumentsSize and BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info.CollectionSizes.IndexesSize */
 	totalSize: number;
 	documentsSize: number;
-	indexesSize: {
-		[key: string]: number;
-	};
+	indexesSize: { [key: string]: number };
 }
 
+/** JobBase is an abstract class that represents a foundational job structure for various types of jobs. */
 export interface JobBase {
+	/** Property Name represents the name of the job. */
 	name: string;
+	/** Represents the scheduling interval for the job.
+The scheduling interval follows the cron syntax. */
 	cronInterval: string;
-	deployType: Deploy;
-	backupType: Backup;
+	/** Represents the deployment type of this job, defined by the Enum JobDeploy. */
+	deployType: JobDeploy;
+	/** Represents the backup type of this job, defined by the Enum JobBackup. */
+	backupType: JobBackup;
 }
 
+/** Represents a request to create a new job. */
 export interface CreateJobRequest extends JobBase {
+	/** Gets or sets the unique identifier (ID) for the deployment associated with this job. */
 	idDeploy: string;
+	/** Gets or sets the unique identifier (ID) for the backup associated with this job. */
 	idBackup: string;
 }
 
@@ -1029,76 +1266,142 @@ export interface DatabaseInfo {
 	collections: CollectionInfo[];
 }
 
-export enum Deploy {
-	Local = "Local",
-}
-
+/** The DeployBase class serves as a data container for deployment information. */
 export interface DeployBase {
+	/** Gets or sets the name of the DeployBase object. */
 	name: string;
 }
 
-export interface GetConnectionInformationResponse {
-	data: {
-		[key: string]: DatabaseInfo[];
-	};
-	errors: {
-		[key: string]: string;
-	};
+/** FTP server connection details. */
+export interface FtpConnection {
+	/** FTP server host. */
+	host: string;
+	/** Username for FTP server. */
+	username: string;
+	/** Password for the provided username. */
+	password: string;
+	/** FTP server port. */
+	port: number;
+	/** Encryption method for FTP connection. */
+	encryption: FtpEncryption;
 }
 
-export interface JobData extends CreateJobRequest {
-	id: string;
-}
-
-export interface JobEntity extends JobBase {
-	id: ObjectId;
-	idDeploy: ObjectId;
-	idBackup: ObjectId;
-}
-
-export interface LocalDeployBase extends DeployBase {
-	/** Path where files are moved */
+/** FTP deployment details. */
+export interface FtpDeployBase extends DeployBase {
+	/** FTP deployment connection details. */
+	connection: FtpConnection;
+	/** The file system path where deployment files are outputted. */
 	outputPath: string;
 }
 
-export interface LocalDeployData extends LocalDeployBase {
+/** Data model for ftp deployment-related operations. */
+export interface FtpDeployData extends FtpDeployBase {
+	/** The unique identifier (ID) for the ftp deployment. */
 	id: string;
 }
 
-export interface LocalDeployEntity extends LocalDeployBase {
+export interface FtpDeployEntity extends FtpDeployBase {
 	id: ObjectId;
 }
 
-/** Backup job for a mongo connection */
-export interface MongoBackupTask extends BaseBackupTask {
+/** Types of FTP encryption methods. */
+export enum FtpEncryption {
+	None = "None",
+	Implicit = "Implicit",
+	Explicit = "Explicit",
+}
+
+/** Represents the response containing the information about the connections. */
+export interface GetConnectionInformationResponse {
+	/** The key is the connection's unique identifier, and the value is a list of database information. */
+	data: { [key: string]: DatabaseInfo[] };
+	/** The key is the operation's unique identifier, and the value is the error message. */
+	errors: { [key: string]: string };
+}
+
+/** Represents the type of backups that this job can handle. */
+export enum JobBackup {
+	Mongo = "Mongo",
+}
+
+/** Represents a data model used for job-related operations. */
+export interface JobData extends CreateJobRequest {
+	/** Gets or sets the unique identifier (ID) of the job. */
+	id: string;
+}
+
+/** Represents the types of deployment this job supports. */
+export enum JobDeploy {
+	Local = "Local",
+	Ftp = "Ftp",
+}
+
+/** The JobEntity class inherits from JobBase and serves as a data container for job information. */
+export interface JobEntity extends JobBase {
+	/** Gets or sets the Id of the related JobDeploy object. */
+	idDeploy: ObjectId;
+	/** Gets or sets the Id of the related JobBackup object. */
+	idBackup: ObjectId;
+	/** Gets or sets the unique identifier for the JobEntity object. */
+	id: ObjectId;
+}
+
+/** Serves as a data container for local deployment information. */
+export interface LocalDeployBase extends DeployBase {
+	/** The file system path where deployment files are outputted. */
+	outputPath: string;
+}
+
+/** Represents a data model for local deployment-related operations. */
+export interface LocalDeployData extends LocalDeployBase {
+	/** Gets or sets the unique identifier (ID) for the local deployment. */
+	id: string;
+}
+
+/** The class represents a local deployment entity. */
+export interface LocalDeployEntity extends LocalDeployBase {
+	/** Gets or sets the ObjectId of the local deployment entity. This field is also the BsonId. */
+	id: ObjectId;
+}
+
+/** JobBackup job for a mongo connection */
+export interface MongoBackupTaskBase extends BaseBackupTask {
 	/** Id of the mongo connection */
 	idConnection: string;
 	/** Mapping of a database to a list of collection to backup */
-	elements: {
-		[key: string]: string[];
-	};
+	elements: { [key: string]: string[] };
 }
 
-export interface MongoBackupTaskData extends MongoBackupTask {
-	/** JobDetail's id */
+/** Represents a data model used for MongoDB backup task-related operations. */
+export interface MongoBackupTaskData extends MongoBackupTaskBase {
+	/** Gets or sets the unique identifier (ID) of the job detail associated with this MongoBackupTaskBase. */
 	id: string;
 }
 
-export interface MongoBackupTaskEntity extends MongoBackupTask {
+/** This class represents the entities of the MongoDB backup tasks. */
+export interface MongoBackupTaskEntity extends MongoBackupTaskBase {
+	/** Gets or sets the ID of the MongoDB backup task entity. */
 	id: ObjectId;
 }
 
+/** The MongoConnectionBase class is used to establish connections to MongoDB. */
 export interface MongoConnectionBase {
+	/** Gets or sets the name for the MongoConnectionBase object. This property is required. */
 	name: string;
+	/** Gets or sets the Connection String for the MongoDB connection entity. */
+	connectionString: string;
 }
 
+/** Represents a data model used for MongoDB connection operations. */
 export interface MongoConnectionData extends MongoConnectionBase {
+	/** Gets or sets the unique identifier (ID) for this MongoDB connection. */
 	id: string;
 }
 
+/** This class represents the entities of the MongoDB connections. */
 export interface MongoConnectionEntity extends MongoConnectionBase {
+	/** Gets or sets the ID of the MongoDB connection entity. */
 	id: ObjectId;
-	connectionString: string;
 }
 
 export interface ObjectId {
@@ -1113,21 +1416,11 @@ export class ApiException extends Error {
 	override message: string;
 	status: number;
 	response: string;
-	headers: {
-		[key: string]: any;
-	};
+	headers: { [key: string]: any };
 	result: any;
 	protected isApiException = true;
 
-	constructor(
-		message: string,
-		status: number,
-		response: string,
-		headers: {
-			[key: string]: any;
-		},
-		result: any
-	) {
+	constructor(message: string, status: number, response: string, headers: { [key: string]: any }, result: any) {
 		super();
 
 		this.message = message;
@@ -1142,15 +1435,7 @@ export class ApiException extends Error {
 	}
 }
 
-function throwException(
-	message: string,
-	status: number,
-	response: string,
-	headers: {
-		[key: string]: any;
-	},
-	result?: any
-): any {
+function throwException(message: string, status: number, response: string, headers: { [key: string]: any }, result?: any): any {
 	if (result !== null && result !== undefined) throw result;
 	else throw new ApiException(message, status, response, headers, null);
 }

@@ -3,16 +3,11 @@ import { Autocomplete, Button, Dialog, DialogActions, DialogContent, DialogTitle
 import { useAppDispatch, useAppSelector } from "@store";
 import { IdConnection, MongoConnectionMeta } from "@modules/databases/mongo/mongo.database.types";
 import { usePropsState } from "@hooks/usePropsState";
-import { DatabaseInfo, MongoBackupTask } from "@apis/backend/generated";
+import { DatabaseInfo, MongoBackupTaskBase } from "@apis/backend/generated";
 import { manageMongoTasks } from "@modules/tasks/tasks.async.actions";
 import { deepClone } from "@mui/x-data-grid/utils/utils";
 import { MongoBackupElements } from "@components/tasks/mongo/MongoBackupElements";
-
-export interface AddEntityProps<T> {
-	open: boolean;
-	setClose: () => void;
-	update?: T;
-}
+import { AddEntityProps } from "@components/entity/EntityManager";
 
 const emptyObject = {};
 
@@ -26,7 +21,7 @@ export function AddMongoTask({ open, setClose, update }: AddEntityProps<IdConnec
 
 	const [name, setName] = usePropsState(previousValue?.name ?? "");
 	const [idConnection, setIdConnection] = usePropsState<string | undefined>(previousValue?.idConnection);
-	const [elements, setElements] = usePropsState<MongoBackupTask["elements"]>(previousValue?.elements ?? emptyObject);
+	const [elements, setElements] = usePropsState<MongoBackupTaskBase["elements"]>(previousValue?.elements ?? emptyObject);
 
 	const updateName = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,7 +78,7 @@ export function AddMongoTask({ open, setClose, update }: AddEntityProps<IdConnec
 
 	return (
 		<Dialog open={open} onClose={setClose} maxWidth={"md"} fullWidth>
-			<DialogTitle>{update ? "Update" : "Create"} a mongo backup task</DialogTitle>
+			<DialogTitle align={"center"}>{update ? "Update" : "Create"} a mongo backup task</DialogTitle>
 			<DialogContent dividers>
 				<Stack spacing={3} p={3}>
 					<TextField onChange={updateName} disabled={!!update} value={name} label={"Name"} />

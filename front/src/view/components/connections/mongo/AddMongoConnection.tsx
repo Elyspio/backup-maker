@@ -5,12 +5,7 @@ import { manageMongoConnections } from "@modules/databases/mongo/mongo.database.
 import { IdConnection } from "@modules/databases/mongo/mongo.database.types";
 import { AsyncThunkAction } from "@reduxjs/toolkit";
 import { usePropsState } from "@hooks/usePropsState";
-
-export interface AddEntityProps<T> {
-	open: boolean;
-	setClose: () => void;
-	update?: T;
-}
+import { AddEntityProps } from "@components/entity/EntityManager";
 
 export function AddMongoConnection({ open, setClose, update }: AddEntityProps<IdConnection>) {
 	const updateName = useAppSelector((s) => s.databases.mongo.connections[update!]?.name);
@@ -44,8 +39,8 @@ export function AddMongoConnection({ open, setClose, update }: AddEntityProps<Id
 	}, [update, name, connectionString, dispatch, setClose]);
 
 	return (
-		<Dialog open={open} onClose={setClose} maxWidth={"md"} fullWidth>
-			<DialogTitle>{update ? "Update" : "Create"} a mongodb connection</DialogTitle>
+		<Dialog open={open} onClose={setClose} maxWidth={"xs"} fullWidth>
+			<DialogTitle align={"center"}>{update ? "Update" : "Create"} a mongodb connection</DialogTitle>
 			<DialogContent dividers>
 				<Stack spacing={3} p={3}>
 					<TextField onChange={updateField("name")} disabled={!!update} value={name} label={"Name"} />

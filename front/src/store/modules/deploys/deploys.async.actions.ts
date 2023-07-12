@@ -1,43 +1,81 @@
 import { createAsyncActionGenerator, getService } from "@store/utils/utils.actions";
-import { LocalDeployBase, LocalDeployData } from "@apis/backend/generated";
+import { FtpDeployBase, FtpDeployData, LocalDeployBase, LocalDeployData } from "@apis/backend/generated";
 import { toast } from "react-toastify";
 import { IdConnection } from "@modules/databases/mongo/mongo.database.types";
 import { DeployService } from "@services/deploy.service";
 
-const createAsyncThunk = createAsyncActionGenerator("databases/mongo");
+const createAsyncThunkLocal = createAsyncActionGenerator("deploys/local");
 
 export const manageLocalDeploy = {
-	add: createAsyncThunk("deploy/mongo/add", (arg: LocalDeployBase, { extra }) => {
+	add: createAsyncThunkLocal("add", (arg: LocalDeployBase, { extra }) => {
 		const databaseMongoService = getService(DeployService, extra);
 
 		return toast.promise(databaseMongoService.local.add(arg), {
-			error: `Could not create "${arg.name}" connection`,
-			success: `The mongo connection "${arg.name}" has been created`,
+			error: `Could not create "${arg.name}" local deploy`,
+			success: `The local deploy "${arg.name}" has been created`,
 		});
 	}),
-	delete: createAsyncThunk("deploy/mongo/delete", (idDeploy: IdConnection, { extra, getState }) => {
+	delete: createAsyncThunkLocal("delete", (idDeploy: IdConnection, { extra, getState }) => {
 		const state = getState();
 
 		const databaseMongoService = getService(DeployService, extra);
 
-		const con = state.deploys.locals[idDeploy];
+		const con = state.deploys.local[idDeploy];
 
 		return toast.promise(databaseMongoService.local.remove(idDeploy), {
-			error: `Could not delate "${con.name}" connection`,
-			success: `The mongo connection "${con.name}" has been deleted`,
+			error: `Could not delate "${con.name}" local deploy`,
+			success: `The local deploy "${con.name}" has been deleted`,
 		});
 	}),
-	getAll: createAsyncThunk("deploy/mongo/get-all", (_, { extra }) => {
+	getAll: createAsyncThunkLocal("get-all", (_, { extra }) => {
 		const databaseMongoService = getService(DeployService, extra);
 
 		return databaseMongoService.local.getAll();
 	}),
-	update: createAsyncThunk("deploy/mongo/update", (deploy: LocalDeployData, { extra }) => {
+	update: createAsyncThunkLocal("update", (deploy: LocalDeployData, { extra }) => {
 		const databaseMongoService = getService(DeployService, extra);
 
 		return toast.promise(databaseMongoService.local.update(deploy), {
 			error: `Could not update "${deploy.name}" local deploy`,
 			success: `The local deploy "${deploy.name}" has been updated`,
+		});
+	}),
+};
+
+const createAsyncThunkFtp = createAsyncActionGenerator("deploys/ftp");
+
+export const manageFtpDeploy = {
+	add: createAsyncThunkFtp("add", (arg: FtpDeployBase, { extra }) => {
+		const databaseMongoService = getService(DeployService, extra);
+
+		return toast.promise(databaseMongoService.ftp.add(arg), {
+			error: `Could not create "${arg.name}" FTP deploy`,
+			success: `The FTP deploy "${arg.name}" has been created`,
+		});
+	}),
+	delete: createAsyncThunkFtp("delete", (idDeploy: IdConnection, { extra, getState }) => {
+		const state = getState();
+
+		const databaseMongoService = getService(DeployService, extra);
+
+		const con = state.deploys.local[idDeploy];
+
+		return toast.promise(databaseMongoService.ftp.remove(idDeploy), {
+			error: `Could not delete "${con.name}" FTP deploy`,
+			success: `The FTP deploy "${con.name}" has been deleted`,
+		});
+	}),
+	getAll: createAsyncThunkFtp("get-all", (_, { extra }) => {
+		const databaseMongoService = getService(DeployService, extra);
+
+		return databaseMongoService.ftp.getAll();
+	}),
+	update: createAsyncThunkFtp("update", (deploy: FtpDeployData, { extra }) => {
+		const databaseMongoService = getService(DeployService, extra);
+
+		return toast.promise(databaseMongoService.ftp.update(deploy), {
+			error: `Could not update "${deploy.name}" local deploy`,
+			success: `The FTP deploy "${deploy.name}" has been updated`,
 		});
 	}),
 };

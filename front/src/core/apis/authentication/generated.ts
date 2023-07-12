@@ -19,21 +19,21 @@ export class AuthenticationClient {
 	constructor(baseUrl?: string, instance?: AxiosInstance) {
 		this.instance = instance ? instance : axios.create();
 
-		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "http://localhost:4001";
+		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
 	}
 
 	/**
 	 * Final register step
-	 * @param hash user's password hashed with salt
-	 * @return the created user
+	 * @param body user's password hashed with salt
+	 * @return Created
 	 */
-	register(username: string, hash: string, cancelToken?: CancelToken | undefined): Promise<User> {
-		let url_ = this.baseUrl + "/api/auth/{username}";
+	register(username: string, body: string, cancelToken?: CancelToken | undefined): Promise<User> {
+		let url_ = this.baseUrl + "/api/auth/{username}/register/finalize";
 		if (username === undefined || username === null) throw new Error("The parameter 'username' must be defined.");
 		url_ = url_.replace("{username}", encodeURIComponent("" + username));
 		url_ = url_.replace(/[?&]$/, "");
 
-		const content_ = JSON.stringify(hash);
+		const content_ = JSON.stringify(body);
 
 		let options_: AxiosRequestConfig = {
 			data: content_,
@@ -61,48 +61,11 @@ export class AuthenticationClient {
 	}
 
 	/**
-	 * Change user's password
-	 * @param hash user's password hashed with salt
-	 * @return the created user
-	 */
-	changePassword(username: string, hash: string, cancelToken?: CancelToken | undefined): Promise<void> {
-		let url_ = this.baseUrl + "/api/auth/{username}";
-		if (username === undefined || username === null) throw new Error("The parameter 'username' must be defined.");
-		url_ = url_.replace("{username}", encodeURIComponent("" + username));
-		url_ = url_.replace(/[?&]$/, "");
-
-		const content_ = JSON.stringify(hash);
-
-		let options_: AxiosRequestConfig = {
-			data: content_,
-			method: "PUT",
-			url: url_,
-			headers: {
-				"Content-Type": "application/json",
-			},
-			cancelToken,
-		};
-
-		return this.instance
-			.request(options_)
-			.catch((_error: any) => {
-				if (isAxiosError(_error) && _error.response) {
-					return _error.response;
-				} else {
-					throw _error;
-				}
-			})
-			.then((_response: AxiosResponse) => {
-				return this.processChangePassword(_response);
-			});
-	}
-
-	/**
 	 * First register step
-	 * @return a salt for this username
+	 * @return Success
 	 */
 	initRegister(username: string, cancelToken?: CancelToken | undefined): Promise<InitRegisterResponse> {
-		let url_ = this.baseUrl + "/api/auth/{username}/init";
+		let url_ = this.baseUrl + "/api/auth/{username}/register/init";
 		if (username === undefined || username === null) throw new Error("The parameter 'username' must be defined.");
 		url_ = url_.replace("{username}", encodeURIComponent("" + username));
 		url_ = url_.replace(/[?&]$/, "");
@@ -131,11 +94,48 @@ export class AuthenticationClient {
 	}
 
 	/**
+	 * Change user's password
+	 * @param body user's password hashed with salt
+	 * @return No Content
+	 */
+	changePassword(username: string, body: string, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/auth/{username}/password/finalize";
+		if (username === undefined || username === null) throw new Error("The parameter 'username' must be defined.");
+		url_ = url_.replace("{username}", encodeURIComponent("" + username));
+		url_ = url_.replace(/[?&]$/, "");
+
+		const content_ = JSON.stringify(body);
+
+		let options_: AxiosRequestConfig = {
+			data: content_,
+			method: "PUT",
+			url: url_,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processChangePassword(_response);
+			});
+	}
+
+	/**
 	 * First step to change user's password
-	 * @return a salt for this username
+	 * @return Success
 	 */
 	initChangePassword(username: string, cancelToken?: CancelToken | undefined): Promise<InitRegisterResponse> {
-		let url_ = this.baseUrl + "/api/auth/{username}/init";
+		let url_ = this.baseUrl + "/api/auth/{username}/password/init";
 		if (username === undefined || username === null) throw new Error("The parameter 'username' must be defined.");
 		url_ = url_.replace("{username}", encodeURIComponent("" + username));
 		url_ = url_.replace(/[?&]$/, "");
@@ -165,15 +165,15 @@ export class AuthenticationClient {
 
 	/**
 	 * Final login step
-	 * @return a JWT for this user
+	 * @return Success
 	 */
-	login(username: string, hash: string, cancelToken?: CancelToken | undefined): Promise<string> {
-		let url_ = this.baseUrl + "/api/auth/{username}/login";
+	login(username: string, body: string, cancelToken?: CancelToken | undefined): Promise<string> {
+		let url_ = this.baseUrl + "/api/auth/{username}/login/finalize";
 		if (username === undefined || username === null) throw new Error("The parameter 'username' must be defined.");
 		url_ = url_.replace("{username}", encodeURIComponent("" + username));
 		url_ = url_.replace(/[?&]$/, "");
 
-		const content_ = JSON.stringify(hash);
+		const content_ = JSON.stringify(body);
 
 		let options_: AxiosRequestConfig = {
 			data: content_,
@@ -202,7 +202,7 @@ export class AuthenticationClient {
 
 	/**
 	 * First login step
-	 * @return a challenge for this username
+	 * @return Success
 	 */
 	initLogin(username: string, cancelToken?: CancelToken | undefined): Promise<InitVerifyResponse> {
 		let url_ = this.baseUrl + "/api/auth/{username}/login/init";
@@ -256,26 +256,6 @@ export class AuthenticationClient {
 		return Promise.resolve<User>(null as any);
 	}
 
-	protected processChangePassword(response: AxiosResponse): Promise<void> {
-		const status = response.status;
-		let _headers: any = {};
-		if (response.headers && typeof response.headers === "object") {
-			for (let k in response.headers) {
-				if (response.headers.hasOwnProperty(k)) {
-					_headers[k] = response.headers[k];
-				}
-			}
-		}
-		if (status === 204) {
-			const _responseText = response.data;
-			return Promise.resolve<void>(null as any);
-		} else if (status !== 200 && status !== 204) {
-			const _responseText = response.data;
-			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-		}
-		return Promise.resolve<void>(null as any);
-	}
-
 	protected processInitRegister(response: AxiosResponse): Promise<InitRegisterResponse> {
 		const status = response.status;
 		let _headers: any = {};
@@ -297,6 +277,26 @@ export class AuthenticationClient {
 			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
 		}
 		return Promise.resolve<InitRegisterResponse>(null as any);
+	}
+
+	protected processChangePassword(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
 	}
 
 	protected processInitChangePassword(response: AxiosResponse): Promise<InitRegisterResponse> {
@@ -377,12 +377,12 @@ export class JwtClient {
 	constructor(baseUrl?: string, instance?: AxiosInstance) {
 		this.instance = instance ? instance : axios.create();
 
-		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "http://localhost:4001";
+		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
 	}
 
 	/**
 	 * Verify if Jwt is still valid
-	 * @return a JWT for this user
+	 * @return Success
 	 */
 	verify(cancelToken?: CancelToken | undefined): Promise<boolean> {
 		let url_ = this.baseUrl + "/api/jwt/verify";
@@ -413,7 +413,7 @@ export class JwtClient {
 
 	/**
 	 * Get public RSA key used for Jwt validation
-	 * @return a JWT for this user
+	 * @return Success
 	 */
 	getValidationKey(cancelToken?: CancelToken | undefined): Promise<StringResponse> {
 		let url_ = this.baseUrl + "/api/jwt/validation-key";
@@ -444,7 +444,7 @@ export class JwtClient {
 
 	/**
 	 * Refresh a JWT
-	 * @return a JWT for this user
+	 * @return Success
 	 */
 	refreshJwt(cancelToken?: CancelToken | undefined): Promise<StringResponse> {
 		let url_ = this.baseUrl + "/api/jwt/refresh";
@@ -551,11 +551,12 @@ export class UsersClient {
 	constructor(baseUrl?: string, instance?: AxiosInstance) {
 		this.instance = instance ? instance : axios.create();
 
-		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "http://localhost:4001";
+		this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
 	}
 
 	/**
 	 * Get a specific user
+	 * @return Success
 	 */
 	get(id: string, cancelToken?: CancelToken | undefined): Promise<User> {
 		let url_ = this.baseUrl + "/api/users/{id}";
@@ -588,14 +589,15 @@ export class UsersClient {
 
 	/**
 	 * Update an user
+	 * @return No Content
 	 */
-	updateUser(id: string, user: User, cancelToken?: CancelToken | undefined): Promise<void> {
+	updateUser(id: string, body: User, cancelToken?: CancelToken | undefined): Promise<void> {
 		let url_ = this.baseUrl + "/api/users/{id}";
 		if (id === undefined || id === null) throw new Error("The parameter 'id' must be defined.");
 		url_ = url_.replace("{id}", encodeURIComponent("" + id));
 		url_ = url_.replace(/[?&]$/, "");
 
-		const content_ = JSON.stringify(user);
+		const content_ = JSON.stringify(body);
 
 		let options_: AxiosRequestConfig = {
 			data: content_,
@@ -623,6 +625,7 @@ export class UsersClient {
 
 	/**
 	 * Delete an user
+	 * @return No Content
 	 */
 	deleteUser(id: string, cancelToken?: CancelToken | undefined): Promise<void> {
 		let url_ = this.baseUrl + "/api/users/{id}";
@@ -653,6 +656,7 @@ export class UsersClient {
 
 	/**
 	 * Get all users
+	 * @return Success
 	 */
 	getAll(cancelToken?: CancelToken | undefined): Promise<User[]> {
 		let url_ = this.baseUrl + "/api/users";
@@ -683,14 +687,14 @@ export class UsersClient {
 
 	/**
 	 * Get if there is at least one user in database
-	 * @return If at least one user exist in database
+	 * @return Success
 	 */
 	checkIfUsersExist(cancelToken?: CancelToken | undefined): Promise<boolean> {
 		let url_ = this.baseUrl + "/api/users/any";
 		url_ = url_.replace(/[?&]$/, "");
 
 		let options_: AxiosRequestConfig = {
-			method: "POST",
+			method: "GET",
 			url: url_,
 			headers: {
 				Accept: "application/json",
@@ -822,6 +826,85 @@ export class UsersClient {
 	}
 }
 
+export interface Authentication {
+	roles: AuthenticationRoles[];
+}
+
+export enum AuthenticationRoles {
+	User = "User",
+	Admin = "Admin",
+}
+
+export interface Authorizations {
+	authentication: Authentication;
+	videyo?: Videyo | undefined;
+	sousMarinJaune?: SousMarinJaune | undefined;
+	backupMaker?: BackupMaker | undefined;
+}
+
+export interface BackupMaker {
+	roles: BackupMakerRole[];
+}
+
+export enum BackupMakerRole {
+	Admin = "Admin",
+}
+
+export interface Credentials {
+	github?: Github | undefined;
+	docker?: Docker | undefined;
+}
+
+export interface Docker {
+	username: string;
+	password: string;
+}
+
+export interface Github {
+	token: string;
+	user: string;
+}
+
+export interface InitRegisterResponse {
+	salt: string;
+}
+
+export interface InitVerifyResponse {
+	salt: string;
+	challenge: string;
+}
+
+export interface ObjectId {
+	readonly timestamp?: number;
+	readonly machine?: number;
+	readonly pid?: number;
+	readonly increment?: number;
+	readonly creationTime?: string;
+}
+
+export interface Settings {
+	theme: SettingsType;
+}
+
+export enum SettingsType {
+	Dark = "Dark",
+	Light = "Light",
+	System = "System",
+}
+
+export interface SousMarinJaune {
+	roles: SousMarinJauneRole[];
+}
+
+export enum SousMarinJauneRole {
+	Admin = "Admin",
+	User = "User",
+}
+
+export interface StringResponse {
+	data: string;
+}
+
 export interface UserBase {
 	username: string;
 	hash?: string | undefined;
@@ -838,44 +921,8 @@ export interface User extends UserBase {
 	createdAt: string;
 }
 
-export interface Settings {
-	theme: SettingsType;
-}
-
-export enum SettingsType {
-	Dark = "Dark",
-	Light = "Light",
-	System = "System",
-}
-
-export interface Credentials {
-	github?: Github | undefined;
-	docker?: Docker | undefined;
-}
-
-export interface Github {
-	token: string;
-	user: string;
-}
-
-export interface Docker {
-	username: string;
-	password: string;
-}
-
-export interface Authorizations {
-	authentication: Authentication;
-	videyo?: Videyo | undefined;
-	sousMarinJaune?: SousMarinJaune | undefined;
-}
-
-export interface Authentication {
-	roles: AuthenticationRoles[];
-}
-
-export enum AuthenticationRoles {
-	User = "User",
-	Admin = "Admin",
+export interface UserEntity extends UserBase {
+	id: ObjectId;
 }
 
 export interface Videyo {
@@ -887,47 +934,15 @@ export enum VideyoRole {
 	Admin = "Admin",
 }
 
-export interface SousMarinJaune {
-	roles: SousMarinJauneRole[];
-}
-
-export enum SousMarinJauneRole {
-	Admin = "Admin",
-	User = "User",
-}
-
-export interface InitRegisterResponse {
-	salt: string;
-}
-
-export interface InitVerifyResponse {
-	salt: string;
-	challenge: string;
-}
-
-export interface StringResponse {
-	data: string;
-}
-
 export class ApiException extends Error {
 	override message: string;
 	status: number;
 	response: string;
-	headers: {
-		[key: string]: any;
-	};
+	headers: { [key: string]: any };
 	result: any;
 	protected isApiException = true;
 
-	constructor(
-		message: string,
-		status: number,
-		response: string,
-		headers: {
-			[key: string]: any;
-		},
-		result: any
-	) {
+	constructor(message: string, status: number, response: string, headers: { [key: string]: any }, result: any) {
 		super();
 
 		this.message = message;
@@ -942,15 +957,7 @@ export class ApiException extends Error {
 	}
 }
 
-function throwException(
-	message: string,
-	status: number,
-	response: string,
-	headers: {
-		[key: string]: any;
-	},
-	result?: any
-): any {
+function throwException(message: string, status: number, response: string, headers: { [key: string]: any }, result?: any): any {
 	if (result !== null && result !== undefined) throw result;
 	else throw new ApiException(message, status, response, headers, null);
 }

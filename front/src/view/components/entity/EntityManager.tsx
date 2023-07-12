@@ -1,9 +1,11 @@
 import { useModal } from "@hooks/useModal";
 import React, { useCallback } from "react";
-import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import { AppAccordion } from "@components/utils/accordion/AppAccordion";
 import { Add } from "@mui/icons-material";
-import { AddEntityProps } from "@components/connections/mongo/AddMongoConnection";
+import { IconWithTooltip } from "@components/utils/tooltip/IconWithTooltip";
+import { usePermissions } from "@hooks/usePermissions";
+import { BackupMakerRole } from "@apis/authentication/generated";
 
 type EntityManagerProps<T> = {
 	AddComponent: (props: AddEntityProps<T>) => React.JSX.Element;
@@ -11,6 +13,12 @@ type EntityManagerProps<T> = {
 	title: string;
 	elements: React.JSX.Element;
 };
+
+export interface AddEntityProps<T> {
+	open: boolean;
+	setClose: () => void;
+	update?: T;
+}
 
 export function EntityManager<T>({ name, elements, AddComponent, title }: EntityManagerProps<T>) {
 	const modal = useModal(false);
@@ -23,17 +31,24 @@ export function EntityManager<T>({ name, elements, AddComponent, title }: Entity
 		[modal]
 	);
 
+	const isAdmin = usePermissions(BackupMakerRole.Admin);
+
 	return (
 		<Stack spacing={2}>
 			<AppAccordion.Frame>
 				<AppAccordion.Summary>
 					<Stack direction={"row"} justifyContent={"space-between"} width={150} alignItems={"center"}>
 						<Typography>{name}</Typography>
-						<Tooltip title={title} placement={"right"}>
-							<IconButton onClick={addEntity} color={"success"}>
-								<Add />
-							</IconButton>
-						</Tooltip>
+						<IconWithTooltip
+							title={title}
+							disabledTitle={"You must be an admin"}
+							disabled={!isAdmin}
+							onClick={addEntity}
+							color={"success"}
+							tooltipProps={{ placement: "right" }}
+						>
+							<Add />
+						</IconWithTooltip>
 					</Stack>
 				</AppAccordion.Summary>
 				<AppAccordion.Details>{elements}</AppAccordion.Details>

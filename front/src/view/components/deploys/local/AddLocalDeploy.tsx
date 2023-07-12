@@ -5,15 +5,10 @@ import { IdConnection } from "@modules/databases/mongo/mongo.database.types";
 import { AsyncThunkAction } from "@reduxjs/toolkit";
 import { usePropsState } from "@hooks/usePropsState";
 import { manageLocalDeploy } from "@modules/deploys/deploys.async.actions";
-
-export interface AddEntityProps<T> {
-	open: boolean;
-	setClose: () => void;
-	update?: T;
-}
+import { AddEntityProps } from "../../entity/EntityManager";
 
 export function AddLocalDeploy({ open, setClose, update }: AddEntityProps<IdConnection>) {
-	const previousValue = useAppSelector((s) => s.deploys.locals[update!]);
+	const previousValue = useAppSelector((s) => s.deploys.local[update!]);
 
 	const dispatch = useAppDispatch();
 
@@ -45,8 +40,12 @@ export function AddLocalDeploy({ open, setClose, update }: AddEntityProps<IdConn
 	}, [update, name, outputPath, dispatch, setClose]);
 
 	return (
-		<Dialog open={open} onClose={setClose} maxWidth={"md"} fullWidth>
-			<DialogTitle>{update ? "Update" : "Create"} a local deployment configuration</DialogTitle>
+		<Dialog open={open} onClose={setClose} maxWidth={"xs"} fullWidth>
+			<DialogTitle>
+				{" "}
+				align={"center"}
+				{update ? "Update" : "Create"} a local deployment configuration
+			</DialogTitle>
 			<DialogContent dividers>
 				<Stack spacing={3} p={3}>
 					<TextField onChange={updateField("name")} disabled={!!update} value={name} label={"Name"} />

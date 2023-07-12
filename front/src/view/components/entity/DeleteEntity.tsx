@@ -26,7 +26,7 @@ export function DeleteEntity({ title, open, setClose, description, entity: { id,
 
 	return (
 		<Dialog open={open} onClose={setClose}>
-			<DialogTitle>{title}</DialogTitle>
+			<DialogTitle align={"center"}>{title}</DialogTitle>
 			<DialogContent dividers>
 				<Stack direction={"row"} spacing={1}>
 					<Typography whiteSpace={"nowrap"}>Are you sure that you want to delete</Typography>
