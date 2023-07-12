@@ -2,14 +2,13 @@
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
 
-
 /// <summary>
-/// Logging Extensions methods for <see cref="IServiceCollection"/> 
+///     Logging Extensions methods for <see cref="IServiceCollection" />
 /// </summary>
 public static class LoggingExtensions
 {
 	/// <summary>
-	/// Activate logging
+	///     Activate logging
 	/// </summary>
 	/// <param name="host"></param>
 	/// <returns></returns>

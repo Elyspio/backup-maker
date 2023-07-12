@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace BackupMaker.Api.Adapters.Rest.Injections;
 
 /// <summary>
-/// Adapter module for REST services, implementing the IDotnetModule interface.
+///     Adapter module for REST services, implementing the IDotnetModule interface.
 /// </summary>
 public class RestAdapterModule : IDotnetModule
 {

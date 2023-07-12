@@ -8,7 +8,7 @@ using MongoDB.Bson;
 namespace BackupMaker.Api.Core.Injections;
 
 /// <summary>
-/// Core module responsible for configuring and registering services 
+///     Core module responsible for configuring and registering services
 /// </summary>
 public class CoreModule : IDotnetModule
 {
@@ -16,7 +16,7 @@ public class CoreModule : IDotnetModule
 	public void Load(IServiceCollection services, IConfiguration configuration)
 	{
 		var nsp = typeof(CoreModule).Namespace!;
-		var baseNamespace = nsp[..nsp.LastIndexOf(".")];
+		var baseNamespace = nsp[..nsp.LastIndexOf(".", StringComparison.Ordinal)];
 		services.Scan(scan => scan
 			.FromAssemblyOf<CoreModule>().AddClasses(classes => classes.InNamespaces(baseNamespace + ".Services"))
 			.AsImplementedInterfaces()
@@ -24,7 +24,7 @@ public class CoreModule : IDotnetModule
 
 		services.Scan(scan => scan
 			.FromAssemblyOf<CoreModule>().AddClasses(classes => classes.InNamespaces(baseNamespace + ".Assemblers"))
-			.AsSelf()
+			.AsSelfWithInterfaces()
 			.WithSingletonLifetime());
 
 		TypeAdapterConfig.GlobalSettings.ForType<Guid, ObjectId>().MapWith(id => id.AsObjectId());

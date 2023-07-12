@@ -1,12 +1,12 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Assemblers;
-using BackupMaker.Api.Abstractions.Models.Entities;
-using BackupMaker.Api.Abstractions.Models.Transports;
+using BackupMaker.Api.Abstractions.Models.Entities.Deploy;
+using BackupMaker.Api.Abstractions.Models.Transports.Deploy;
 using Mapster;
 
 namespace BackupMaker.Api.Core.Assemblers;
 
 /// <inheritdoc />
-public class LocalDeployAssembler : BaseAssembler<LocalDeployEntity, LocalDeployData>
+public class LocalDeployAssembler : BaseAssembler<LocalDeployData, LocalDeployEntity>
 {
 	/// <inheritdoc />
 	public override LocalDeployData Convert(LocalDeployEntity obj)

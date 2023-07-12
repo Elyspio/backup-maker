@@ -3,12 +3,13 @@
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Helpers;
 
 /// <summary>
-/// AssemblyHelper is a static helper class that provides methods for retrieving classes which  implement a specific interface from a specified assembly.
+///     AssemblyHelper is a static helper class that provides methods for retrieving classes which  implement a specific
+///     interface from a specified assembly.
 /// </summary>
 public static class AssemblyHelper
 {
 	/// <summary>
-	/// Get the names of all classes in TAssembly which implement TInterface.
+	///     Get the names of all classes in TAssembly which implement TInterface.
 	/// </summary>
 	/// <typeparam name="TAssembly">Any class within the target assembly.</typeparam>
 	/// <typeparam name="TInterface">The interface that the classes should implement.</typeparam>
@@ -22,8 +23,8 @@ public static class AssemblyHelper
 
 
 	/// <summary>
-	/// Get a collection of all types in assemblies referenced by the assembly of TAssembly,
-	/// including the Types in TAssembly itself.
+	///     Get a collection of all types in assemblies referenced by the assembly of TAssembly,
+	///     including the Types in TAssembly itself.
 	/// </summary>
 	/// <typeparam name="TAssembly">Any class within the target assembly.</typeparam>
 	/// <returns>All types in TAssembly and its referenced assemblies.</returns>

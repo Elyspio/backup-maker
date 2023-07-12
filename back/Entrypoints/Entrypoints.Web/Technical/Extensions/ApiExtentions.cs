@@ -1,12 +1,15 @@
 ﻿using BackupMaker.Api.Entrypoints.Web.Technical.Filters;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System.Text.Json.Serialization;
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
 
 /// <summary>
-/// Api Extensions methods for <see cref="IServiceCollection"/> 
+///     Api Extensions methods for <see cref="IServiceCollection" />
 /// </summary>
 public static class ApiExtentions
 {
@@ -19,6 +22,7 @@ public static class ApiExtentions
 	{
 		services.AddEndpointsApiExplorer();
 
+		// services.AddSingleton<CustomAuthorizeFilter>();
 
 		services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
@@ -31,13 +35,14 @@ public static class ApiExtentions
 					o.Filters.Add<HttpExceptionFilter>();
 				}
 			)
-			.AddJsonOptions(x =>
+			.AddNewtonsoftJson(x =>
 			{
-				// serialize enums as strings in api responses (e.g. Role)
-				x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter(allowIntegerValues: false));
+				x.SerializerSettings.Formatting = Formatting.None;
+				x.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
-				// ignore omitted parameters on models to enable optional params (e.g. User update)
-				x.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+				// x.SerializerSettings.ContractResolver = new JsonContractResolver();
+				x.SerializerSettings.Converters.Add(new StringEnumConverter());
+				x.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
 			});
 
 		return services;

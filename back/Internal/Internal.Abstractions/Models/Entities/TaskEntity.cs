@@ -1,23 +1,25 @@
-﻿using MongoDB.Bson;
+﻿using BackupMaker.Api.Abstractions.Interfaces.Business;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+
 // ReSharper disable All
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace BackupMaker.Api.Abstractions.Models.Entities;
 
-public class TaskEntity
+public class TaskEntity : IEntity
 {
-	[BsonId]
-	[BsonRepresentation(BsonType.ObjectId)]
-	public ObjectId Id { get; set; }
-
 	public DateTime CreatedAt { get; set; } = DateTime.Now;
 	public List<string> Paths { get; set; } = new();
 	public string? Description { get; set; }
 	public List<string> Exclusions { get; set; } = new();
 	public List<TaskRun> Runs { get; set; } = new();
 	public List<TaskRemote> Remotes { get; set; } = new();
+
+	[BsonId]
+	[BsonRepresentation(BsonType.ObjectId)]
+	public ObjectId Id { get; set; }
 }
 
 public class TaskRun

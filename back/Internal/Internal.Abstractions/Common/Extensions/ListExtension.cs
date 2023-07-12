@@ -3,18 +3,19 @@
 namespace BackupMaker.Api.Abstractions.Common.Extensions;
 
 /// <summary>
-/// Provides extension methods for working with list data types.
+///     Provides extension methods for working with list data types.
 /// </summary>
 public static class ListExtension
 {
 	/// <summary>
-	/// Executes a provided asynchronous method concurrently on the elements of an IEnumerable and returns a ParallelResult object.
+	///     Executes a provided asynchronous method concurrently on the elements of an IEnumerable and returns a ParallelResult
+	///     object.
 	/// </summary>
 	/// <typeparam name="TInput">Input type.</typeparam>
 	/// <typeparam name="TRet">Return type.</typeparam>
 	/// <param name="elements">The elements to process.</param>
 	/// <param name="action">Asynchronous method to apply on every element.</param>
-	/// <returns>A task that represents the operation and returns a <see cref="ParallelResult{TInput, TRet}"/></returns>
+	/// <returns>A task that represents the operation and returns a <see cref="ParallelResult{TInput, TRet}" /></returns>
 	public async static Task<ParallelResult<TInput, TRet>> Parallelize<TInput, TRet>(this IEnumerable<TInput> elements, Func<TInput, Task<TRet>> action) where TInput : notnull
 	{
 		var innerExceptions = new ConcurrentDictionary<TInput, Exception>();
@@ -44,12 +45,13 @@ public static class ListExtension
 	}
 
 	/// <summary>
-	/// Executes a provided asynchronous method concurrently on the elements of an IEnumerable and returns a ParallelResult object (no return data).
+	///     Executes a provided asynchronous method concurrently on the elements of an IEnumerable and returns a ParallelResult
+	///     object (no return data).
 	/// </summary>
 	/// <typeparam name="TInput">Input type.</typeparam>
 	/// <param name="elements">The elements to process.</param>
 	/// <param name="action">Asynchronous method to apply on every element.</param>
-	/// <returns>A task that represents the operation and returns a <see cref="ParallelResult{TInput}"/></returns>
+	/// <returns>A task that represents the operation and returns a <see cref="ParallelResult{TInput}" /></returns>
 	public async static Task<ParallelResult<TInput>> Parallelize<TInput>(this IEnumerable<TInput> elements, Func<TInput, Task> action) where TInput : notnull
 	{
 		var innerExceptions = new ConcurrentDictionary<TInput, Exception>();
@@ -75,58 +77,58 @@ public static class ListExtension
 	}
 
 	/// <summary>
-	/// Represents the result of a parallel operation with a collection of return data and exceptions.
+	///     Represents the result of a parallel operation with a collection of return data and exceptions.
 	/// </summary>
 	/// <typeparam name="TInput">Input type.</typeparam>
 	/// <typeparam name="TRet">Return type.</typeparam>
 	public class ParallelResult<TInput, TRet> where TInput : notnull
 	{
 		/// <summary>
-		/// Gets or sets the list of return data.
+		///     Gets or sets the list of return data.
 		/// </summary>
 		public required List<TRet> Data { get; set; }
 
 		/// <summary>
-		/// Gets or sets the list of exceptions that occurred during processing.
+		///     Gets or sets the list of exceptions that occurred during processing.
 		/// </summary>
 		public required Dictionary<TInput, Exception> Exceptions { get; set; }
 
 		/// <summary>
-		/// Gets or sets the overall status of the parallel operation.
+		///     Gets or sets the overall status of the parallel operation.
 		/// </summary>
 		public ParallelStatus Status { get; set; }
 	}
 
 	/// <summary>
-	/// Represents the result of a parallel operation with a collection of exceptions.
+	///     Represents the result of a parallel operation with a collection of exceptions.
 	/// </summary>
 	/// <typeparam name="TInput">Input type.</typeparam>
 	public class ParallelResult<TInput> where TInput : notnull
 	{
 		/// <summary>
-		/// Gets or sets the list of exceptions that occurred during processing.
+		///     Gets or sets the list of exceptions that occurred during processing.
 		/// </summary>
 		public required Dictionary<TInput, Exception> Exceptions { get; set; }
 
 		/// <summary>
-		/// Gets or sets the overall status of the parallel operation.
+		///     Gets or sets the overall status of the parallel operation.
 		/// </summary>
 		public ParallelStatus Status { get; set; }
 	}
 }
 
 /// <summary>
-/// Enumerates the possible status of a parallel operation.
+///     Enumerates the possible status of a parallel operation.
 /// </summary>
 public enum ParallelStatus
 {
 	/// <summary>
-	/// Indicates that the parallel operation succeeded without unhandled exceptions.
+	///     Indicates that the parallel operation succeeded without unhandled exceptions.
 	/// </summary>
 	Succeed,
-	
+
 	/// <summary>
-	/// Indicates that the parallel operation encountered unhandled exceptions.
+	///     Indicates that the parallel operation encountered unhandled exceptions.
 	/// </summary>
 	Faulted
 }

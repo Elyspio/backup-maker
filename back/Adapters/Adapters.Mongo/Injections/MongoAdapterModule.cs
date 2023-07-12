@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace BackupMaker.Api.Adapters.Mongo.Injections;
 
 /// <summary>
-/// Inject repositories in DI
+///     Inject repositories in DI
 /// </summary>
 public class MongoAdapterModule : IDotnetModule
 {

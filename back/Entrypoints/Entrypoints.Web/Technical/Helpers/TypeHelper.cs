@@ -7,7 +7,6 @@ using System.Text.Json.Serialization;
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Helpers;
 
 /// <summary>
-/// 
 /// </summary>
 public static class TypeHelper
 {

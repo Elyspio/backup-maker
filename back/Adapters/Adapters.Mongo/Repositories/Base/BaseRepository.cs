@@ -1,4 +1,4 @@
-﻿using BackupMaker.Api.Abstractions.Common.Technical;
+﻿using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
 using BackupMaker.Api.Adapters.Mongo.Technical;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -10,17 +10,17 @@ using MongoDB.Driver;
 namespace BackupMaker.Api.Adapters.Mongo.Repositories.Base;
 
 /// <summary>
-///		Manage entity in MongoDB
+///     Manage entity in MongoDB
 /// </summary>
 /// <typeparam name="T">Entity implementation</typeparam>
 public abstract class BaseRepository<T> : TracingContext
 {
 	private readonly string _collectionName;
 	private readonly MongoContext _context;
-	private readonly ILogger _logger;
+	private protected readonly ILogger _logger;
 
 	/// <summary>
-	/// Default constructor
+	///     Default constructor
 	/// </summary>
 	/// <param name="configuration"></param>
 	/// <param name="logger"></param>
@@ -39,13 +39,13 @@ public abstract class BaseRepository<T> : TracingContext
 	}
 
 	/// <summary>
-	///	Implementation of the collection
+	///     Implementation of the collection
 	/// </summary>
 	protected IMongoCollection<T> EntityCollection => _context.MongoDatabase.GetCollection<T>(_collectionName);
 
 
 	/// <summary>
-	/// Create an index for this collection
+	///     Create an index for this collection
 	/// </summary>
 	/// <param name="properties"></param>
 	/// <param name="unique"></param>

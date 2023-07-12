@@ -1,7 +1,10 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Helpers;
-using BackupMaker.Api.Abstractions.Common.Technical;
+using BackupMaker.Api.Abstractions.Interfaces.Clients;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
+using BackupMaker.Api.Abstractions.Interfaces.Services.Deploy;
+using BackupMaker.Api.Abstractions.Models.Base.Job;
+using BackupMaker.Api.Abstractions.Models.Entities.Jobs;
 using BackupMaker.Api.Abstractions.Models.Transports.Jobs;
 using BackupMaker.Api.Abstractions.Models.Transports.Requests;
 using BackupMaker.Api.Core.Assemblers;
@@ -10,45 +13,52 @@ using Microsoft.Extensions.Logging;
 namespace BackupMaker.Api.Core.Services;
 
 /// <inheritdoc cref="IJobService" />
-public class JobService(IJobRepository jobRepository, ILogger<JobService> logger, JobAssembler jobAssembler) : TracingContext(logger), IJobService
+internal class JobService(IJobRepository jobRepository, ILogger<JobService> logger, JobAssembler jobAssembler, IMongoDatabaseService mongoDatabaseService, ILocalDeploymentService localDeploymentService, IMongoBackupTaskService mongoBackupTaskService,
+		IFtpClient ftpClient, IFtpDeployService ftpDeployService)
+	: CrudService<JobData, CreateJobRequest, JobEntity>(logger, jobRepository, jobAssembler), IJobService
 {
-	private readonly JobAssembler _jobAssembler = jobAssembler;
-	private readonly IJobRepository _jobRepository = jobRepository;
+	private readonly IFtpClient _ftpClient = ftpClient;
 
-
-	/// <inheritdoc />
-	public async Task<List<JobData>> GetAll()
+	public async Task Process(JobData job)
 	{
-		using var logger = LogService(autoExit: false);
+		using var _ = LogService($"{Log.F(job)}");
 
-		var jobs = await _jobRepository.GetAll();
+		await using var stream = await HandleBackup(job);
 
-		logger.Exit($"{Log.F(jobs.Count)}");
+		var filename = $"{job.Name}:{DateTime.Now:yy-MM-dd-yyyy}";
 
-		return _jobAssembler.Convert(jobs);
+		await HandleDeploy(job, stream, filename);
 	}
 
-	/// <inheritdoc />
-	public async Task Add(CreateJobRequest deploy)
+	private async Task<Stream> HandleBackup(JobData job)
 	{
-		using var _ = LogService($"{Log.F(deploy)}");
+		using var _ = LogService($"{Log.F(job.Id)}");
 
-		await _jobRepository.Add(deploy);
+		switch (job.BackupType)
+		{
+			case JobBackup.Mongo:
+				var backupTask = await mongoBackupTaskService.GetById(job.IdBackup);
+				return await mongoDatabaseService.Backup(backupTask);
+			default:
+				throw new ArgumentOutOfRangeException();
+		}
 	}
 
-	/// <inheritdoc />
-	public async Task Delete(Guid id)
+
+	private async Task HandleDeploy(JobData job, Stream archive, string filename)
 	{
-		using var _ = LogService($"{Log.F(id)}");
+		using var _ = LogService($"{Log.F(job.Id)} {Log.F(archive.Length)} {Log.F(filename)}");
 
-		await _jobRepository.Delete(id);
-	}
-
-	/// <inheritdoc />
-	public async Task Update(Guid idJob, CreateJobRequest job)
-	{
-		using var _ = LogService($"{Log.F(idJob)} {Log.F(job)}");
-
-		await _jobRepository.Update(idJob, job);
+		switch (job.DeployType)
+		{
+			case JobDeploy.Ftp:
+				await ftpDeployService.Deploy(job.IdDeploy, archive, filename);
+				break;
+			case JobDeploy.Local:
+				await localDeploymentService.Deploy(job.IdDeploy, archive, filename);
+				break;
+			default:
+				throw new ArgumentOutOfRangeException();
+		}
 	}
 }

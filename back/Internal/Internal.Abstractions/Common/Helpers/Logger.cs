@@ -8,12 +8,12 @@ using System.Text.Json.Serialization;
 namespace BackupMaker.Api.Abstractions.Common.Helpers;
 
 /// <summary>
-/// Provides utility methods for logging.
+///     Provides utility methods for logging.
 /// </summary>
 public static class Log
 {
 	/// <summary>
-	/// Custom JSON serializer options with enum as string.
+	///     Custom JSON serializer options with enum as string.
 	/// </summary>
 	private static readonly JsonSerializerOptions options = new()
 	{
@@ -24,7 +24,7 @@ public static class Log
 	};
 
 	/// <summary>
-	/// Formats a named value as a JSON string.
+	///     Formats a named value as a JSON string.
 	/// </summary>
 	public static string F(object? value, [CallerArgumentExpression("value")] string name = "")
 	{
@@ -32,7 +32,7 @@ public static class Log
 	}
 
 	/// <summary>
-	/// Creates a new instance of the LoggerInstance class for method logging.
+	///     Creates a new instance of the LoggerInstance class for method logging.
 	/// </summary>
 	public static LoggerInstance Enter(this ILogger logger, string arguments = "", LogLevel level = LogLevel.Debug, Activity? activity = null, [CallerMemberName] string method = "", bool autoExit = true, string className = "")
 	{
@@ -40,7 +40,7 @@ public static class Log
 	}
 
 	/// <summary>
-	/// Extracts class name from the provided filepath.
+	///     Extracts class name from the provided filepath.
 	/// </summary>
 	public static string GetClassNameFromFilepath(string fullFilePath)
 	{
@@ -53,11 +53,10 @@ public static class Log
 
 
 	/// <summary>
-	/// Encapsulates a logging session, providing methods to record specific events and messages.
+	///     Encapsulates a logging session, providing methods to record specific events and messages.
 	/// </summary>
 	public class LoggerInstance : IDisposable
 	{
-		private readonly Activity? _activity;
 		private readonly string _arguments;
 		private readonly bool _autoExit;
 		private readonly string _className;
@@ -68,7 +67,7 @@ public static class Log
 		private readonly string? _traceId;
 
 		/// <summary>
-		/// Creates a new instance of the LoggerInstance class.
+		///     Creates a new instance of the LoggerInstance class.
 		/// </summary>
 		/// <param name="logger">The logger to be used.</param>
 		/// <param name="method">The method to be logged.</param>
@@ -81,7 +80,7 @@ public static class Log
 		{
 			_arguments = arguments;
 			_level = level;
-			_activity = activity;
+			Activity = activity;
 			_autoExit = autoExit;
 			_method = method;
 			_logger = logger;
@@ -91,21 +90,24 @@ public static class Log
 			Enter();
 		}
 
+		public Activity? Activity { get; }
+
+
 		/// <summary>
-		/// Releases associated resources and call <see cref="Exit"/> if <see cref="_autoExit"/> is enabled
+		///     Releases associated resources and call <see cref="Exit" /> if <see cref="_autoExit" /> is enabled
 		/// </summary>
 		public void Dispose()
 		{
 			if (_autoExit) Exit();
-			_activity?.Dispose();
+			Activity?.Dispose();
 			GC.SuppressFinalize(this);
 		}
 
 
 		/// <summary>
-		/// Logs an "entering method" message.
+		///     Logs an "entering method" message.
 		/// </summary>
-		public void Enter()
+		private void Enter()
 		{
 			if (!_logger.IsEnabled(_level)) return;
 			var sb = new StringBuilder($"{_traceId} {_className}.{_method} -- Enter");
@@ -116,7 +118,7 @@ public static class Log
 
 
 		/// <summary>
-		/// Logs an "exiting method" message.
+		///     Logs an "exiting method" message.
 		/// </summary>
 		public void Exit(string? content = null)
 		{
@@ -132,7 +134,7 @@ public static class Log
 		}
 
 		/// <summary>
-		/// Logs an error message.
+		///     Logs an error message.
 		/// </summary>
 		public void Error(string content)
 		{
@@ -141,7 +143,7 @@ public static class Log
 		}
 
 		/// <summary>
-		/// Logs a warning message.
+		///     Logs a warning message.
 		/// </summary>
 		public void Warn(string content)
 		{
@@ -151,7 +153,7 @@ public static class Log
 
 
 		/// <summary>
-		/// Logs a debug message.
+		///     Logs a debug message.
 		/// </summary>
 		public void Debug(string s)
 		{

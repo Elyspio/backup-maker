@@ -3,13 +3,12 @@
 namespace BackupMaker.Api.Abstractions.Common.Extensions;
 
 /// <summary>
-/// BsonExtension is a static class that provides extension methods for ObjectId and Guid types.
+///     BsonExtension is a static class that provides extension methods for ObjectId and Guid types.
 /// </summary>
 public static class BsonExtension
 {
-	
 	/// <summary>
-	/// Transforms an ObjectId into a Guid
+	///     Transforms an ObjectId into a Guid
 	/// </summary>
 	/// <param name="oid">The ObjectId to be converted.</param>
 	/// <returns>Guid representation of the ObjectId.</returns>
@@ -24,7 +23,7 @@ public static class BsonExtension
 	}
 
 	/// <summary>
-	/// Transforms a Guid into an ObjectId. Used to convert a Guid that was once an ObjectId
+	///     Transforms a Guid into an ObjectId. Used to convert a Guid that was once an ObjectId
 	/// </summary>
 	/// <param name="gid">The Guid to be converted.</param>
 	/// <returns>ObjectId representation of the Guid.</returns>

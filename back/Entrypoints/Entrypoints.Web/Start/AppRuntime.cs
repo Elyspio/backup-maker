@@ -3,12 +3,12 @@
 namespace BackupMaker.Api.Entrypoints.Web.Start;
 
 /// <summary>
-/// Application Initializer
+///     Application Initializer
 /// </summary>
 public static class AppRuntime
 {
 	/// <summary>
-	/// Initialize runtime middlewares
+	///     Initialize runtime middlewares
 	/// </summary>
 	/// <param name="app"></param>
 	/// <returns></returns>
@@ -18,10 +18,6 @@ public static class AppRuntime
 		app.UseCors();
 
 		app.UseAppSwagger();
-
-
-		// Start Dependency Injection
-		app.UseAdvancedDependencyInjection();
 
 		// Setup authentication
 		app.UseAuthentication();

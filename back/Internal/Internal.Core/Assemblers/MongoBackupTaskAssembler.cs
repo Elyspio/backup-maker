@@ -1,12 +1,12 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Assemblers;
-using BackupMaker.Api.Abstractions.Models.Entities;
-using BackupMaker.Api.Abstractions.Models.Transports;
+using BackupMaker.Api.Abstractions.Models.Entities.Backup;
+using BackupMaker.Api.Abstractions.Models.Transports.Backup;
 using Mapster;
 
 namespace BackupMaker.Api.Core.Assemblers;
 
 /// <inheritdoc />
-public class MongoBackupTaskAssembler : BaseAssembler<MongoBackupTaskEntity, MongoBackupTaskData>
+public class MongoBackupTaskAssembler : BaseAssembler<MongoBackupTaskData, MongoBackupTaskEntity>
 {
 	/// <inheritdoc />
 	public override MongoBackupTaskData Convert(MongoBackupTaskEntity obj)

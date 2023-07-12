@@ -1,8 +1,8 @@
 ﻿using Adapters.Authentication;
+using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
 using BackupMaker.Api.Abstractions.Models.Transports.Jobs;
 using BackupMaker.Api.Abstractions.Models.Transports.Requests;
-using BackupMaker.Api.Entrypoints.Web.Controllers.Base;
 using BackupMaker.Api.Entrypoints.Web.Technical.Filters;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,8 +16,6 @@ namespace BackupMaker.Api.Entrypoints.Web.Controllers;
 [Produces("application/json")]
 public class JobsController(ILogger<JobsController> logger, IJobService jobService) : TracingController(logger)
 {
-	private readonly IJobService _jobService = jobService;
-
 	/// <summary>
 	///     Get all jobs
 	/// </summary>
@@ -26,7 +24,7 @@ public class JobsController(ILogger<JobsController> logger, IJobService jobServi
 	[ProducesResponseType(typeof(List<JobData>), StatusCodes.Status200OK)]
 	public async Task<IActionResult> GetJobs()
 	{
-		var jobs = await _jobService.GetAll();
+		var jobs = await jobService.GetAll();
 		return Ok(jobs);
 	}
 
@@ -41,7 +39,7 @@ public class JobsController(ILogger<JobsController> logger, IJobService jobServi
 	[Authorize(BackupMakerRole.Admin)]
 	public async Task<IActionResult> CreateJob(CreateJobRequest job)
 	{
-		await _jobService.Add(job);
+		await jobService.Add(job);
 		return NoContent();
 	}
 
@@ -57,7 +55,7 @@ public class JobsController(ILogger<JobsController> logger, IJobService jobServi
 	[Authorize(BackupMakerRole.Admin)]
 	public async Task<IActionResult> UpdateJob(Guid idJob, CreateJobRequest job)
 	{
-		await _jobService.Update(idJob, job);
+		await jobService.Replace(idJob, job);
 		return NoContent();
 	}
 
@@ -71,7 +69,7 @@ public class JobsController(ILogger<JobsController> logger, IJobService jobServi
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
 	public async Task<IActionResult> DeleteJob(Guid idJob)
 	{
-		await _jobService.Delete(idJob);
+		await jobService.Delete(idJob);
 		return NoContent();
 	}
 }

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <EnablePreviewFeatures>True</EnablePreviewFeatures>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <RootNamespace>BackupMaker.Api.Adapters.Ftp</RootNamespace>
+    </PropertyGroup>
+
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Internal\Internal.Abstractions\BackupMaker.Api.Abstractions.csproj"/>
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <PackageReference Include="Scrutor" Version="4.2.2"/>
+    </ItemGroup>
+
+</Project>

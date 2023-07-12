@@ -1,6 +1,6 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Assemblers;
-using BackupMaker.Api.Abstractions.Models.Entities;
-using BackupMaker.Api.Abstractions.Models.Transports;
+using BackupMaker.Api.Abstractions.Models.Entities.Connections;
+using BackupMaker.Api.Abstractions.Models.Transports.Connections;
 using Mapster;
 
 namespace BackupMaker.Api.Core.Assemblers;

@@ -1,4 +1,5 @@
 ﻿using BackupMaker.Api.Abstractions.Interfaces.Injections;
+using BackupMaker.Api.Adapters.Ftp.Injections;
 using BackupMaker.Api.Adapters.Hangfire.Injections;
 using BackupMaker.Api.Adapters.Mongo.Injections;
 using BackupMaker.Api.Adapters.Rest.Injections;
@@ -8,12 +9,12 @@ using BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
 namespace BackupMaker.Api.Entrypoints.Web.Start;
 
 /// <summary>
-/// Application builder
+///     Application builder
 /// </summary>
 public class AppBuilder
 {
 	/// <summary>
-	/// Create builder from command args
+	///     Create builder from command args
 	/// </summary>
 	/// <param name="args"></param>
 	public AppBuilder(string[] args)
@@ -25,6 +26,7 @@ public class AppBuilder
 		builder.Services.AddModule<HangfireAdapterModule>(builder.Configuration);
 		builder.Services.AddModule<MongoAdapterModule>(builder.Configuration);
 		builder.Services.AddModule<RestAdapterModule>(builder.Configuration);
+		builder.Services.AddModule<FtpModule>(builder.Configuration);
 
 		builder.Services.AddModule<CoreModule>(builder.Configuration);
 
@@ -35,16 +37,17 @@ public class AppBuilder
 		builder.Services
 			.AddAppControllers()
 			.AddAppSignalR()
-			.AddAppSwagger()
-			.AddAppOpenTelemetry(builder.Configuration);
+			.AddAppSwagger();
+
 
 		if (builder.Environment.IsDevelopment()) builder.Services.SetupDevelopmentCors();
+		else builder.Services.AddAppOpenTelemetry(builder.Configuration);
 
 		Application = builder.Build();
 	}
 
 	/// <summary>
-	/// Built application
+	///     Built application
 	/// </summary>
 	public WebApplication Application { get; }
 }

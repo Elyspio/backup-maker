@@ -1,21 +1,19 @@
-﻿using BackupMaker.Api.Abstractions.Common.Technical;
+﻿using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
 using BackupMaker.Api.Entrypoints.Web.Technical.Helpers;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using System.Diagnostics;
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
 
-
 /// <summary>
-/// OpenTelemetry Extensions methods for <see cref="IServiceCollection"/> 
+///     OpenTelemetry Extensions methods for <see cref="IServiceCollection" />
 /// </summary>
 public static class OpenTelemetryExtentions
 {
 	/// <summary>
-	/// Activate open telemetry support
+	///     Activate open telemetry support
 	/// </summary>
 	/// <param name="services"></param>
 	/// <param name="configuration"></param>
@@ -24,8 +22,7 @@ public static class OpenTelemetryExtentions
 	{
 		var sources = AssemblyHelper.GetClassWithInterface<Program, ITracingContext>().ToArray();
 
-
-		services.AddOptions<OtlpExporterOptions>().Configure((opts) => { opts.Endpoint = new Uri(configuration["OpenTelemetry:Url"]!); });
+		services.AddOptions<OtlpExporterOptions>().Configure(opts => { opts.Endpoint = new(configuration["OpenTelemetry:Url"]!); });
 
 		services.AddOpenTelemetryEventLogging();
 

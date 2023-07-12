@@ -1,16 +1,16 @@
 ﻿using Adapters.Authentication;
 using BackupMaker.Api.Abstractions.Common.Helpers;
-using BackupMaker.Api.Abstractions.Interfaces.Services;
+using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
+using BackupMaker.Api.Abstractions.Interfaces.Services.Deploy;
 using BackupMaker.Api.Abstractions.Models.Base.Deploy;
-using BackupMaker.Api.Abstractions.Models.Transports;
-using BackupMaker.Api.Entrypoints.Web.Controllers.Base;
+using BackupMaker.Api.Abstractions.Models.Transports.Deploy;
 using BackupMaker.Api.Entrypoints.Web.Technical.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackupMaker.Api.Entrypoints.Web.Controllers.Deploys;
 
 /// <summary>
-/// Manage local deployments
+///     Manage local deployments
 /// </summary>
 /// <param name="logger"></param>
 /// <param name="localDeploymentService"></param>
@@ -20,8 +20,6 @@ namespace BackupMaker.Api.Entrypoints.Web.Controllers.Deploys;
 [Produces("application/json")]
 public class LocalDeployController(ILogger<LocalDeployController> logger, ILocalDeploymentService localDeploymentService) : TracingController(logger)
 {
-	private readonly ILocalDeploymentService _localDeploymentService = localDeploymentService;
-
 	/// <summary>
 	///     Get all local deployment configurations
 	/// </summary>
@@ -32,7 +30,7 @@ public class LocalDeployController(ILogger<LocalDeployController> logger, ILocal
 	{
 		using var _ = LogController();
 
-		var deployments = await _localDeploymentService.GetAll();
+		var deployments = await localDeploymentService.GetAll();
 
 		return Ok(deployments);
 	}
@@ -50,7 +48,7 @@ public class LocalDeployController(ILogger<LocalDeployController> logger, ILocal
 	{
 		using var _ = LogController($"{Log.F(deploy)}");
 
-		await _localDeploymentService.Add(deploy);
+		await localDeploymentService.Add(deploy);
 
 		return NoContent();
 	}
@@ -68,7 +66,7 @@ public class LocalDeployController(ILogger<LocalDeployController> logger, ILocal
 	{
 		using var _ = LogController($"{Log.F(idDeploy)}");
 
-		await _localDeploymentService.Delete(idDeploy);
+		await localDeploymentService.Delete(idDeploy);
 
 		return NoContent();
 	}
@@ -87,7 +85,7 @@ public class LocalDeployController(ILogger<LocalDeployController> logger, ILocal
 	{
 		using var _ = LogController($"{Log.F(idDeploy)} {Log.F(deploy)}");
 
-		await _localDeploymentService.Update(idDeploy, deploy);
+		await localDeploymentService.Replace(idDeploy, deploy);
 
 		return NoContent();
 	}

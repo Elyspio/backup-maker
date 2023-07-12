@@ -1,8 +1,8 @@
 ﻿using Adapters.Authentication;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Cryptography;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 
 namespace BackupMaker.Api.Core.Services;
 

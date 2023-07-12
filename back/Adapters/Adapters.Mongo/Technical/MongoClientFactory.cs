@@ -4,12 +4,12 @@ using MongoDB.Driver.Core.Extensions.DiagnosticSources;
 namespace BackupMaker.Api.Adapters.Mongo.Technical;
 
 /// <summary>
-/// Manage mongo client
+///     Manage mongo client
 /// </summary>
 public class MongoClientFactory
 {
 	/// <summary>
-	/// Create mongo client with telemetry support
+	///     Create mongo client with telemetry support
 	/// </summary>
 	/// <param name="connectionString"></param>
 	/// <returns></returns>

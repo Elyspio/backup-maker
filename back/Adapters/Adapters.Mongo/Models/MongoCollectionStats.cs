@@ -367,8 +367,6 @@ internal record Cursor(
 	double UpdateValueSizeChange
 );
 
-
-
 [BsonIgnoreExtraElements]
 [SuppressMessage("ReSharper", "NotAccessedPositionalProperty.Global")]
 [SuppressMessage("ReSharper", "InconsistentNaming")]

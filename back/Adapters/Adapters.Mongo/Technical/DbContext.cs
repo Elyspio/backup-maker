@@ -7,12 +7,12 @@ using MongoDB.Driver;
 namespace BackupMaker.Api.Adapters.Mongo.Technical;
 
 /// <summary>
-/// Manage app mongo connection
+///     Manage app mongo connection
 /// </summary>
 public class MongoContext
 {
 	/// <summary>
-	/// Default constructor
+	///     Default constructor
 	/// </summary>
 	/// <param name="configuration"></param>
 	public MongoContext(IConfiguration configuration)
