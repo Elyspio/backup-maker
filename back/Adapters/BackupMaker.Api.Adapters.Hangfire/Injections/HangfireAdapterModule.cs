@@ -9,7 +9,7 @@ using MongoDB.Driver;
 
 namespace BackupMaker.Api.Adapters.Hangfire.Injections;
 
-public class HangfireAdapterModule : IDotnetModule
+public sealed class HangfireAdapterModule : IDotnetModule
 {
 	public void Load(IServiceCollection services, IConfiguration configuration)
 	{
@@ -21,19 +21,31 @@ public class HangfireAdapterModule : IDotnetModule
 			.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
 			.UseSimpleAssemblyNameTypeSerializer()
 			.UseRecommendedSerializerSettings()
-			.UseMongoStorage(mongoClient, mongoUrlBuilder.DatabaseName, new()
+			.UseMongoStorage(mongoClient, mongoUrlBuilder.DatabaseName, new MongoStorageOptions
 			{
-				MigrationOptions = new()
+				MigrationOptions = new MongoMigrationOptions
 				{
 					MigrationStrategy = new MigrateMongoMigrationStrategy(),
 					BackupStrategy = new CollectionMongoBackupStrategy()
 				},
 				Prefix = "hangfire",
-				CheckConnection = true
+				CheckConnection = true,
+				InvisibilityTimeout = TimeSpan.FromMinutes(30)
 			})
 		);
 
+		var nsp = typeof(HangfireAdapterModule).Namespace!;
+		var baseNamespace = nsp[..nsp.LastIndexOf(".", StringComparison.Ordinal)];
+		services.Scan(scan => scan
+			.FromAssemblyOf<HangfireAdapterModule>().AddClasses(classes => classes.InNamespaces(baseNamespace + ".Triggers"))
+			.AsImplementedInterfaces()
+			.WithSingletonLifetime());
+
 		// Add the processing server as IHostedService
-		services.AddHangfireServer(serverOptions => { serverOptions.ServerName = "Hangfire"; });
+		services.AddHangfireServer(serverOptions =>
+		{
+			serverOptions.ServerName = "Hangfire";
+			serverOptions.CancellationCheckInterval = TimeSpan.FromSeconds(1);
+		});
 	}
 }

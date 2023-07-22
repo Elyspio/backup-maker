@@ -1,7 +1,8 @@
-﻿using BackupMaker.Api.Abstractions.Common.Helpers;
-using Microsoft.Extensions.Logging;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using BackupMaker.Api.Abstractions.Common.Helpers;
+using BackupMaker.Api.Abstractions.Common.Technical.Tracing.Base;
+using Microsoft.Extensions.Logging;
 
 namespace BackupMaker.Api.Abstractions.Common.Technical.Tracing;
 
@@ -37,7 +38,7 @@ public abstract class TracingAttribute : Attribute, ITracingContext
 		method = TracingContext.GetMethodName(method);
 
 		var className = Log.GetClassNameFromFilepath(fullFilePath);
-		var activity = ActivitySource.StartActivity($"{className}.{method} : {arguments}");
+		var activity = ActivitySource.CreateActivity(className, method, arguments);
 		return Logger.Enter(arguments, LogLevel.Debug, activity, method, autoExit, className);
 	}
 }

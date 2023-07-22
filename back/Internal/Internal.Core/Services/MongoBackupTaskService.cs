@@ -9,5 +9,6 @@ using Microsoft.Extensions.Logging;
 namespace BackupMaker.Api.Core.Services;
 
 /// <inheritdoc cref="IMongoBackupTaskService" />
-internal class MongoBackupTaskService(ILogger<MongoBackupTaskService> logger, IMongoBackupRepository mongoBackupRepository, MongoBackupTaskAssembler mongoBackupTaskAssembler) :
+internal sealed class MongoBackupTaskService(ILogger<MongoBackupTaskService> logger, IMongoBackupRepository mongoBackupRepository,
+	MongoBackupTaskAssembler mongoBackupTaskAssembler) :
 	CrudService<MongoBackupTaskData, MongoBackupTaskBase, MongoBackupTaskEntity>(logger, mongoBackupRepository, mongoBackupTaskAssembler), IMongoBackupTaskService;

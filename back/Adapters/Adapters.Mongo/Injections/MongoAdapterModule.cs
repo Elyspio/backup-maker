@@ -7,7 +7,7 @@ namespace BackupMaker.Api.Adapters.Mongo.Injections;
 /// <summary>
 ///     Inject repositories in DI
 /// </summary>
-public class MongoAdapterModule : IDotnetModule
+public sealed class MongoAdapterModule : IDotnetModule
 {
 	/// <inheritdoc />
 	public void Load(IServiceCollection services, IConfiguration configuration)
@@ -16,7 +16,7 @@ public class MongoAdapterModule : IDotnetModule
 		var baseNamespace = nsp[..nsp.LastIndexOf(".", StringComparison.Ordinal)];
 		services.Scan(scan =>
 			scan.FromAssemblyOf<MongoAdapterModule>()
-				.AddClasses(classes => classes.InNamespaces($"{baseNamespace}.Repositories", $"{baseNamespace}.Watchers"))
+				.AddClasses(classes => classes.InNamespaces($"{baseNamespace}.Repositories", $"{baseNamespace}.Managers"))
 				.AsImplementedInterfaces()
 				.WithSingletonLifetime()
 		);

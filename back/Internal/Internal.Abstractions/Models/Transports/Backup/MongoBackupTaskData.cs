@@ -6,7 +6,7 @@ namespace BackupMaker.Api.Abstractions.Models.Transports.Backup;
 /// <summary>
 ///     Represents a data model used for MongoDB backup task-related operations.
 /// </summary>
-public class MongoBackupTaskData : MongoBackupTaskBase, ITransport
+public sealed class MongoBackupTaskData : MongoBackupTaskBase, ITransport
 {
 	/// <summary>
 	///     Gets or sets the unique identifier (ID) of the job detail associated with this MongoBackupTaskBase.

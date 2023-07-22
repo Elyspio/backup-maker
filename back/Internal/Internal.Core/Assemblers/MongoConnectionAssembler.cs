@@ -6,7 +6,7 @@ using Mapster;
 namespace BackupMaker.Api.Core.Assemblers;
 
 /// <inheritdoc />
-public class MongoConnectionAssembler : BaseAssembler<MongoConnectionData, MongoConnectionEntity>
+public sealed class MongoConnectionAssembler : BaseAssembler<MongoConnectionData, MongoConnectionEntity>
 {
 	/// <inheritdoc />
 	public override MongoConnectionEntity Convert(MongoConnectionData obj)

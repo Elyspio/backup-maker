@@ -6,7 +6,7 @@ namespace BackupMaker.Api.Abstractions.Models.Transports.Jobs;
 /// <summary>
 ///     Represents a data model used for job-related operations.
 /// </summary>
-public class JobData : CreateJobRequest, ITransport
+public sealed class JobData : CreateJobRequest, ITransport
 {
 	/// <summary>
 	///     Gets or sets the unique identifier (ID) of the job.

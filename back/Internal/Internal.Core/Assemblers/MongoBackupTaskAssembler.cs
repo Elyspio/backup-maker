@@ -6,7 +6,7 @@ using Mapster;
 namespace BackupMaker.Api.Core.Assemblers;
 
 /// <inheritdoc />
-public class MongoBackupTaskAssembler : BaseAssembler<MongoBackupTaskData, MongoBackupTaskEntity>
+public sealed class MongoBackupTaskAssembler : BaseAssembler<MongoBackupTaskData, MongoBackupTaskEntity>
 {
 	/// <inheritdoc />
 	public override MongoBackupTaskData Convert(MongoBackupTaskEntity obj)

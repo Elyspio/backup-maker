@@ -7,4 +7,5 @@ using Microsoft.Extensions.Logging;
 
 namespace BackupMaker.Api.Adapters.Mongo.Repositories.Deploy;
 
-internal class FtpDeployRepository(IConfiguration configuration, ILogger<FtpDeployRepository> logger) : CrudRepository<FtpDeployEntity, FtpDeployBase>(configuration, logger), IFtpDeployRepository;
+internal sealed class FtpDeployRepository(IConfiguration configuration, ILogger<FtpDeployRepository> logger) :
+	CrudRepository<FtpDeployEntity, FtpDeployBase>(configuration, logger), IFtpDeployRepository;

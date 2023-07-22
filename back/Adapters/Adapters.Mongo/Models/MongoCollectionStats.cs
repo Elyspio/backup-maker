@@ -1,8 +1,8 @@
 ﻿// Root myDeserializedClass = JsonSerializer.Deserialize<Root>(myJsonResponse);
 
-using MongoDB.Bson.Serialization.Attributes;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace BackupMaker.Api.Adapters.Mongo.Models;
 

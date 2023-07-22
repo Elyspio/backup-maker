@@ -6,7 +6,7 @@ namespace BackupMaker.Api.Entrypoints.Web.Technical.Filters.Swagger;
 /// <summary>
 ///     Supprime le parametre "api-version" qui est automatiquement ajouter par le framework
 /// </summary>
-public class SwaggerRemoveVersionFilter : IOperationFilter
+public sealed class SwaggerRemoveVersionFilter : IOperationFilter
 {
 	/// <summary>
 	///     Ajout dans la documentation Swagger le header x-token-claims-idTechPs

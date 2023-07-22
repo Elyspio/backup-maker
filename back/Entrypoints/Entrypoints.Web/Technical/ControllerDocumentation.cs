@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 namespace BackupMaker.Api.Entrypoints.Web.Technical;
 
 /// <inheritdoc />
-public class ControllerDocumentationConvention : IControllerModelConvention
+public sealed class ControllerDocumentationConvention : IControllerModelConvention
 {
 	void IControllerModelConvention.Apply(ControllerModel? controller)
 	{
@@ -13,7 +13,7 @@ public class ControllerDocumentationConvention : IControllerModelConvention
 		foreach (var attribute in controller.Attributes)
 			if (attribute.GetType() == typeof(RouteAttribute))
 			{
-				var routeAttribute = (RouteAttribute) attribute;
+				var routeAttribute = (RouteAttribute)attribute;
 				if (!string.IsNullOrWhiteSpace(routeAttribute.Name)) controller.ControllerName = routeAttribute.Name;
 			}
 	}

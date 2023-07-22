@@ -9,6 +9,6 @@ namespace BackupMaker.Api.Adapters.Mongo.Repositories.Job;
 
 /// Repository implementation for
 /// <see cref="JobEntity" />
-internal class JobRepository(IConfiguration conf, ILogger<JobRepository> logger) : CrudRepository<JobEntity, CreateJobRequest>(conf, logger), IJobRepository
+internal sealed class JobRepository(IConfiguration conf, ILogger<JobRepository> logger) : CrudRepository<JobEntity, CreateJobRequest>(conf, logger), IJobRepository
 {
 }

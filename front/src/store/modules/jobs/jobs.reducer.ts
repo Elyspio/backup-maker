@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { JobsState } from "@modules/jobs/jobs.types";
-import { manageJobs } from "@modules/jobs/jobs.async.actions";
+import { jobsCrud } from "@modules/jobs/jobs.async.actions";
 
 const initialState: JobsState = {
 	data: {},
@@ -11,7 +11,7 @@ const slice = createSlice({
 	initialState,
 	reducers: {},
 	extraReducers: (builder) => {
-		builder.addCase(manageJobs.getAll.fulfilled, (state, action) => {
+		builder.addCase(jobsCrud.getAll.fulfilled, (state, action) => {
 			for (const deploy of action.payload) {
 				state.data[deploy.id] = deploy;
 			}

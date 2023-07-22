@@ -18,7 +18,7 @@ namespace BackupMaker.Api.Entrypoints.Web.Controllers.Deploys;
 [ApiController]
 [Tags("DeploysFtp")]
 [Produces("application/json")]
-public class FtpDeployController(ILogger<FtpDeployController> logger, IFtpDeployService ftpDeployService) : TracingController(logger)
+public sealed class FtpDeployController(ILogger<FtpDeployController> logger, IFtpDeployService ftpDeployService) : TracingController(logger)
 {
 	/// <summary>
 	///     Get all FTP deployment configurations²

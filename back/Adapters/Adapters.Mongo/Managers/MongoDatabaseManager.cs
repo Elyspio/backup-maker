@@ -1,4 +1,6 @@
-﻿using BackupMaker.Api.Abstractions.Common.Extensions;
+﻿using System.Diagnostics;
+using System.Text;
+using BackupMaker.Api.Abstractions.Common.Extensions;
 using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
@@ -7,13 +9,11 @@ using BackupMaker.Api.Adapters.Mongo.Technical;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Diagnostics;
-using System.Text;
 
-namespace BackupMaker.Api.Adapters.Mongo.Repositories.Managers;
+namespace BackupMaker.Api.Adapters.Mongo.Managers;
 
 /// <inheritdoc cref="IMongoDatabaseManager" />
-internal class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger) : TracingContext(logger), IMongoDatabaseManager
+internal sealed class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger) : TracingAdapter(logger), IMongoDatabaseManager
 {
 	public async Task<List<DatabaseInfo>> GetDatabases(string connectionString)
 	{
@@ -23,18 +23,15 @@ internal class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger) : Trac
 
 		var databasesName = await (await client.ListDatabaseNamesAsync()).ToListAsync();
 
-		var databasesResult = await databasesName.Parallelize(async databaseName =>
+		var databasesResult = await databasesName.Parallelize(async (databaseName, token) =>
 		{
-			using var __ = CreateInnerActivity($"MongoDatabaseManager.GetDatabases {Log.F(databaseName)}");
-
 			var database = client.GetDatabase(databaseName);
 
-			var collections = await GetCollectionOnlyNames(database);
+			var collections = await GetCollectionOnlyNames(database, token);
 
-			var collectionsResult = await collections.Parallelize(collectionName => GetCollectionInfo(database, collectionName));
+			var collectionsResult = await collections.Parallelize((collectionName, _) => GetCollectionInfo(database, collectionName), token);
 
 			if (collectionsResult.Status is ParallelStatus.Faulted) throw new AggregateException(collectionsResult.Exceptions.Values);
-
 
 			return new DatabaseInfo(databaseName, collectionsResult.Data);
 		});
@@ -45,23 +42,22 @@ internal class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger) : Trac
 		return databasesResult.Data;
 	}
 
-	public async Task<string> Backup(string connectionString, Dictionary<string, List<string>> elements)
+	public async Task<string> Backup(string connectionString, Dictionary<string, List<string>> elements, CancellationToken cancellationToken)
 	{
 		using var logger = LogAdapter($"{Log.F(elements)}", autoExit: false);
 
-
-		var tempDir = Path.Join(Path.GetTempPath(), "backup-maker", DateTime.Now.ToString("yy-MMM-dd.hh-mm-ss"));
+		var tempDir = Directory.CreateTempSubdirectory("backup-maker").FullName;
 
 		var commands = await Task.WhenAll(elements.Select(async elem =>
 		{
 			var database = new MongoClient(connectionString).GetDatabase(elem.Key);
 
-			var databaseCollections = await GetCollectionOnlyNames(database);
+			var databaseCollections = await GetCollectionOnlyNames(database, cancellationToken);
 
-			return GenerateMongoDumpCommandLine(connectionString, elem.Key, databaseCollections.Except(elem.Value).ToList(), tempDir);
+			return (Database: elem.Key, Command: GenerateMongoDumpArgument(connectionString, elem.Key, databaseCollections.Except(elem.Value).ToList(), tempDir));
 		}));
 
-		var results = await commands.Parallelize(Dump);
+		var results = await commands.Parallelize((pair, token) => Dump(pair.Database, pair.Command, token), cancellationToken);
 
 		var exceptions = new List<Exception>();
 		var i = 0;
@@ -69,7 +65,7 @@ internal class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger) : Trac
 		{
 			i += 1;
 			if (exitCode == 0) continue;
-			exceptions.Add(new($"{elements.Keys.ToArray()[i - 1]}: {stderr}"));
+			exceptions.Add(new Exception($"{elements.Keys.ToArray()[i - 1]}: {stderr}"));
 		}
 
 		if (exceptions.Any()) throw new AggregateException(exceptions);
@@ -81,9 +77,9 @@ internal class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger) : Trac
 	}
 
 
-	private async Task<(string stdout, string stderr, int exitCode)> Dump(string command)
+	private async Task<(string stdout, string stderr, int exitCode)> Dump(string database, string command, CancellationToken token)
 	{
-		using var _ = LogAdapter();
+		using var logger = LogAdapter($"{database}");
 
 		// Create a new process instance
 		var process = new Process();
@@ -122,12 +118,24 @@ internal class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger) : Trac
 		process.BeginOutputReadLine();
 		process.BeginErrorReadLine();
 		// Wait for the process to exit
-		await process.WaitForExitAsync();
+
+		try
+		{
+			await process.WaitForExitAsync(token);
+		}
+		catch (OperationCanceledException e)
+		{
+			if (!process.HasExited)
+			{
+				logger.Debug($"Killing process {process.Id}");
+				process.Kill();
+			}
+		}
 
 		return (stdout.ToString(), stderr.ToString(), process.ExitCode);
 	}
 
-	private string GenerateMongoDumpCommandLine(string connectionString, string database, IEnumerable<string> excludedConnection, string directory)
+	private string GenerateMongoDumpArgument(string connectionString, string database, IEnumerable<string> excludedConnection, string directory)
 	{
 		var ignore = excludedConnection.Aggregate("", (acc, current) =>
 		{
@@ -150,7 +158,7 @@ internal class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger) : Trac
 		using var _ = LogAdapter($"{database.DatabaseNamespace} {Log.F(collectionName)}");
 
 		var scale = Math.Pow(1024, 2);
-		var stats = await database.RunCommandAsync(new BsonDocumentCommand<BsonDocument>(new()
+		var stats = await database.RunCommandAsync(new BsonDocumentCommand<BsonDocument>(new BsonDocument
 		{
 			{
 				"collstats", collectionName
@@ -161,7 +169,8 @@ internal class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger) : Trac
 		var indexes = stats["indexSizes"].AsBsonDocument.ToDictionary().ToDictionary(pair => pair.Key, pair => Convert.ToDouble(pair.Value) / scale);
 
 
-		return new(collectionName, stats["count"].AsInt32, new(stats["totalSize"].ToDouble() / scale, stats["storageSize"].ToDouble() / scale, indexes));
+		return new CollectionInfo(collectionName, stats["count"].AsInt32,
+			new CollectionSizes(stats["totalSize"].ToDouble() / scale, stats["storageSize"].ToDouble() / scale, indexes));
 	}
 
 
@@ -169,12 +178,13 @@ internal class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger) : Trac
 	///     Get all collections in a database (without returning views)
 	/// </summary>
 	/// <param name="database"></param>
+	/// <param name="cancellationToken"></param>
 	/// <returns></returns>
-	private async Task<List<string>> GetCollectionOnlyNames(IMongoDatabase database)
+	private async Task<List<string>> GetCollectionOnlyNames(IMongoDatabase database, CancellationToken cancellationToken)
 	{
 		using var _ = LogAdapter($"database={database.DatabaseNamespace.DatabaseName}");
 
-		var storages = await (await database.ListCollectionsAsync()).ToListAsync();
+		var storages = await (await database.ListCollectionsAsync(cancellationToken: cancellationToken)).ToListAsync(cancellationToken);
 
 		return storages.Where(s => s["type"] == "collection").Select(s => s["name"].AsString).ToList();
 	}

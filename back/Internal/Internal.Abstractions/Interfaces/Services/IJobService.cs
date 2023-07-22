@@ -10,9 +10,15 @@ namespace BackupMaker.Api.Abstractions.Interfaces.Services;
 public interface IJobService : ICrudService<JobData, CreateJobRequest, JobEntity>
 {
 	/// <summary>
-	///     Process the job. Implement this method to define specific job processing logic.
+	///     Trigger a job to start now
 	/// </summary>
-	/// <param name="job">The JobData instance that the job processing logic will use.</param>
-	/// <returns>A Task representing the asynchronous operation.</returns>
-	Task Process(JobData job);
+	/// <param name="idJob"></param>
+	/// <returns></returns>
+	Task Trigger(Guid idJob);
+
+	/// <summary>
+	///     Clear hangfire databases and recreate jobs
+	/// </summary>
+	/// <returns></returns>
+	Task Recreate();
 }

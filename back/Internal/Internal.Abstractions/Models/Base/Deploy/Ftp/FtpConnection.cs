@@ -5,7 +5,7 @@ namespace BackupMaker.Api.Abstractions.Models.Base.Deploy.Ftp;
 /// <summary>
 ///     FTP server connection details.
 /// </summary>
-public class FtpConnection
+public sealed class FtpConnection
 {
 	/// <summary>
 	///     FTP server host.

@@ -8,7 +8,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace BackupMaker.Api.Abstractions.Models.Entities;
 
-public class TaskEntity : IEntity
+public sealed class TaskEntity : IEntity
 {
 	public DateTime CreatedAt { get; set; } = DateTime.Now;
 	public List<string> Paths { get; set; } = new();
@@ -22,14 +22,14 @@ public class TaskEntity : IEntity
 	public ObjectId Id { get; set; }
 }
 
-public class TaskRun
+public sealed class TaskRun
 {
 	public DateTime Time { get; set; } = DateTime.Now;
 	public string? Stdout { get; set; }
 	public string? Stderr { get; set; }
 }
 
-public class TaskRemote
+public sealed class TaskRemote
 {
 	public enum RemoteType
 	{
@@ -44,13 +44,13 @@ public class TaskRemote
 	public TaskRemoteSsh Ssh { get; set; }
 }
 
-public class TaskRemoteLocal
+public sealed class TaskRemoteLocal
 {
 	public string Folder { get; set; }
 	public string Filename { get; set; }
 }
 
-public class TaskRemoteSsh
+public sealed class TaskRemoteSsh
 {
 	public string Hostname { get; set; }
 	public string Folder { get; set; }

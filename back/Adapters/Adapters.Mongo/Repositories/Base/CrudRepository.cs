@@ -6,13 +6,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using MongoDB.Driver.Linq;
 
 namespace BackupMaker.Api.Adapters.Mongo.Repositories.Base;
 
 /// <inheritdoc cref="ICrudRepository{TEntity,TBase}" />
-internal class CrudRepository<TEntity, TBase>(IConfiguration configuration, ILogger logger) : BaseRepository<TEntity>(configuration, logger), ICrudRepository<TEntity, TBase> where TEntity : IEntity
+internal abstract class CrudRepository<TEntity, TBase>(IConfiguration configuration, ILogger logger) : BaseRepository<TEntity>(configuration, logger),
+	ICrudRepository<TEntity, TBase> where TEntity : IEntity
 {
+	protected FilterDefinitionBuilder<TEntity> Filter = Builders<TEntity>.Filter;
+	protected UpdateDefinitionBuilder<TEntity> Update = Builders<TEntity>.Update;
+
 	public async Task<TEntity> Add(TBase @base)
 	{
 		using var logger = LogAdapter($"{Log.F(@base)}", autoExit: false);
@@ -34,7 +37,9 @@ internal class CrudRepository<TEntity, TBase>(IConfiguration configuration, ILog
 
 		entity.Id = id;
 
-		await EntityCollection.ReplaceOneAsync(e => e.Id == id, entity);
+		var filter = Filter.Eq(e => e.Id, id);
+
+		await EntityCollection.ReplaceOneAsync(filter, entity);
 
 		return entity;
 	}
@@ -54,9 +59,9 @@ internal class CrudRepository<TEntity, TBase>(IConfiguration configuration, ILog
 	{
 		using var logger = LogAdapter(autoExit: false);
 
-		var found = await EntityCollection.AsQueryable().Where(e => e.Id == id).ToListAsync();
+		var filter = Filter.Eq(e => e.Id, id);
 
-		var result = await EntityCollection.DeleteOneAsync(e => e.Id == id);
+		var result = await EntityCollection.DeleteOneAsync(filter);
 
 		logger.Exit($"{Log.F(result.DeletedCount)}");
 	}
@@ -65,7 +70,9 @@ internal class CrudRepository<TEntity, TBase>(IConfiguration configuration, ILog
 	{
 		using var logger = LogAdapter(autoExit: false);
 
-		var found = await EntityCollection.AsQueryable().Where(e => e.Id == id).FirstOrDefaultAsync();
+		var filter = Filter.Eq(e => e.Id, id);
+
+		var found = await EntityCollection.Find(filter).FirstOrDefaultAsync();
 
 		logger.Exit($"{Log.F(found is not null)}");
 

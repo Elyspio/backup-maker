@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackupMaker.Api.Adapters.Ha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackupMaker.Api.Adapters.Ftp", "Adapters\BackupMaker.Api.Adapters.Ftp\BackupMaker.Api.Adapters.Ftp.csproj", "{1D66C69C-D31F-4D2E-89D9-B7D50609C958}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackupMaker.Api.Adapters.Compress", "Adapters\BackupMaker.Api.Adapters.Compress\BackupMaker.Api.Adapters.Compress.csproj", "{EDDE35FE-51D3-4598-AF04-AE2112E933F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{1D66C69C-D31F-4D2E-89D9-B7D50609C958}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D66C69C-D31F-4D2E-89D9-B7D50609C958}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D66C69C-D31F-4D2E-89D9-B7D50609C958}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDDE35FE-51D3-4598-AF04-AE2112E933F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDDE35FE-51D3-4598-AF04-AE2112E933F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDDE35FE-51D3-4598-AF04-AE2112E933F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDDE35FE-51D3-4598-AF04-AE2112E933F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -65,5 +71,6 @@ Global
 		{DB580F46-4558-41BE-B3FF-ACA86560D225} = {5FEC1367-1714-4958-9275-5EC567137D92}
 		{C0B2B9EF-A0FB-4525-90DE-073CE5350D89} = {5FEC1367-1714-4958-9275-5EC567137D92}
 		{1D66C69C-D31F-4D2E-89D9-B7D50609C958} = {5FEC1367-1714-4958-9275-5EC567137D92}
+		{EDDE35FE-51D3-4598-AF04-AE2112E933F9} = {5FEC1367-1714-4958-9275-5EC567137D92}
 	EndGlobalSection
 EndGlobal

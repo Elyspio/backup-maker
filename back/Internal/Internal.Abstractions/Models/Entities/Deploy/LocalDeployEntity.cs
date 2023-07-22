@@ -8,7 +8,7 @@ namespace BackupMaker.Api.Abstractions.Models.Entities.Deploy;
 /// <summary>
 ///     The class represents a local deployment entity.
 /// </summary>
-public class LocalDeployEntity : LocalDeployBase, IEntity
+public sealed class LocalDeployEntity : LocalDeployBase, IEntity
 {
 	/// <summary>
 	///     Gets or sets the ObjectId of the local deployment entity. This field is also the BsonId.

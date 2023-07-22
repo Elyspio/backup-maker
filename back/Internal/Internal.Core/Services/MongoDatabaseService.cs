@@ -1,24 +1,26 @@
-﻿using BackupMaker.Api.Abstractions.Common.Extensions;
+﻿using System.Net;
+using BackupMaker.Api.Abstractions.Common.Extensions;
 using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
+using BackupMaker.Api.Abstractions.Configurations;
 using BackupMaker.Api.Abstractions.Exceptions;
+using BackupMaker.Api.Abstractions.Interfaces.Compressor;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
 using BackupMaker.Api.Abstractions.Models.Base.Backup;
+using BackupMaker.Api.Abstractions.Models.Base.Database.Mongo;
 using BackupMaker.Api.Abstractions.Models.Transports.Connections;
 using BackupMaker.Api.Abstractions.Models.Transports.Responses;
 using BackupMaker.Api.Core.Assemblers;
 using Microsoft.Extensions.Logging;
-using SharpCompress.Archives;
-using SharpCompress.Archives.Zip;
-using SharpCompress.Common;
-using System.Net;
+using Microsoft.Extensions.Options;
 
 namespace BackupMaker.Api.Core.Services;
 
 /// <inheritdoc cref="IMongoDatabaseService" />
-internal class MongoDatabaseService(IMongoDatabaseManager mongoDatabaseManager, IMongoConnectionRepository mongoConnectionRepository, MongoConnectionAssembler mongoConnectionAssembler, ILogger<MongoDatabaseService> logger) : TracingContext(logger),
-	IMongoDatabaseService
+internal sealed class MongoDatabaseService(IMongoDatabaseManager mongoDatabaseManager, IMongoConnectionRepository mongoConnectionRepository,
+	MongoConnectionAssembler mongoConnectionAssembler, ILogger<MongoDatabaseService> logger, IZipCompressor zipCompressor,
+	IOptions<CoreConfiguration> config) : TracingService(logger), IMongoDatabaseService
 {
 	public async Task<GetConnectionInformationResponse> GetInfos()
 	{
@@ -26,14 +28,15 @@ internal class MongoDatabaseService(IMongoDatabaseManager mongoDatabaseManager, 
 
 		var connections = await mongoConnectionRepository.GetAll();
 
-		var result = await connections.Parallelize(async connection => (Id: connection.Id.AsGuid(), Infos: await mongoDatabaseManager.GetDatabases(connection.ConnectionString)));
+		var result = await connections.Parallelize(async (connection, _) => (Id: connection.Id.AsGuid(),
+			Infos: await mongoDatabaseManager.GetDatabases(connection.ConnectionString)));
 
 
 		var data = result.Data.ToDictionary(pair => pair.Id, pair => pair.Infos);
 		var errors = result.Exceptions.ToDictionary(pair => pair.Key.Id.AsGuid(), pair => pair.Value.ToString());
 
 
-		return new()
+		return new GetConnectionInformationResponse
 		{
 			Errors = errors,
 			Data = data
@@ -55,7 +58,7 @@ internal class MongoDatabaseService(IMongoDatabaseManager mongoDatabaseManager, 
 	{
 		using var _ = LogService($"{Log.F(name)} {Log.F(connectionString)}");
 
-		await mongoConnectionRepository.Add(new()
+		await mongoConnectionRepository.Add(new MongoConnectionBase
 		{
 			Name = name,
 			ConnectionString = connectionString
@@ -76,21 +79,26 @@ internal class MongoDatabaseService(IMongoDatabaseManager mongoDatabaseManager, 
 		await mongoConnectionRepository.Delete(idConnection.AsObjectId());
 	}
 
-	public async Task<Stream> Backup(MongoBackupTaskBase task)
+	public async Task<Stream> Backup(MongoBackupTaskBase task, CancellationToken cancellationToken)
 	{
 		using var logger = LogService($"{Log.F(task.IdConnection)} {Log.F(task.Elements.Keys)}", autoExit: false);
 
 		var connection = await mongoConnectionRepository.GetById(task.IdConnection.AsObjectId());
 
-		if (connection is null) throw new HttpException(HttpStatusCode.NotFound, $"Could not find mongo connection with id={task.IdConnection}");
+		if (connection is null)
+			throw new HttpException(HttpStatusCode.NotFound,
+				$"Could not find mongo connection with id={task.IdConnection}");
 
-		var folderToCompress = await mongoDatabaseManager.Backup(connection.ConnectionString, task.Elements);
+		var folderToCompress =
+			await mongoDatabaseManager.Backup(connection.ConnectionString, task.Elements, cancellationToken);
 
-		var outputStream = new MemoryStream();
+		var outputStream = zipCompressor.Compress(folderToCompress, config.Value.ArchivePassword);
+		Task.Run(async () =>
+		{
+			await Task.Delay(500, cancellationToken);
+			Directory.Delete(folderToCompress, true);
+		}, cancellationToken).GetAwaiter();
 
-		using var archive = ZipArchive.Create();
-		archive.AddAllFromDirectory(folderToCompress);
-		archive.SaveTo(outputStream, CompressionType.Deflate);
 
 		logger.Exit($"{Log.F(outputStream.Length)}");
 

@@ -30,7 +30,7 @@ public static class SwaggerExtentions
 			options.CustomOperationIds(e => e.ActionDescriptor.RouteValues["action"]);
 
 			foreach (var xmlPath in xmlPaths) options.IncludeXmlComments(xmlPath);
-		});
+		}).AddSwaggerGenNewtonsoftSupport();
 
 		return services;
 	}

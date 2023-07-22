@@ -24,4 +24,8 @@ export class JobsService extends BaseService {
 	update(job: JobData) {
 		return this.backendApiClient.jobs.updateJob(job.id, job);
 	}
+
+	trigger(idJob: JobData["id"]) {
+		return this.backendApiClient.jobs.triggerJob(idJob);
+	}
 }

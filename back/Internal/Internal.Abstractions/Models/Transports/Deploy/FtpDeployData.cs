@@ -6,7 +6,7 @@ namespace BackupMaker.Api.Abstractions.Models.Transports.Deploy;
 /// <summary>
 ///     Data model for ftp deployment-related operations.
 /// </summary>
-public class FtpDeployData : FtpDeployBase, ITransport
+public sealed class FtpDeployData : FtpDeployBase, ITransport
 {
 	/// <summary>
 	///     The unique identifier (ID) for the ftp deployment.

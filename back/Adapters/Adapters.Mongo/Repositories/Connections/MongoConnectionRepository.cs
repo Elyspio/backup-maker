@@ -11,15 +11,16 @@ using MongoDB.Driver;
 namespace BackupMaker.Api.Adapters.Mongo.Repositories.Connections;
 
 /// <inheritdoc cref="IMongoConnectionRepository" />
-internal class MongoConnectionRepository(IConfiguration configuration, ILogger<MongoConnectionRepository> logger) : CrudRepository<MongoConnectionEntity, MongoConnectionBase>(configuration, logger), IMongoConnectionRepository
+internal sealed class MongoConnectionRepository(IConfiguration configuration, ILogger<MongoConnectionRepository> logger) :
+	CrudRepository<MongoConnectionEntity, MongoConnectionBase>(configuration, logger), IMongoConnectionRepository
 {
 	public async Task<MongoConnectionEntity> UpdateConnectionString(ObjectId id, string connectionString)
 	{
 		using var _ = LogAdapter($"{Log.F(id)}");
 
-		var update = Builders<MongoConnectionEntity>.Update.Set(con => con.ConnectionString, connectionString);
-
-		return await EntityCollection.FindOneAndUpdateAsync(con => con.Id == id, update, new()
+		var update = Update.Set(con => con.ConnectionString, connectionString);
+		var filter = Filter.Eq(con => con.Id, id);
+		return await EntityCollection.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<MongoConnectionEntity, MongoConnectionEntity>
 		{
 			ReturnDocument = ReturnDocument.After
 		});

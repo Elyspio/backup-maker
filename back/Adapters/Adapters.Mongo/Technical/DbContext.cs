@@ -9,7 +9,7 @@ namespace BackupMaker.Api.Adapters.Mongo.Technical;
 /// <summary>
 ///     Manage app mongo connection
 /// </summary>
-public class MongoContext
+public sealed class MongoContext
 {
 	/// <summary>
 	///     Default constructor

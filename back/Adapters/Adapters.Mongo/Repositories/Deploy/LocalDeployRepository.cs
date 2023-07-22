@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace BackupMaker.Api.Adapters.Mongo.Repositories.Deploy;
 
 /// <inheritdoc cref="ILocalDeploymentRepository" />
-internal class LocalDeployRepository(IConfiguration configuration, ILogger<LocalDeployRepository> logger) : CrudRepository<LocalDeployEntity, LocalDeployBase>(configuration, logger), ILocalDeploymentRepository
+internal sealed class LocalDeployRepository(IConfiguration configuration, ILogger<LocalDeployRepository> logger) :
+	CrudRepository<LocalDeployEntity, LocalDeployBase>(configuration, logger), ILocalDeploymentRepository
 {
 }

@@ -9,13 +9,13 @@ namespace BackupMaker.Api.Adapters.Rest.Injections;
 /// <summary>
 ///     Adapter module for REST services, implementing the IDotnetModule interface.
 /// </summary>
-public class RestAdapterModule : IDotnetModule
+public sealed class RestAdapterModule : IDotnetModule
 {
 	/// <inheritdoc />
 	public void Load(IServiceCollection services, IConfiguration configuration)
 	{
 		var conf = configuration.GetSection(EndpointConfig.Section).Get<EndpointConfig>()!;
 
-		services.AddHttpClient<IJwtClient, JwtClient>(client => { client.BaseAddress = new(conf.Authentication); });
+		services.AddHttpClient<IJwtClient, JwtClient>(client => { client.BaseAddress = new Uri(conf.Authentication); });
 	}
 }

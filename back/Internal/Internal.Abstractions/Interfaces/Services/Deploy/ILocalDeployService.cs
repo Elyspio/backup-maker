@@ -15,6 +15,7 @@ public interface ILocalDeploymentService : ICrudService<LocalDeployData, LocalDe
 	/// <param name="id">The id of the local deployment to handle.</param>
 	/// <param name="archive">The Stream of the archive file to deploy.</param>
 	/// <param name="filename"></param>
+	/// <param name="cancellationToken"></param>
 	/// <returns>A task that represents the asynchronous operation.</returns>
-	Task Deploy(Guid id, Stream archive, string filename);
+	Task Deploy(Guid id, Stream archive, string filename, CancellationToken cancellationToken);
 }

@@ -11,10 +11,10 @@ public static class JsonConverters
 	///     Mark the property as password and replace content with stars on serialisation
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Property)]
-	public class Password : Attribute;
+	public sealed class Password : Attribute;
 
 	/// <inheritdoc />
-	internal class JsonReplacePassword(IValueProvider baseValueProvider) : IValueProvider
+	internal sealed class JsonReplacePassword(IValueProvider baseValueProvider) : IValueProvider
 	{
 		/// <inheritdoc />
 		public object GetValue(object target)

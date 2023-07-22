@@ -14,7 +14,7 @@ namespace BackupMaker.Api.Entrypoints.Web.Controllers;
 [Route("api/jobs")]
 [ApiController]
 [Produces("application/json")]
-public class JobsController(ILogger<JobsController> logger, IJobService jobService) : TracingController(logger)
+public sealed class JobsController(ILogger<JobsController> logger, IJobService jobService) : TracingController(logger)
 {
 	/// <summary>
 	///     Get all jobs
@@ -60,6 +60,21 @@ public class JobsController(ILogger<JobsController> logger, IJobService jobServi
 	}
 
 	/// <summary>
+	///     Update a job
+	/// </summary>
+	/// <param name="idJob"></param>
+	/// <param name="job"></param>
+	/// <returns></returns>
+	[HttpPost("{idJob:guid}/trigger")]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	[Authorize(BackupMakerRole.Admin)]
+	public async Task<IActionResult> TriggerJob(Guid idJob)
+	{
+		await jobService.Trigger(idJob);
+		return NoContent();
+	}
+
+	/// <summary>
 	///     Delete a job
 	/// </summary>
 	/// <param name="idJob"></param>
@@ -70,6 +85,16 @@ public class JobsController(ILogger<JobsController> logger, IJobService jobServi
 	public async Task<IActionResult> DeleteJob(Guid idJob)
 	{
 		await jobService.Delete(idJob);
+		return NoContent();
+	}
+
+
+	[HttpPatch]
+	[Authorize(BackupMakerRole.Admin)]
+	[ProducesResponseType(StatusCodes.Status204NoContent)]
+	public async Task<IActionResult> RecreateJobs()
+	{
+		await jobService.Recreate();
 		return NoContent();
 	}
 }

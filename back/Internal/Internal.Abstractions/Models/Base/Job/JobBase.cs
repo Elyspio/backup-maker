@@ -17,11 +17,9 @@ public abstract class JobBase
 	///     The scheduling interval follows the cron syntax.
 	/// </summary>
 	/// <remarks>
-	///     The regular expressions validates some general cron expressions such as "@annually",
-	///     "@monthly", "@weekly", "@daily", "@hourly", "@reboot" and expressions like "@every 1h30m".
 	///     It also validates standard cron expressions such as "* * * * *", which represents every minute.
 	/// </remarks>
-	[RegularExpression("^((\\*(\\/\\d+)?|\\d+(\\-\\d+)?(\\/\\d+)?(,\\d+(\\-\\d+)?(\\/\\d+)?)*)( )?){5}$")]
+	[RegularExpression(@"^((\*(\/\d+)?|\d+(\-\d+)?(\/\d+)?(,\d+(\-\d+)?(\/\d+)?)*)( )?){5}$")]
 	public required string CronInterval { get; set; }
 
 	/// <summary>

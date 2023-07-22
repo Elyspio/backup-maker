@@ -18,7 +18,7 @@ namespace BackupMaker.Api.Entrypoints.Web.Controllers.Deploys;
 [ApiController]
 [Tags("DeploysLocal")]
 [Produces("application/json")]
-public class LocalDeployController(ILogger<LocalDeployController> logger, ILocalDeploymentService localDeploymentService) : TracingController(logger)
+public sealed class LocalDeployController(ILogger<LocalDeployController> logger, ILocalDeploymentService localDeploymentService) : TracingController(logger)
 {
 	/// <summary>
 	///     Get all local deployment configurations

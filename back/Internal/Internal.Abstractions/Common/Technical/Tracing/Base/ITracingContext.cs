@@ -1,4 +1,4 @@
-﻿namespace BackupMaker.Api.Abstractions.Common.Technical.Tracing;
+﻿namespace BackupMaker.Api.Abstractions.Common.Technical.Tracing.Base;
 
 /// <summary>
 ///     Empty Interface to facilitate DI integration

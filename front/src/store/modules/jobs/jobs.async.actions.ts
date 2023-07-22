@@ -6,7 +6,7 @@ import { IdJob } from "@modules/jobs/jobs.types";
 
 const createAsyncThunk = createAsyncActionGenerator("jobs");
 
-export const manageJobs = {
+export const jobsCrud = {
 	add: createAsyncThunk("add", (arg: CreateJobRequest, { extra }) => {
 		const tasksService = getService(JobsService, extra);
 
@@ -41,3 +41,16 @@ export const manageJobs = {
 		});
 	}),
 };
+
+export const triggerJob = createAsyncThunk("trigger", (idJob: JobData["id"], { getState, extra }) => {
+	const jobsService = getService(JobsService, extra);
+
+	const state = getState();
+
+	const job = state.jobs.data[idJob];
+
+	return toast.promise(jobsService.trigger(idJob), {
+		error: `Could not update "${job.name}" job`,
+		success: `The job "${job.name}" has been triggered`,
+	});
+});

@@ -6,7 +6,7 @@ using Mapster;
 namespace BackupMaker.Api.Core.Assemblers;
 
 /// <inheritdoc />
-public class FtpDeployAssembler : BaseAssembler<FtpDeployData, FtpDeployEntity>
+public sealed class FtpDeployAssembler : BaseAssembler<FtpDeployData, FtpDeployEntity>
 {
 	/// <inheritdoc />
 	public override FtpDeployData Convert(FtpDeployEntity obj)

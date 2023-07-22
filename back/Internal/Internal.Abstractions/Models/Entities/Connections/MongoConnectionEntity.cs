@@ -11,7 +11,7 @@ namespace BackupMaker.Api.Abstractions.Models.Entities.Connections;
 /// <remarks>
 ///     It extends the `MongoConnectionBase` base class.
 /// </remarks>
-public class MongoConnectionEntity : MongoConnectionBase, IEntity
+public sealed class MongoConnectionEntity : MongoConnectionBase, IEntity
 {
 	/// <summary>
 	///     Gets or sets the ID of the MongoDB connection entity.

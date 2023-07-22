@@ -15,7 +15,7 @@ public interface ICrudService<TData, in TBase, TEntity> where TData : ITransport
 	/// </summary>
 	/// <param name="base"></param>
 	/// <returns>The TData that was added.</returns>
-	public Task Add(TBase @base);
+	public Task<TData> Add(TBase @base);
 
 	/// <summary>
 	///     Replace a single object in the repository.
@@ -23,7 +23,7 @@ public interface ICrudService<TData, in TBase, TEntity> where TData : ITransport
 	/// <param name="id"></param>
 	/// <param name="base"></param>
 	/// <returns>The TData that was added.</returns>
-	public Task Replace(Guid id, TBase @base);
+	public Task<TData> Replace(Guid id, TBase @base);
 
 	/// <summary>
 	///     Fetches all object in the repository.

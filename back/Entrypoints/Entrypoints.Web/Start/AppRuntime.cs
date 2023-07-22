@@ -1,4 +1,7 @@
 ﻿using BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
+using BackupMaker.Api.Entrypoints.Web.Technical.Filters;
+using Hangfire;
+using Hangfire.Dashboard;
 
 namespace BackupMaker.Api.Entrypoints.Web.Start;
 
@@ -25,6 +28,16 @@ public static class AppRuntime
 
 		// Setup Controllers
 		app.MapControllers();
+		app.UseHangfireDashboard(options: new DashboardOptions
+		{
+			PrefixPath = app.Environment.IsDevelopment() ? null : "/backup",
+			DarkModeEnabled = true,
+			Authorization = new IDashboardAuthorizationFilter[]
+			{
+				new HangfireAuthorizationFilter()
+			}
+		});
+
 
 		if (!app.Environment.IsProduction()) return app;
 

@@ -6,7 +6,7 @@ namespace BackupMaker.Api.Adapters.Mongo.Technical;
 /// <summary>
 ///     Manage mongo client
 /// </summary>
-public class MongoClientFactory
+public static class MongoClientFactory
 {
 	/// <summary>
 	///     Create mongo client with telemetry support
@@ -17,11 +17,11 @@ public class MongoClientFactory
 	{
 		var mongoUrl = new MongoUrl(connectionString);
 		var clientSettings = MongoClientSettings.FromUrl(mongoUrl);
-		clientSettings.ClusterConfigurator = cb => cb.Subscribe(new DiagnosticsActivityEventSubscriber(new()
+		clientSettings.ClusterConfigurator = cb => cb.Subscribe(new DiagnosticsActivityEventSubscriber(new InstrumentationOptions
 		{
 			CaptureCommandText = true
 		}));
 
-		return (new(clientSettings), mongoUrl);
+		return (new MongoClient(clientSettings), mongoUrl);
 	}
 }

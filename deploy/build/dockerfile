@@ -1,4 +1,7 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS builder-back
+FROM mcr.microsoft.com/dotnet/sdk:8.0-preview AS builder-back
+
+VOLUME /packages
+ENV NUGET_PACKAGES /packages
 
 ARG MAIN_CSPROJ_PATH
 ARG ROOT_FOLDER
@@ -29,10 +32,12 @@ RUN find *.csproj | sed -r -e 's/((.+).csproj)/.\/\1 .\/\2/g' | xargs -I % sh -c
 # endregion optimize dotnet restore
 
 
-COPY ${ROOT_FOLDER} ${SRC}/${ROOT_FOLDER}
 
 WORKDIR ${SRC}/${ROOT_FOLDER}
 RUN dotnet restore ${MAIN_CSPROJ_PATH}
+
+COPY ${ROOT_FOLDER} ${SRC}/${ROOT_FOLDER}
+
 RUN dotnet publish ${MAIN_CSPROJ_PATH} --no-restore -o /app/out
 
 
@@ -48,7 +53,22 @@ RUN cd /front && yarn build
 
 
 # Running
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS production
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-preview  AS production
+
+
+# Set timezone to EUROPE/PARIS 
+RUN apt-get update && apt-get install -y locales  \
+&& localedef -i fr_FR -c -f UTF-8 -A /usr/share/locale/locale.alias fr_FR.UTF-8 \
+&& ln -fs /usr/share/zoneinfo/Europe/Paris /etc/localtime && dpkg-reconfigure -f noninteractive tzdata
+ENV LANG fr_FR.utf8
+
+# Install mongodump
+RUN apt-get update \
+    && apt-get install -y gnupg wget \
+    && wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | apt-key add - \
+    && echo "deb http://repo.mongodb.org/apt/debian bullseye/mongodb-org/4.4 main" | tee /etc/apt/sources.list.d/mongodb-org-4.4.list \
+    && apt-get update \
+    && apt-get install -y mongodb-database-tools
 
 ARG ENTRY_DLL
 ENV ENTRY_DLL ${ENTRY_DLL}

@@ -1,15 +1,15 @@
-﻿using BackupMaker.Api.Entrypoints.Web.Technical.Helpers;
+﻿using System.Reflection;
+using System.Text.Json.Serialization;
+using BackupMaker.Api.Entrypoints.Web.Technical.Helpers;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Reflection;
-using System.Text.Json.Serialization;
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Filters.Swagger;
 
 /// <summary>
 ///     Permet que les propriétés des objets de retour soient affichées en tant que required ssi elles ne sont pas nullable
 /// </summary>
-public class NullableSchemaFilter : ISchemaFilter
+public sealed class NullableSchemaFilter : ISchemaFilter
 {
 	private readonly NullabilityInfoContext _nullabilityContext = new();
 

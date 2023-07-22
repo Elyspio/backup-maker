@@ -8,7 +8,7 @@ namespace BackupMaker.Api.Entrypoints.Web.Technical.Filters;
 /// , Intercepts
 /// <see cref="HttpException" />
 /// to returns HTTP codes from exceptions
-public class HttpExceptionFilter : ExceptionFilterAttribute
+public sealed class HttpExceptionFilter : ExceptionFilterAttribute
 {
 	/// <inheritdoc />
 	public override void OnException(ExceptionContext context)
@@ -16,7 +16,7 @@ public class HttpExceptionFilter : ExceptionFilterAttribute
 		if (context.Exception is HttpException ex)
 			context.Result = new ObjectResult(ex.ToString())
 			{
-				StatusCode = (int) ex.Code,
+				StatusCode = (int)ex.Code,
 				Value = ex.ToString()
 			};
 		else

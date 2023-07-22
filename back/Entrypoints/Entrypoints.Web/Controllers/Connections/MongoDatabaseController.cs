@@ -16,7 +16,7 @@ namespace BackupMaker.Api.Entrypoints.Web.Controllers.Connections;
 [ApiController]
 [Route("api/database")]
 [Produces("application/json")]
-public class MongoDatabaseController(IMongoDatabaseService mongoDatabaseService, ILogger<MongoDatabaseController> logger) : TracingController(logger)
+public sealed class MongoDatabaseController(IMongoDatabaseService mongoDatabaseService, ILogger<MongoDatabaseController> logger) : TracingController(logger)
 {
 	/// <summary>
 	///     Get informations about databases, collections, sizes for all connections

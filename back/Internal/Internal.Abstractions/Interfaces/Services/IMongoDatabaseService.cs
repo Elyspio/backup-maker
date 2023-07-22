@@ -52,6 +52,7 @@ public interface IMongoDatabaseService
 	///     Creates a backup of a MongoDB database based on a backup task configuration.
 	/// </summary>
 	/// <param name="task">The backup task configuration details.</param>
+	/// <param name="cancellationToken"></param>
 	/// <returns>The archive as stream</returns>
-	public Task<Stream> Backup(MongoBackupTaskBase task);
+	public Task<Stream> Backup(MongoBackupTaskBase task, CancellationToken cancellationToken);
 }

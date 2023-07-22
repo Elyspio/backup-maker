@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { useAppSelector } from "@store";
+import React, { useCallback, useMemo } from "react";
+import { useAppDispatch, useAppSelector } from "@store";
 import { Stack } from "@mui/material";
 import { DeleteForever, Edit } from "@mui/icons-material";
 import { useModal } from "@hooks/useModal";
@@ -18,8 +18,12 @@ import { FtpDeploy } from "@components/deploys/ftp/FtpDeploy";
 import { EntityTitle } from "@components/entity/EntityTitle";
 import { IconWithTooltip } from "@components/utils/tooltip/IconWithTooltip";
 import { usePermissions } from "@hooks/usePermissions";
+import { triggerJob } from "@modules/jobs/jobs.async.actions";
+import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 
 export function JobDetail() {
+	const dispatch = useAppDispatch();
+
 	const { jobs, tasks, deploys } = useAppSelector((s) => ({
 		jobs: s.jobs.data,
 		tasks: s.tasks,
@@ -47,6 +51,11 @@ export function JobDetail() {
 
 	const isAdmin = usePermissions("Admin");
 
+	const triggerJobCb = useCallback(() => {
+		if (!isAdmin || !job) return;
+		dispatch(triggerJob(job.id));
+	}, [isAdmin, job, dispatch]);
+
 	if (!job) return <UnableToFindEntity description={"job"} name={slug!} />;
 	if (!deploy) return <UnableToFindEntity description={`${job.deployType} deploy configuration with id`} name={job.idDeploy} />;
 	if (!task) return <UnableToFindEntity description={`${job.backupType} task configuration with id`} name={job.idBackup} />;
@@ -62,6 +71,10 @@ export function JobDetail() {
 
 				<IconWithTooltip disabled={!isAdmin} title={"Delete the job configuration"} disabledTitle={"You must be an admin"} onClick={deleteModal.setOpen} color={"error"}>
 					<DeleteForever />
+				</IconWithTooltip>
+
+				<IconWithTooltip disabled={!isAdmin} title={"Run the job"} disabledTitle={"You must be an admin"} onClick={triggerJobCb} color={"primary"}>
+					<PlayCircleOutlineIcon />
 				</IconWithTooltip>
 			</Stack>
 

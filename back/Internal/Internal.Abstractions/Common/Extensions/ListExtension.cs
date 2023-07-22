@@ -15,19 +15,21 @@ public static class ListExtension
 	/// <typeparam name="TRet">Return type.</typeparam>
 	/// <param name="elements">The elements to process.</param>
 	/// <param name="action">Asynchronous method to apply on every element.</param>
+	/// <param name="token"></param>
 	/// <returns>A task that represents the operation and returns a <see cref="ParallelResult{TInput, TRet}" /></returns>
-	public async static Task<ParallelResult<TInput, TRet>> Parallelize<TInput, TRet>(this IEnumerable<TInput> elements, Func<TInput, Task<TRet>> action) where TInput : notnull
+	public static async Task<ParallelResult<TInput, TRet>> Parallelize<TInput, TRet>(this IEnumerable<TInput> elements, Func<TInput, CancellationToken, Task<TRet>> action,
+		CancellationToken token = default) where TInput : notnull
 	{
 		var innerExceptions = new ConcurrentDictionary<TInput, Exception>();
 
 		var results = new ConcurrentBag<TRet>();
 
 
-		await Parallel.ForEachAsync(elements, async (input, _) =>
+		await Parallel.ForEachAsync(elements, token, async (input, t) =>
 		{
 			try
 			{
-				var result = await action(input);
+				var result = await action(input, t);
 				results.Add(result);
 			}
 			catch (Exception e)
@@ -36,7 +38,7 @@ public static class ListExtension
 			}
 		});
 
-		return new()
+		return new ParallelResult<TInput, TRet>
 		{
 			Data = results.ToList(),
 			Exceptions = innerExceptions.ToDictionary(pair => pair.Key, pair => pair.Value),
@@ -51,17 +53,19 @@ public static class ListExtension
 	/// <typeparam name="TInput">Input type.</typeparam>
 	/// <param name="elements">The elements to process.</param>
 	/// <param name="action">Asynchronous method to apply on every element.</param>
+	/// <param name="token"></param>
 	/// <returns>A task that represents the operation and returns a <see cref="ParallelResult{TInput}" /></returns>
-	public async static Task<ParallelResult<TInput>> Parallelize<TInput>(this IEnumerable<TInput> elements, Func<TInput, Task> action) where TInput : notnull
+	public static async Task<ParallelResult<TInput>> Parallelize<TInput>(this IEnumerable<TInput> elements, Func<TInput, CancellationToken, Task> action,
+		CancellationToken token = default) where TInput : notnull
 	{
 		var innerExceptions = new ConcurrentDictionary<TInput, Exception>();
 
 
-		await Parallel.ForEachAsync(elements, async (input, _) =>
+		await Parallel.ForEachAsync(elements, token, async (input, t) =>
 		{
 			try
 			{
-				await action(input);
+				await action(input, t);
 			}
 			catch (Exception e)
 			{
@@ -69,7 +73,7 @@ public static class ListExtension
 			}
 		});
 
-		return new()
+		return new ParallelResult<TInput>
 		{
 			Exceptions = innerExceptions.ToDictionary(pair => pair.Key, pair => pair.Value),
 			Status = innerExceptions.Any() ? ParallelStatus.Faulted : ParallelStatus.Succeed
@@ -81,7 +85,7 @@ public static class ListExtension
 	/// </summary>
 	/// <typeparam name="TInput">Input type.</typeparam>
 	/// <typeparam name="TRet">Return type.</typeparam>
-	public class ParallelResult<TInput, TRet> where TInput : notnull
+	public sealed class ParallelResult<TInput, TRet> where TInput : notnull
 	{
 		/// <summary>
 		///     Gets or sets the list of return data.
@@ -103,7 +107,7 @@ public static class ListExtension
 	///     Represents the result of a parallel operation with a collection of exceptions.
 	/// </summary>
 	/// <typeparam name="TInput">Input type.</typeparam>
-	public class ParallelResult<TInput> where TInput : notnull
+	public sealed class ParallelResult<TInput> where TInput : notnull
 	{
 		/// <summary>
 		///     Gets or sets the list of exceptions that occurred during processing.

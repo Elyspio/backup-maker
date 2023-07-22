@@ -8,7 +8,7 @@ namespace BackupMaker.Api.Abstractions.Models.Entities.Jobs;
 /// <summary>
 ///     The JobEntity class inherits from JobBase and serves as a data container for job information.
 /// </summary>
-public class JobEntity : JobBase, IEntity
+public sealed class JobEntity : JobBase, IEntity
 {
 	/// <summary>
 	///     Gets or sets the Id of the related JobDeploy object.

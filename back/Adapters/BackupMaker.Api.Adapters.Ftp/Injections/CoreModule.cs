@@ -7,7 +7,7 @@ namespace BackupMaker.Api.Adapters.Ftp.Injections;
 /// <summary>
 ///     Core module responsible for configuring and registering services
 /// </summary>
-public class FtpModule : IDotnetModule
+public sealed class FtpModule : IDotnetModule
 {
 	/// <inheritdoc />
 	public void Load(IServiceCollection services, IConfiguration configuration)

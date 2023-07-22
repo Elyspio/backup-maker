@@ -13,7 +13,7 @@ namespace BackupMaker.Api.Adapters.Mongo.Repositories.Base;
 ///     Manage entity in MongoDB
 /// </summary>
 /// <typeparam name="T">Entity implementation</typeparam>
-public abstract class BaseRepository<T> : TracingContext
+public abstract class BaseRepository<T> : TracingAdapter
 {
 	private readonly string _collectionName;
 	private readonly MongoContext _context;
@@ -26,7 +26,7 @@ public abstract class BaseRepository<T> : TracingContext
 	/// <param name="logger"></param>
 	protected BaseRepository(IConfiguration configuration, ILogger logger) : base(logger)
 	{
-		_context = new(configuration);
+		_context = new MongoContext(configuration);
 		_collectionName = typeof(T).Name[..^"Entity".Length];
 		_logger = logger;
 		var pack = new ConventionPack

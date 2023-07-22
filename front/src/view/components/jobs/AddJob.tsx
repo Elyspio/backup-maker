@@ -6,7 +6,7 @@ import { usePropsState } from "@hooks/usePropsState";
 import { JobBackup, JobData, JobDeploy } from "@apis/backend/generated";
 import { DeployState } from "@modules/deploys/deploys.types";
 import { TasksState } from "@modules/tasks/tasks.types";
-import { manageJobs } from "@modules/jobs/jobs.async.actions";
+import { jobsCrud } from "@modules/jobs/jobs.async.actions";
 import cronstrue from "cronstrue";
 import { AddEntityProps } from "@components/entity/EntityManager";
 
@@ -66,7 +66,7 @@ export function AddJob({ open, setClose, update }: AddEntityProps<IdConnection>)
 
 	const createNewLocalDeploy = useCallback(() => {
 		const action = !update
-			? manageJobs.add({
+			? jobsCrud.add({
 					name,
 					idDeploy,
 					idBackup,
@@ -74,7 +74,7 @@ export function AddJob({ open, setClose, update }: AddEntityProps<IdConnection>)
 					deployType,
 					cronInterval,
 			  })
-			: manageJobs.update({
+			: jobsCrud.update({
 					id: update,
 					name,
 					idDeploy,

@@ -5,7 +5,7 @@ namespace BackupMaker.Api.Abstractions.Models.Transports.Responses;
 /// <summary>
 ///     Represents the response containing the information about the connections.
 /// </summary>
-public class GetConnectionInformationResponse
+public sealed class GetConnectionInformationResponse
 {
 	/// <summary>
 	///     The key is the connection's unique identifier, and the value is a list of database information.

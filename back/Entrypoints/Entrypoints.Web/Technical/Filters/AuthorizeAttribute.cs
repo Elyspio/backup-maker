@@ -1,4 +1,5 @@
-﻿using Adapters.Authentication;
+﻿using System.Diagnostics;
+using Adapters.Authentication;
 using BackupMaker.Api.Abstractions.Common.Helpers;
 using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
@@ -6,13 +7,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Newtonsoft.Json;
-using System.Diagnostics;
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Filters;
 
 /// <inheritdoc cref="IAuthorizationFilter" />
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public class AuthorizeAttribute : TypeFilterAttribute
+public sealed class AuthorizeAttribute : TypeFilterAttribute
 {
 	/// <inheritdoc />
 	public AuthorizeAttribute(BackupMakerRole role) : base(typeof(CustomAuthorizeFilter))
@@ -24,7 +24,7 @@ public class AuthorizeAttribute : TypeFilterAttribute
 	}
 }
 
-public class CustomAuthorizeFilter(BackupMakerRole role, ILogger<CustomAuthorizeFilter> logger) : TracingAttribute, IAuthorizationFilter
+public sealed class CustomAuthorizeFilter(BackupMakerRole role, ILogger<CustomAuthorizeFilter> logger) : TracingAttribute, IAuthorizationFilter
 {
 	public override ILogger Logger { get; set; } = logger;
 

@@ -7,12 +7,18 @@ type EntitySubPropertyProps = {
 };
 
 export function EntitySubProperty({ name, value }: EntitySubPropertyProps) {
-	let node = <Typography variant={"body2"}>{value}</Typography>;
+	let node = (
+		<Typography variant={"body2"} sx={{ opacity: 0.75 }}>
+			{value}
+		</Typography>
+	);
 	if (Array.isArray(value)) {
 		node = (
-			<Stack direction={"row"} flexWrap={"wrap"}>
+			<Stack direction={"row"} flexWrap={"wrap"} spacing={1}>
 				{value.map((v) => (
-					<Typography key={v}>{v}</Typography>
+					<Typography sx={{ opacity: 0.75 }} key={v}>
+						{v}
+					</Typography>
 				))}
 			</Stack>
 		);

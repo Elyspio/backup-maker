@@ -6,7 +6,7 @@ using Mapster;
 namespace BackupMaker.Api.Core.Assemblers;
 
 /// <inheritdoc />
-public class JobAssembler : BaseAssembler<JobData, JobEntity>
+public sealed class JobAssembler : BaseAssembler<JobData, JobEntity>
 {
 	/// <inheritdoc />
 	public override JobData Convert(JobEntity obj)

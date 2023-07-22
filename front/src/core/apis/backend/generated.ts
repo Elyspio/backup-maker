@@ -68,7 +68,7 @@ export class DeploysFtpClient {
 			method: "POST",
 			url: url_,
 			headers: {
-				"Content-Type": "application/json",
+				"Content-Type": "application/json-patch+json",
 			},
 			cancelToken,
 		};
@@ -137,7 +137,7 @@ export class DeploysFtpClient {
 			method: "PUT",
 			url: url_,
 			headers: {
-				"Content-Type": "application/json",
+				"Content-Type": "application/json-patch+json",
 			},
 			cancelToken,
 		};
@@ -297,7 +297,7 @@ export class DeploysLocalClient {
 			method: "POST",
 			url: url_,
 			headers: {
-				"Content-Type": "application/json",
+				"Content-Type": "application/json-patch+json",
 			},
 			cancelToken,
 		};
@@ -366,7 +366,7 @@ export class DeploysLocalClient {
 			method: "PUT",
 			url: url_,
 			headers: {
-				"Content-Type": "application/json",
+				"Content-Type": "application/json-patch+json",
 			},
 			cancelToken,
 		};
@@ -526,7 +526,7 @@ export class JobsClient {
 			method: "POST",
 			url: url_,
 			headers: {
-				"Content-Type": "application/json",
+				"Content-Type": "application/json-patch+json",
 			},
 			cancelToken,
 		};
@@ -562,7 +562,7 @@ export class JobsClient {
 			method: "PUT",
 			url: url_,
 			headers: {
-				"Content-Type": "application/json",
+				"Content-Type": "application/json-patch+json",
 			},
 			cancelToken,
 		};
@@ -609,6 +609,37 @@ export class JobsClient {
 			})
 			.then((_response: AxiosResponse) => {
 				return this.processDeleteJob(_response);
+			});
+	}
+
+	/**
+	 * Update a job
+	 * @return No Content
+	 */
+	triggerJob(idJob: string, cancelToken?: CancelToken | undefined): Promise<void> {
+		let url_ = this.baseUrl + "/api/jobs/{idJob}/trigger";
+		if (idJob === undefined || idJob === null) throw new Error("The parameter 'idJob' must be defined.");
+		url_ = url_.replace("{idJob}", encodeURIComponent("" + idJob));
+		url_ = url_.replace(/[?&]$/, "");
+
+		let options_: AxiosRequestConfig = {
+			method: "POST",
+			url: url_,
+			headers: {},
+			cancelToken,
+		};
+
+		return this.instance
+			.request(options_)
+			.catch((_error: any) => {
+				if (isAxiosError(_error) && _error.response) {
+					return _error.response;
+				} else {
+					throw _error;
+				}
+			})
+			.then((_response: AxiosResponse) => {
+				return this.processTriggerJob(_response);
 			});
 	}
 
@@ -694,6 +725,26 @@ export class JobsClient {
 		}
 		return Promise.resolve<void>(null as any);
 	}
+
+	protected processTriggerJob(response: AxiosResponse): Promise<void> {
+		const status = response.status;
+		let _headers: any = {};
+		if (response.headers && typeof response.headers === "object") {
+			for (let k in response.headers) {
+				if (response.headers.hasOwnProperty(k)) {
+					_headers[k] = response.headers[k];
+				}
+			}
+		}
+		if (status === 204) {
+			const _responseText = response.data;
+			return Promise.resolve<void>(null as any);
+		} else if (status !== 200 && status !== 204) {
+			const _responseText = response.data;
+			return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+		}
+		return Promise.resolve<void>(null as any);
+	}
 }
 
 export class MongoBackupClient {
@@ -753,7 +804,7 @@ export class MongoBackupClient {
 			method: "POST",
 			url: url_,
 			headers: {
-				"Content-Type": "application/json",
+				"Content-Type": "application/json-patch+json",
 			},
 			cancelToken,
 		};
@@ -789,7 +840,7 @@ export class MongoBackupClient {
 			method: "PUT",
 			url: url_,
 			headers: {
-				"Content-Type": "application/json",
+				"Content-Type": "application/json-patch+json",
 			},
 			cancelToken,
 		};
@@ -1011,7 +1062,7 @@ export class MongoDatabaseClient {
 			method: "POST",
 			url: url_,
 			headers: {
-				"Content-Type": "application/json",
+				"Content-Type": "application/json-patch+json",
 			},
 			cancelToken,
 		};
@@ -1049,7 +1100,7 @@ export class MongoDatabaseClient {
 			method: "PUT",
 			url: url_,
 			headers: {
-				"Content-Type": "application/json",
+				"Content-Type": "application/json-patch+json",
 			},
 			cancelToken,
 		};
@@ -1303,7 +1354,7 @@ export interface FtpDeployData extends FtpDeployBase {
 }
 
 export interface FtpDeployEntity extends FtpDeployBase {
-	id: ObjectId;
+	id: string;
 }
 
 /** Types of FTP encryption methods. */
@@ -1345,11 +1396,11 @@ export enum JobDeploy {
 /** The JobEntity class inherits from JobBase and serves as a data container for job information. */
 export interface JobEntity extends JobBase {
 	/** Gets or sets the Id of the related JobDeploy object. */
-	idDeploy: ObjectId;
+	idDeploy: string;
 	/** Gets or sets the Id of the related JobBackup object. */
-	idBackup: ObjectId;
+	idBackup: string;
 	/** Gets or sets the unique identifier for the JobEntity object. */
-	id: ObjectId;
+	id: string;
 }
 
 /** Serves as a data container for local deployment information. */
@@ -1367,7 +1418,7 @@ export interface LocalDeployData extends LocalDeployBase {
 /** The class represents a local deployment entity. */
 export interface LocalDeployEntity extends LocalDeployBase {
 	/** Gets or sets the ObjectId of the local deployment entity. This field is also the BsonId. */
-	id: ObjectId;
+	id: string;
 }
 
 /** JobBackup job for a mongo connection */
@@ -1389,14 +1440,14 @@ export interface MongoBackupTaskData extends MongoBackupTaskBase {
 /** This class represents the entities of the MongoDB backup tasks. */
 export interface MongoBackupTaskEntity extends MongoBackupTaskBase {
 	/** Gets or sets the ID of the MongoDB backup task entity. */
-	id: ObjectId;
+	id: string;
 }
 
 /** The MongoConnectionBase class is used to establish connections to MongoDB. */
 export interface MongoConnectionBase {
-	/** Gets or sets the name for the MongoConnectionBase object. This property is required. */
+	/** The name for the MongoConnectionBase object. This property is required. */
 	name: string;
-	/** Gets or sets the Connection String for the MongoDB connection entity. */
+	/** The Connection String for the MongoDB connection entity. */
 	connectionString: string;
 }
 
@@ -1409,15 +1460,7 @@ export interface MongoConnectionData extends MongoConnectionBase {
 /** This class represents the entities of the MongoDB connections. */
 export interface MongoConnectionEntity extends MongoConnectionBase {
 	/** Gets or sets the ID of the MongoDB connection entity. */
-	id: ObjectId;
-}
-
-export interface ObjectId {
-	readonly timestamp?: number;
-	readonly machine?: number;
-	readonly pid?: number;
-	readonly increment?: number;
-	readonly creationTime?: string;
+	id: string;
 }
 
 export class ApiException extends Error {

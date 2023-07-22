@@ -290,10 +290,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@elyspio/vite-eslint-config@2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@elyspio/vite-eslint-config/-/vite-eslint-config-2.0.2.tgz#2bec12343ed40e67aba01a1ed925559cb37a5988"
-  integrity sha512-PQoi7eCfpCR3N542S6eIohc78x8qbZOsohDUOjQEiWkQIPUM0WPwTcgWCUG0mHRe1EBn7QOJl+wpsUa2XcJO6w==
+"@elyspio/vite-eslint-config@2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@elyspio/vite-eslint-config/-/vite-eslint-config-2.0.3.tgz#196dca7394f78449f03dc84f74dc66eded2f07b2"
+  integrity sha512-NCorzwAJhv4zQw68wNCzeaAkeqPmiCB47xjXT5Hxvfs6WANZxJD89qIzlzb4kyyfcRABi/8LxY92HHIzaLJrRA==
   dependencies:
     "@types/node" "^20.2.1"
     "@types/prettier" "^2.7.2"

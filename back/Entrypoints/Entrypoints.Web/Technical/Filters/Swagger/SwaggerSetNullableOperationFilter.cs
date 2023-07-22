@@ -1,9 +1,9 @@
-﻿using BackupMaker.Api.Entrypoints.Web.Technical.Helpers;
+﻿using System.Reflection;
+using BackupMaker.Api.Entrypoints.Web.Technical.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Reflection;
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Filters.Swagger;
 
@@ -11,7 +11,7 @@ namespace BackupMaker.Api.Entrypoints.Web.Technical.Filters.Swagger;
 ///     Permet que les paramètres des endpoints dans le swagger soient affichés en tant que required ssi ils ne sont pas
 ///     optionnels (int?)
 /// </summary>
-public class SwaggerSetNullableOperationFilter : IOperationFilter
+public sealed class SwaggerSetNullableOperationFilter : IOperationFilter
 {
 	private readonly NullabilityInfoContext _nullabilityContext = new();
 

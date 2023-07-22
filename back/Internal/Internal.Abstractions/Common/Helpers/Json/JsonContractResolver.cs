@@ -1,16 +1,16 @@
+using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Reflection;
 
 namespace BackupMaker.Api.Abstractions.Common.Helpers.Json;
 
 /// <summary>
 ///     Custom JSON contract resolver for the application.
 /// </summary>
-public class JsonContractResolver : CamelCasePropertyNamesContractResolver
+public sealed class JsonContractResolver : CamelCasePropertyNamesContractResolver
 {
 	/// <inheritdoc />
-	override protected JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+	protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
 	{
 		var property = base.CreateProperty(member, memberSerialization);
 

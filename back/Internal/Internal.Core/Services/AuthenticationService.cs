@@ -1,12 +1,12 @@
-﻿using Adapters.Authentication;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
+using Adapters.Authentication;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Cryptography;
 
 namespace BackupMaker.Api.Core.Services;
 
-internal class AuthenticationService : IAuthenticationService
+internal sealed class AuthenticationService : IAuthenticationService
 {
 	private readonly IJwtClient _jwtClient;
 	private readonly SecurityKey _publicKey;
@@ -32,7 +32,7 @@ internal class AuthenticationService : IAuthenticationService
 
 		try
 		{
-			tokenHandler.ValidateToken(token, new()
+			tokenHandler.ValidateToken(token, new TokenValidationParameters
 			{
 				ValidateIssuerSigningKey = true,
 				IssuerSigningKey = _publicKey,
@@ -41,7 +41,7 @@ internal class AuthenticationService : IAuthenticationService
 				ClockSkew = TimeSpan.Zero
 			}, out var securityToken);
 
-			validatedToken = (JwtSecurityToken?) securityToken;
+			validatedToken = (JwtSecurityToken?)securityToken;
 
 			return true;
 		}

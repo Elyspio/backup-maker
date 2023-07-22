@@ -1,5 +1,5 @@
-﻿using BackupMaker.Api.Abstractions.Common.Helpers;
-using System.Net;
+﻿using System.Net;
+using BackupMaker.Api.Abstractions.Common.Helpers;
 
 namespace BackupMaker.Api.Abstractions.Exceptions;
 
@@ -39,5 +39,10 @@ public class HttpException : Exception
 	public HttpStatusCode Code { get; }
 
 
-	public class NotFound<T>(Guid id) : HttpException(HttpStatusCode.NotFound, $"Could not find {typeof(T).Name} with {Log.F(id)}");
+	/// <summary>
+	///     This represents a HTTP 404 (Not Found) exception specifically for entities or resources of type <typeparamref name="T" />.
+	///     It is used when the specified entity or resource cannot be found.
+	/// </summary>
+	/// <typeparam name="T">The type of the entity or resource which could not be found.</typeparam>
+	public sealed class NotFound<T>(Guid id) : HttpException(HttpStatusCode.NotFound, $"Could not find {typeof(T).Name} with {Log.F(id)}");
 }

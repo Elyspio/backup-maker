@@ -11,7 +11,7 @@ namespace BackupMaker.Api.Abstractions.Models.Entities.Backup;
 /// <remarks>
 ///     It inherits from the `MongoBackupTaskBase` base class.
 /// </remarks>
-public class MongoBackupTaskEntity : MongoBackupTaskBase, IEntity
+public sealed class MongoBackupTaskEntity : MongoBackupTaskBase, IEntity
 {
 	/// <summary>
 	///     Gets or sets the ID of the MongoDB backup task entity.

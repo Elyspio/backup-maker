@@ -6,7 +6,7 @@ using Mapster;
 namespace BackupMaker.Api.Core.Assemblers;
 
 /// <inheritdoc />
-public class LocalDeployAssembler : BaseAssembler<LocalDeployData, LocalDeployEntity>
+public sealed class LocalDeployAssembler : BaseAssembler<LocalDeployData, LocalDeployEntity>
 {
 	/// <inheritdoc />
 	public override LocalDeployData Convert(LocalDeployEntity obj)

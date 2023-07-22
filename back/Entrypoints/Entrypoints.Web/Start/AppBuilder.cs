@@ -1,4 +1,6 @@
-﻿using BackupMaker.Api.Abstractions.Interfaces.Injections;
+﻿using BackupMaker.Api.Abstractions.Configurations;
+using BackupMaker.Api.Abstractions.Interfaces.Injections;
+using BackupMaker.Api.Adapters.Compress.Injections;
 using BackupMaker.Api.Adapters.Ftp.Injections;
 using BackupMaker.Api.Adapters.Hangfire.Injections;
 using BackupMaker.Api.Adapters.Mongo.Injections;
@@ -11,7 +13,7 @@ namespace BackupMaker.Api.Entrypoints.Web.Start;
 /// <summary>
 ///     Application builder
 /// </summary>
-public class AppBuilder
+public sealed class AppBuilder
 {
 	/// <summary>
 	///     Create builder from command args
@@ -23,10 +25,14 @@ public class AppBuilder
 
 		builder.Configuration.AddJsonFile("appsettings.docker.json", true, true);
 
+		builder.Services.Configure<CoreConfiguration>(builder.Configuration.GetSection(CoreConfiguration.Section));
+
+
 		builder.Services.AddModule<HangfireAdapterModule>(builder.Configuration);
 		builder.Services.AddModule<MongoAdapterModule>(builder.Configuration);
 		builder.Services.AddModule<RestAdapterModule>(builder.Configuration);
 		builder.Services.AddModule<FtpModule>(builder.Configuration);
+		builder.Services.AddModule<CompressorModule>(builder.Configuration);
 
 		builder.Services.AddModule<CoreModule>(builder.Configuration);
 

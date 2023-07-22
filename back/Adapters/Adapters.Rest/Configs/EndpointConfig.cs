@@ -3,7 +3,7 @@
 /// <summary>
 ///     Configuration settings related to endpoints used in the application.
 /// </summary>
-public class EndpointConfig
+public sealed class EndpointConfig
 {
     /// <summary>
     ///     Defines the configuration section name for the endpoints.

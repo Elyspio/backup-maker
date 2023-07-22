@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
 
 namespace BackupMaker.Api.Abstractions.Common.Helpers;
 
@@ -34,9 +34,10 @@ public static class Log
 	/// <summary>
 	///     Creates a new instance of the LoggerInstance class for method logging.
 	/// </summary>
-	public static LoggerInstance Enter(this ILogger logger, string arguments = "", LogLevel level = LogLevel.Debug, Activity? activity = null, [CallerMemberName] string method = "", bool autoExit = true, string className = "")
+	public static LoggerInstance Enter(this ILogger logger, string arguments = "", LogLevel level = LogLevel.Debug, Activity? activity = null,
+		[CallerMemberName] string method = "", bool autoExit = true, string className = "")
 	{
-		return new(logger, method, arguments, level, activity, autoExit, className);
+		return new LoggerInstance(logger, method, arguments, level, activity, autoExit, className);
 	}
 
 	/// <summary>
@@ -55,7 +56,7 @@ public static class Log
 	/// <summary>
 	///     Encapsulates a logging session, providing methods to record specific events and messages.
 	/// </summary>
-	public class LoggerInstance : IDisposable
+	public sealed class LoggerInstance : IDisposable
 	{
 		private readonly string _arguments;
 		private readonly bool _autoExit;
@@ -111,7 +112,7 @@ public static class Log
 		{
 			if (!_logger.IsEnabled(_level)) return;
 			var sb = new StringBuilder($"{_traceId} {_className}.{_method} -- Enter");
-			if (_arguments?.Length > 0) sb.Append($" -- {_arguments}");
+			if (!string.IsNullOrWhiteSpace(_arguments)) sb.Append($" -- {_arguments}");
 
 			_logger.Log(_level, sb.ToString());
 		}
@@ -128,7 +129,7 @@ public static class Log
 
 			if (!string.IsNullOrWhiteSpace(content)) sb.Append($" -- {content}");
 
-			sb.Append($" -- {Stopwatch.GetElapsedTime(_startedAt).Milliseconds}ms");
+			sb.Append($" -- {Stopwatch.GetElapsedTime(_startedAt).TotalMilliseconds}ms");
 
 			_logger.Log(_level, sb.ToString());
 		}

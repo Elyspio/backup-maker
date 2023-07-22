@@ -1,10 +1,10 @@
-﻿using BackupMaker.Api.Entrypoints.Web.Technical.Filters;
+﻿using System.Text.Json.Serialization;
+using BackupMaker.Api.Abstractions.Common.Helpers.Json;
+using BackupMaker.Api.Entrypoints.Web.Technical.Filters;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
-using System.Text.Json.Serialization;
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Extensions;
 
@@ -38,7 +38,7 @@ public static class ApiExtentions
 			.AddNewtonsoftJson(x =>
 			{
 				x.SerializerSettings.Formatting = Formatting.None;
-				x.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+				x.SerializerSettings.ContractResolver = new JsonContractResolver();
 
 				// x.SerializerSettings.ContractResolver = new JsonContractResolver();
 				x.SerializerSettings.Converters.Add(new StringEnumConverter());

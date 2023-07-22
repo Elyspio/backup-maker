@@ -1,4 +1,4 @@
-﻿using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
+﻿using BackupMaker.Api.Abstractions.Common.Technical.Tracing.Base;
 using BackupMaker.Api.Entrypoints.Web.Technical.Helpers;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Metrics;
@@ -22,30 +22,38 @@ public static class OpenTelemetryExtentions
 	{
 		var sources = AssemblyHelper.GetClassWithInterface<Program, ITracingContext>().ToArray();
 
-		services.AddOptions<OtlpExporterOptions>().Configure(opts => { opts.Endpoint = new(configuration["OpenTelemetry:Url"]!); });
+		services.AddOptions<OtlpExporterOptions>().Configure(opts => { opts.Endpoint = new Uri(configuration["OpenTelemetry:Url"]!); });
 
 		services.AddOpenTelemetryEventLogging();
 
 		services.AddOpenTelemetry()
-			.ConfigureResource(conf => conf.AddService(configuration["OpenTelemetry:Service"]!).AddTelemetrySdk())
+			.ConfigureResource(conf => conf.AddService(configuration["OpenTelemetry:Service"]!))
 			.WithTracing(tracingBuilder =>
 			{
 				tracingBuilder
 					.SetErrorStatusOnException()
 					.AddSource(sources)
 					.AddSource("MongoDB.Driver.Core.Extensions.DiagnosticSources")
+
+					// Configure adapter
+					.AddHangfireInstrumentation(options => { options.RecordException = true; })
+					.AddAspNetCoreInstrumentation(options =>
+					{
+						options.RecordException = true;
+						options.Filter = context => !context.Request.Path.StartsWithSegments("/hangfire");
+					})
+					.AddHttpClientInstrumentation(options => { options.RecordException = true; })
 					// Configure exporters
-					.AddOtlpExporter()
-					// Configure adapters
-					.AddAspNetCoreInstrumentation(options => { options.RecordException = true; })
-					.AddHttpClientInstrumentation(options => { options.RecordException = true; });
+					.AddOtlpExporter();
 			}).WithMetrics(metricBuilder =>
 			{
 				metricBuilder
 					.AddMeter(sources)
-					.AddOtlpExporter()
+					.AddMeter("MongoDB.Driver.Core.Extensions.DiagnosticSources")
+					.AddMeter("*")
 					.AddHttpClientInstrumentation()
-					.AddAspNetCoreInstrumentation();
+					.AddAspNetCoreInstrumentation()
+					.AddOtlpExporter();
 			});
 
 

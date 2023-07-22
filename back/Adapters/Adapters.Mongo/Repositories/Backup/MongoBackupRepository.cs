@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 namespace BackupMaker.Api.Adapters.Mongo.Repositories.Backup;
 
 /// <inheritdoc cref="ILocalDeploymentRepository" />
-internal class MongoBackupRepository(IConfiguration configuration, ILogger<MongoBackupRepository> logger) : CrudRepository<MongoBackupTaskEntity, MongoBackupTaskBase>(configuration, logger), IMongoBackupRepository
+internal sealed class MongoBackupRepository
+	(IConfiguration configuration, ILogger<MongoBackupRepository> logger) : CrudRepository<MongoBackupTaskEntity, MongoBackupTaskBase>(configuration, logger),
+		IMongoBackupRepository
 {
 }

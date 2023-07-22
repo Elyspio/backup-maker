@@ -17,7 +17,7 @@ namespace BackupMaker.Api.Entrypoints.Web.Controllers.Backups;
 [Route("api/tasks/backup/mongo")]
 [ApiController]
 [Produces("application/json")]
-public class MongoBackupController(ILogger<JobsController> logger, IMongoBackupTaskService backupTaskService) : TracingController(logger)
+public sealed class MongoBackupController(ILogger<JobsController> logger, IMongoBackupTaskService backupTaskService) : TracingController(logger)
 {
 	/// <summary>
 	///     Get all mongo backup task configurations

@@ -1,11 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <EnablePreviewFeatures>True</EnablePreviewFeatures>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <LangVersion>preview</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,6 +18,7 @@
         <PackageReference Include="MongoDB.Bson" Version="2.19.2"/>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0"/>
+
 
     </ItemGroup>
 

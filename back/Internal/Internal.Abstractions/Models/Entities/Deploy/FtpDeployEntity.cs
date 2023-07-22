@@ -5,7 +5,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace BackupMaker.Api.Abstractions.Models.Entities.Deploy;
 
-public class FtpDeployEntity : FtpDeployBase, IEntity
+public sealed class FtpDeployEntity : FtpDeployBase, IEntity
 {
 	[BsonId]
 	[BsonRepresentation(BsonType.ObjectId)]
