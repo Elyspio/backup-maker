@@ -68,7 +68,7 @@ internal sealed class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger)
 			exceptions.Add(new Exception($"{elements.Keys.ToArray()[i - 1]}: {stderr}"));
 		}
 
-		if (exceptions.Any()) throw new AggregateException(exceptions);
+		if (exceptions.Count != 0) throw new AggregateException(exceptions);
 
 
 		logger.Exit($"Output directory = {tempDir}");
@@ -123,7 +123,7 @@ internal sealed class MongoDatabaseManager(ILogger<MongoDatabaseManager> logger)
 		{
 			await process.WaitForExitAsync(token);
 		}
-		catch (OperationCanceledException e)
+		catch (OperationCanceledException)
 		{
 			if (!process.HasExited)
 			{

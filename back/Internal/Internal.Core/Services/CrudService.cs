@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace BackupMaker.Api.Core.Services;
 
 internal abstract class CrudService<TData, TBase, TEntity>(ILogger logger, ICrudRepository<TEntity, TBase> repository, IBaseAssembler<TData, TEntity> baseAssembler)
-	: TracingService(logger), ICrudService<TData, TBase, TEntity>
+	: TracingService(logger), ICrudService<TData, TBase>
 	where TData : ITransport
 	where TEntity : IEntity
 {

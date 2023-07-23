@@ -17,7 +17,6 @@ public abstract class BaseRepository<T> : TracingAdapter
 {
 	private readonly string _collectionName;
 	private readonly MongoContext _context;
-	private protected readonly ILogger _logger;
 
 	/// <summary>
 	///     Default constructor
@@ -28,13 +27,12 @@ public abstract class BaseRepository<T> : TracingAdapter
 	{
 		_context = new MongoContext(configuration);
 		_collectionName = typeof(T).Name[..^"Entity".Length];
-		_logger = logger;
 		var pack = new ConventionPack
 		{
 			new EnumRepresentationConvention(BsonType.String)
 		};
 
-		ConventionRegistry.Register("EnumStringConvention", pack, t => true);
+		ConventionRegistry.Register("EnumStringConvention", pack, _ => true);
 		BsonSerializer.RegisterSerializationProvider(new EnumAsStringSerializationProvider());
 	}
 
@@ -69,11 +67,10 @@ public abstract class BaseRepository<T> : TracingAdapter
 		var indexModel = new CreateIndexModel<T>(newIndex, options);
 
 
-		if (!foundIndex)
-		{
-			_logger.LogWarning($"Property {_collectionName}.{indexName} is not indexed, creating one");
-			EntityCollection.Indexes.CreateOne(indexModel);
-			_logger.LogWarning($"Property {_collectionName}.{indexName} is now indexed");
-		}
+		if (foundIndex) return;
+		
+		Logger.LogWarning($"Property {_collectionName}.{indexName} is not indexed, creating one");
+		EntityCollection.Indexes.CreateOne(indexModel);
+		Logger.LogWarning($"Property {_collectionName}.{indexName} is now indexed");
 	}
 }

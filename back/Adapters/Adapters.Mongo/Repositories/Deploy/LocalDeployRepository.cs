@@ -9,6 +9,4 @@ namespace BackupMaker.Api.Adapters.Mongo.Repositories.Deploy;
 
 /// <inheritdoc cref="ILocalDeploymentRepository" />
 internal sealed class LocalDeployRepository(IConfiguration configuration, ILogger<LocalDeployRepository> logger) :
-	CrudRepository<LocalDeployEntity, LocalDeployBase>(configuration, logger), ILocalDeploymentRepository
-{
-}
+	CrudRepository<LocalDeployEntity, LocalDeployBase>(configuration, logger), ILocalDeploymentRepository;

@@ -3,6 +3,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
+// ReSharper disable All
 
 namespace BackupMaker.Api.Adapters.Mongo.Models;
 

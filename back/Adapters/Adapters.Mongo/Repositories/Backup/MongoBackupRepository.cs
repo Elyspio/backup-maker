@@ -11,6 +11,4 @@ namespace BackupMaker.Api.Adapters.Mongo.Repositories.Backup;
 /// <inheritdoc cref="ILocalDeploymentRepository" />
 internal sealed class MongoBackupRepository
 	(IConfiguration configuration, ILogger<MongoBackupRepository> logger) : CrudRepository<MongoBackupTaskEntity, MongoBackupTaskBase>(configuration, logger),
-		IMongoBackupRepository
-{
-}
+		IMongoBackupRepository;

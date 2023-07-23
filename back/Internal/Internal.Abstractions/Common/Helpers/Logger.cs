@@ -15,7 +15,7 @@ public static class Log
 	/// <summary>
 	///     Custom JSON serializer options with enum as string.
 	/// </summary>
-	private static readonly JsonSerializerOptions options = new()
+	private static readonly JsonSerializerOptions Options = new()
 	{
 		Converters =
 		{
@@ -28,7 +28,7 @@ public static class Log
 	/// </summary>
 	public static string F(object? value, [CallerArgumentExpression("value")] string name = "")
 	{
-		return $"{name}={JsonSerializer.Serialize(value, options)}";
+		return $"{name}={JsonSerializer.Serialize(value, Options)}";
 	}
 
 	/// <summary>
@@ -58,7 +58,7 @@ public static class Log
 	/// </summary>
 	public sealed class LoggerInstance : IDisposable
 	{
-		private readonly string _arguments;
+		private readonly string? _arguments;
 		private readonly bool _autoExit;
 		private readonly string _className;
 		private readonly LogLevel _level;
@@ -77,9 +77,8 @@ public static class Log
 		/// <param name="activity">Optional activity to correlate logger messages.</param>
 		/// <param name="autoExit">True if the log must automatically exit when disposed.</param>
 		/// <param name="className">The class name where the logger is used.</param>
-		public LoggerInstance(ILogger logger, string method, string arguments, LogLevel level, Activity? activity = null, bool autoExit = true, string className = "")
+		public LoggerInstance(ILogger logger, string method, string? arguments, LogLevel level, Activity? activity = null, bool autoExit = true, string className = "")
 		{
-			_arguments = arguments;
 			_level = level;
 			Activity = activity;
 			_autoExit = autoExit;
@@ -88,9 +87,14 @@ public static class Log
 			_traceId = activity?.RootId ?? activity?.Id;
 			_className = className;
 
+			if(!string.IsNullOrWhiteSpace(_arguments)) _arguments = arguments;
+			
 			Enter();
 		}
 
+		/// <summary>
+		/// Current activity
+		/// </summary>
 		public Activity? Activity { get; }
 
 

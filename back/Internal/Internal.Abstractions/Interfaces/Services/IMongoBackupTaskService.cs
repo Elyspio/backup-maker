@@ -1,5 +1,4 @@
 ﻿using BackupMaker.Api.Abstractions.Models.Base.Backup;
-using BackupMaker.Api.Abstractions.Models.Entities.Backup;
 using BackupMaker.Api.Abstractions.Models.Transports.Backup;
 
 namespace BackupMaker.Api.Abstractions.Interfaces.Services;
@@ -12,6 +11,4 @@ namespace BackupMaker.Api.Abstractions.Interfaces.Services;
 ///     abstraction for performing various operations such as fetching,
 ///     adding, deleting, and updating MongoDB backup configurations.
 /// </remarks>
-public interface IMongoBackupTaskService : ICrudService<MongoBackupTaskData, MongoBackupTaskBase, MongoBackupTaskEntity>
-{
-}
+public interface IMongoBackupTaskService : ICrudService<MongoBackupTaskData, MongoBackupTaskBase>;

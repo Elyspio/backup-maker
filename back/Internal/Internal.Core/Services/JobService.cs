@@ -33,7 +33,17 @@ internal sealed class JobService(IJobRepository jobRepository, ILogger<JobServic
 
 	public async Task Recreate()
 	{
-		throw new NotImplementedException();
+		using var _ = LogService();
+
+		var entities = await  jobRepository.GetAll();
+
+		var jobs = jobAssembler.Convert(entities);
+
+		await Task.WhenAll(jobs.Select(job =>
+		{
+			RegisterJob(job);
+			return Task.CompletedTask;
+		}).ToList());
 	}
 
 	public new async Task<JobData> Add(CreateJobRequest @base)
@@ -100,7 +110,7 @@ internal sealed class JobService(IJobRepository jobRepository, ILogger<JobServic
 				var backupTask = await mongoBackupTaskService.GetById(job.IdBackup);
 				return await mongoDatabaseService.Backup(backupTask, cancellationToken);
 			default:
-				throw new ArgumentOutOfRangeException();
+				throw new ArgumentOutOfRangeException(nameof(job));
 		}
 	}
 
@@ -120,7 +130,7 @@ internal sealed class JobService(IJobRepository jobRepository, ILogger<JobServic
 				await localDeploymentService.Deploy(job.IdDeploy, archive, filename, cancellationToken);
 				break;
 			default:
-				throw new ArgumentOutOfRangeException();
+				throw new ArgumentOutOfRangeException(nameof(job));
 		}
 	}
 

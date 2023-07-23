@@ -1,5 +1,4 @@
 ﻿using BackupMaker.Api.Abstractions.Models.Base.Deploy;
-using BackupMaker.Api.Abstractions.Models.Entities.Deploy;
 using BackupMaker.Api.Abstractions.Models.Transports.Deploy;
 
 namespace BackupMaker.Api.Abstractions.Interfaces.Services.Deploy;
@@ -7,7 +6,7 @@ namespace BackupMaker.Api.Abstractions.Interfaces.Services.Deploy;
 /// <summary>
 ///     Interface to manage <see cref="LocalDeployData" />
 /// </summary>
-public interface ILocalDeploymentService : ICrudService<LocalDeployData, LocalDeployBase, LocalDeployEntity>
+public interface ILocalDeploymentService : ICrudService<LocalDeployData, LocalDeployBase>
 {
 	/// <summary>
 	///     Deploys the local configuration.

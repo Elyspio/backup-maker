@@ -17,7 +17,7 @@ public sealed class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
 			var forwaredFor = context.GetHttpContext().Request.Headers["X-Forwarded-For"].ToString();
 			return LocalNetworkRegex.IsMatch(forwaredFor);
 		}
-		catch (Exception e)
+		catch (Exception)
 		{
 			return false;
 		}

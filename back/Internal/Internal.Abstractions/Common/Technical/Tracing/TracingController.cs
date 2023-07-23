@@ -11,7 +11,6 @@ namespace BackupMaker.Api.Abstractions.Common.Technical.Tracing;
 /// with tracing context
 public class TracingController : ControllerBase, ITracingContext
 {
-	private static readonly Dictionary<string, ActivitySource> _sources = new();
 	private readonly ILogger _logger;
 	private readonly string _sourceName;
 

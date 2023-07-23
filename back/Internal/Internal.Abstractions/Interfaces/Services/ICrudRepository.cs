@@ -7,8 +7,7 @@ namespace BackupMaker.Api.Abstractions.Interfaces.Services;
 /// </summary>
 /// <typeparam name="TData"></typeparam>
 /// <typeparam name="TBase">type that is used for creating or updating TData</typeparam>
-public interface ICrudService<TData, in TBase, TEntity> where TData : ITransport
-	where TEntity : IEntity
+public interface ICrudService<TData, in TBase> where TData : ITransport
 {
 	/// <summary>
 	///     Adds a new object to the repository.

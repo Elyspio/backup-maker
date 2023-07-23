@@ -1,5 +1,4 @@
 ﻿using BackupMaker.Api.Abstractions.Models.Base.Deploy.Ftp;
-using BackupMaker.Api.Abstractions.Models.Entities.Deploy;
 using BackupMaker.Api.Abstractions.Models.Transports.Deploy;
 
 namespace BackupMaker.Api.Abstractions.Interfaces.Services.Deploy;
@@ -7,7 +6,7 @@ namespace BackupMaker.Api.Abstractions.Interfaces.Services.Deploy;
 /// <summary>
 ///     Interface to manage <see cref="FtpDeployData" />
 /// </summary>
-public interface IFtpDeployService : ICrudService<FtpDeployData, FtpDeployBase, FtpDeployEntity>
+public interface IFtpDeployService : ICrudService<FtpDeployData, FtpDeployBase>
 {
 	/// <summary>
 	///     Deploy to a FTP server

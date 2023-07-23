@@ -17,7 +17,11 @@ public sealed class MongoContext
 	/// <param name="configuration"></param>
 	public MongoContext(IConfiguration configuration)
 	{
-		var (client, url) = MongoClientFactory.Create(configuration["Database"]);
+		var connectionString = configuration["Database"];
+		
+		ArgumentException.ThrowIfNullOrWhiteSpace(connectionString);
+		
+		var (client, url) = MongoClientFactory.Create(connectionString);
 
 		Console.WriteLine($"Connecting to Database '{url.DatabaseName}'");
 
@@ -27,7 +31,7 @@ public sealed class MongoContext
 		{
 			new EnumRepresentationConvention(BsonType.String)
 		};
-		ConventionRegistry.Register("EnumStringConvention", pack, t => true);
+		ConventionRegistry.Register("EnumStringConvention", pack, _ => true);
 		BsonSerializer.RegisterSerializationProvider(new EnumAsStringSerializationProvider());
 	}
 

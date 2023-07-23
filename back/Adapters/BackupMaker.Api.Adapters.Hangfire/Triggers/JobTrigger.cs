@@ -15,11 +15,11 @@ internal sealed class JobTrigger : TracingAdapter, IJobTrigger
 {
 	private readonly ConcurrentDictionary<Guid, RecurringJobDto> _jobs;
 
-	public JobTrigger(ILogger<JobTrigger> _logger) : base(_logger)
+	public JobTrigger(ILogger<JobTrigger> log) : base(log)
 	{
 		using var logger = LogAdapter(autoExit: false);
 		_jobs = new ConcurrentDictionary<Guid, RecurringJobDto>();
-		_ = new Timer(x => UpdateRecurringJobs(), null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
+		_ = new Timer(_ => UpdateRecurringJobs(), null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
 	}
 
 

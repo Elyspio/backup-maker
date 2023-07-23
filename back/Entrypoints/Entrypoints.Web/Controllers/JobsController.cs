@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BackupMaker.Api.Entrypoints.Web.Controllers;
 
 /// <summary>
-///     Entrypoint for <see cref="JobData" />
+/// Entrypoint for <see cref="JobData" />
 /// </summary>
 [Route("api/jobs")]
 [ApiController]
@@ -17,7 +17,7 @@ namespace BackupMaker.Api.Entrypoints.Web.Controllers;
 public sealed class JobsController(ILogger<JobsController> logger, IJobService jobService) : TracingController(logger)
 {
 	/// <summary>
-	///     Get all jobs
+	/// Get all jobs
 	/// </summary>
 	/// <returns></returns>
 	[HttpGet("")]
@@ -30,7 +30,7 @@ public sealed class JobsController(ILogger<JobsController> logger, IJobService j
 
 
 	/// <summary>
-	///     Create a new job
+	/// Create a new job
 	/// </summary>
 	/// <param name="job"></param>
 	/// <returns></returns>
@@ -45,7 +45,7 @@ public sealed class JobsController(ILogger<JobsController> logger, IJobService j
 
 
 	/// <summary>
-	///     Update a job
+	/// Update a job
 	/// </summary>
 	/// <param name="idJob"></param>
 	/// <param name="job"></param>
@@ -60,10 +60,9 @@ public sealed class JobsController(ILogger<JobsController> logger, IJobService j
 	}
 
 	/// <summary>
-	///     Update a job
+	/// Update a job
 	/// </summary>
 	/// <param name="idJob"></param>
-	/// <param name="job"></param>
 	/// <returns></returns>
 	[HttpPost("{idJob:guid}/trigger")]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -75,7 +74,7 @@ public sealed class JobsController(ILogger<JobsController> logger, IJobService j
 	}
 
 	/// <summary>
-	///     Delete a job
+	/// Delete a job
 	/// </summary>
 	/// <param name="idJob"></param>
 	/// <returns></returns>
@@ -89,6 +88,10 @@ public sealed class JobsController(ILogger<JobsController> logger, IJobService j
 	}
 
 
+	/// <summary>
+	/// Recreate all jobs 
+	/// </summary>
+	/// <returns></returns>
 	[HttpPatch]
 	[Authorize(BackupMakerRole.Admin)]
 	[ProducesResponseType(StatusCodes.Status204NoContent)]

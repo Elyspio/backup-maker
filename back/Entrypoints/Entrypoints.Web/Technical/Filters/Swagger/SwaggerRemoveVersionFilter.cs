@@ -4,7 +4,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Filters.Swagger;
 
 /// <summary>
-///     Supprime le parametre "api-version" qui est automatiquement ajouter par le framework
+///     Supprime le paramètre "api-version" qui est automatiquement ajouter par le framework
 /// </summary>
 public sealed class SwaggerRemoveVersionFilter : IOperationFilter
 {

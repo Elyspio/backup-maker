@@ -1,34 +1,39 @@
 ﻿namespace BackupMaker.Api.Abstractions.Common.Assemblers;
 
-public interface IBaseAssembler<TA, TB>
+/// <summary>
+/// Assembling interface
+/// </summary>
+/// <typeparam name="Ta"></typeparam>
+/// <typeparam name="Tb"></typeparam>
+public interface IBaseAssembler<Ta, Tb>
 {
 	/// <summary>
-	///     Convert an object of <typeparamref name="TA" />  to a <typeparamref name="TB" />
+	///     Convert an object of <typeparamref name="Ta" />  to a <typeparamref name="Tb" />
 	/// </summary>
-	TB Convert(TA obj);
+	Tb Convert(Ta obj);
 
 	/// <summary>
-	///     Convert an object of <typeparamref name="TB" />  to a <typeparamref name="TA" />
+	///     Convert an object of <typeparamref name="Tb" />  to a <typeparamref name="Ta" />
 	/// </summary>
-	TA Convert(TB obj);
+	Ta Convert(Tb obj);
 
 	/// <summary>
-	///     Convert a list <typeparamref name="TA" />  to a list of <typeparamref name="TB" />
+	///     Convert a list <typeparamref name="Ta" />  to a list of <typeparamref name="Tb" />
 	/// </summary>
-	IEnumerable<TB> Convert(IEnumerable<TA> objs);
+	IEnumerable<Tb> Convert(IEnumerable<Ta> objs);
 
 	/// <summary>
-	///     Convert a enumerable of <typeparamref name="TB" />  to a enumerable  of <typeparamref name="TA" />
+	///     Convert a enumerable of <typeparamref name="Tb" />  to a enumerable  of <typeparamref name="Ta" />
 	/// </summary>
-	IEnumerable<TA> Convert(IEnumerable<TB> objs);
+	IEnumerable<Ta> Convert(IEnumerable<Tb> objs);
 
 	/// <summary>
-	///     Convert a list of <typeparamref name="TA" />  to a list  of <typeparamref name="TB" />
+	///     Convert a list of <typeparamref name="Ta" />  to a list  of <typeparamref name="Tb" />
 	/// </summary>
-	List<TB> Convert(List<TA> objs);
+	List<Tb> Convert(List<Ta> objs);
 
 	/// <summary>
-	///     Convert a list of <typeparamref name="TB" />  to a list of <typeparamref name="TA" />
+	///     Convert a list of <typeparamref name="Tb" />  to a list of <typeparamref name="Ta" />
 	/// </summary>
-	List<TA> Convert(List<TB> objs);
+	List<Ta> Convert(List<Tb> objs);
 }

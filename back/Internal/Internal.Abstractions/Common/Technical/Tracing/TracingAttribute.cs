@@ -20,6 +20,9 @@ public abstract class TracingAttribute : Attribute, ITracingContext
 		TracingContext.AddSource(_sourceName);
 	}
 
+	/// <summary>
+	/// A logger
+	/// </summary>
 	public abstract ILogger Logger { get; set; }
 
 	private ActivitySource ActivitySource => TracingContext.GetActivitySource(_sourceName);

@@ -11,7 +11,10 @@ namespace BackupMaker.Api.Abstractions.Common.Technical.Tracing;
 /// </summary>
 public class TracingAdapter : ITracingContext
 {
-	private readonly ILogger _logger;
+	/// <summary>
+	/// Adapter's logger
+	/// </summary>
+	protected readonly ILogger Logger;
 	private readonly string _sourceName;
 
 
@@ -21,7 +24,7 @@ public class TracingAdapter : ITracingContext
 	/// <param name="logger"></param>
 	protected TracingAdapter(ILogger logger)
 	{
-		_logger = logger;
+		Logger = logger;
 		_sourceName = GetType().Name;
 		TracingContext.AddSource(_sourceName);
 	}
@@ -45,6 +48,6 @@ public class TracingAdapter : ITracingContext
 
 		var activity = ActivitySource.CreateActivity(className, method, arguments);
 
-		return _logger.Enter(arguments, LogLevel.Debug, activity, method, autoExit, className);
+		return Logger.Enter(arguments, LogLevel.Debug, activity, method, autoExit, className);
 	}
 }

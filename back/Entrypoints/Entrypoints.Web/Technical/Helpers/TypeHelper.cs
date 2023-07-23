@@ -10,7 +10,7 @@ namespace BackupMaker.Api.Entrypoints.Web.Technical.Helpers;
 /// </summary>
 public static class TypeHelper
 {
-	private static readonly JsonSerializerOptions options = new()
+	private static readonly JsonSerializerOptions Options = new()
 	{
 		Converters =
 		{

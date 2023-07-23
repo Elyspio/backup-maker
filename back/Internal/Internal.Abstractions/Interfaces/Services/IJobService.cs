@@ -1,5 +1,4 @@
-﻿using BackupMaker.Api.Abstractions.Models.Entities.Jobs;
-using BackupMaker.Api.Abstractions.Models.Transports.Jobs;
+﻿using BackupMaker.Api.Abstractions.Models.Transports.Jobs;
 using BackupMaker.Api.Abstractions.Models.Transports.Requests;
 
 namespace BackupMaker.Api.Abstractions.Interfaces.Services;
@@ -7,7 +6,7 @@ namespace BackupMaker.Api.Abstractions.Interfaces.Services;
 /// <summary>
 ///     Manage <see cref="JobData" />
 /// </summary>
-public interface IJobService : ICrudService<JobData, CreateJobRequest, JobEntity>
+public interface IJobService : ICrudService<JobData, CreateJobRequest>
 {
 	/// <summary>
 	///     Trigger a job to start now

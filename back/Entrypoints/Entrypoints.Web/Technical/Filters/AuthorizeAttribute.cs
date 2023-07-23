@@ -10,7 +10,9 @@ using Newtonsoft.Json;
 
 namespace BackupMaker.Api.Entrypoints.Web.Technical.Filters;
 
-/// <inheritdoc cref="IAuthorizationFilter" />
+/// <summary>
+/// Add an authorization filter on <see cref="BackupMakerRole"/>
+/// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public sealed class AuthorizeAttribute : TypeFilterAttribute
 {
@@ -24,10 +26,11 @@ public sealed class AuthorizeAttribute : TypeFilterAttribute
 	}
 }
 
+/// Implementation of <see cref="AuthorizeAttribute"/> with dependency injection
 public sealed class CustomAuthorizeFilter(BackupMakerRole role, ILogger<CustomAuthorizeFilter> logger) : TracingAttribute, IAuthorizationFilter
 {
+	/// <inheritdoc />
 	public override ILogger Logger { get; set; } = logger;
-
 
 	/// <inheritdoc />
 	public void OnAuthorization(AuthorizationFilterContext context)

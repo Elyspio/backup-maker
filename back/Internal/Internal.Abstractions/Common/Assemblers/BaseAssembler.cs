@@ -1,52 +1,52 @@
 ﻿namespace BackupMaker.Api.Abstractions.Common.Assemblers;
 
 /// <summary>
-///     Convert an object of <typeparamref name="TA" /> to a <typeparamref name="TB" />  and inversely
+///     Convert an object of <typeparamref name="Ta" /> to a <typeparamref name="Tb" />  and inversely
 /// </summary>
-/// <typeparam name="TA"></typeparam>
-/// <typeparam name="TB"></typeparam>
-public abstract class BaseAssembler<TA, TB> : IBaseAssembler<TA, TB>
+/// <typeparam name="Ta"></typeparam>
+/// <typeparam name="Tb"></typeparam>
+public abstract class BaseAssembler<Ta, Tb> : IBaseAssembler<Ta, Tb>
 {
 	/// <summary>
-	///     Convert an object of <typeparamref name="TA" />  to a <typeparamref name="TB" />
+	///     Convert an object of <typeparamref name="Ta" />  to a <typeparamref name="Tb" />
 	/// </summary>
-	public abstract TB Convert(TA obj);
+	public abstract Tb Convert(Ta obj);
 
 	/// <summary>
-	///     Convert an object of <typeparamref name="TB" />  to a <typeparamref name="TA" />
+	///     Convert an object of <typeparamref name="Tb" />  to a <typeparamref name="Ta" />
 	/// </summary>
-	public abstract TA Convert(TB obj);
+	public abstract Ta Convert(Tb obj);
 
 
 	/// <summary>
-	///     Convert a list <typeparamref name="TA" />  to a list of <typeparamref name="TB" />
+	///     Convert a list <typeparamref name="Ta" />  to a list of <typeparamref name="Tb" />
 	/// </summary>
-	public IEnumerable<TB> Convert(IEnumerable<TA> objs)
+	public IEnumerable<Tb> Convert(IEnumerable<Ta> objs)
 	{
 		return objs.Select(Convert).ToList();
 	}
 
 	/// <summary>
-	///     Convert a enumerable of <typeparamref name="TB" />  to a enumerable  of <typeparamref name="TA" />
+	///     Convert a enumerable of <typeparamref name="Tb" />  to a enumerable  of <typeparamref name="Ta" />
 	/// </summary>
-	public IEnumerable<TA> Convert(IEnumerable<TB> objs)
+	public IEnumerable<Ta> Convert(IEnumerable<Tb> objs)
 	{
 		return objs.Select(Convert).ToList();
 	}
 
 	/// <summary>
-	///     Convert a list of <typeparamref name="TA" />  to a list  of <typeparamref name="TB" />
+	///     Convert a list of <typeparamref name="Ta" />  to a list  of <typeparamref name="Tb" />
 	/// </summary>
-	public List<TB> Convert(List<TA> objs)
+	public List<Tb> Convert(List<Ta> objs)
 	{
 		return objs.Select(Convert).ToList();
 	}
 
 
 	/// <summary>
-	///     Convert a list of <typeparamref name="TB" />  to a list of <typeparamref name="TA" />
+	///     Convert a list of <typeparamref name="Tb" />  to a list of <typeparamref name="Ta" />
 	/// </summary>
-	public List<TA> Convert(List<TB> objs)
+	public List<Ta> Convert(List<Tb> objs)
 	{
 		return objs.Select(Convert).ToList();
 	}

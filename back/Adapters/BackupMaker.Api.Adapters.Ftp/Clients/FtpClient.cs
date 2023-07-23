@@ -7,7 +7,7 @@ using IFtpClient = BackupMaker.Api.Abstractions.Interfaces.Clients.IFtpClient;
 
 namespace BackupMaker.Api.Adapters.Ftp.Clients;
 
-/// <inheritdoc />
+/// <inheritdoc cref="IFtpClient" />
 public sealed class FtpClient(ILogger<FtpClient> logger) : TracingAdapter(logger), IFtpClient
 {
 	/// <inheritdoc />
