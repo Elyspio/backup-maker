@@ -1,6 +1,6 @@
 using Adapters.Authentication;
 using BackupMaker.Api.Abstractions.Common.Helpers;
-using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
+using Elyspio.OpenTelemetry.Tracing.Elements;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
 using BackupMaker.Api.Abstractions.Models.Transports.Connections;
 using BackupMaker.Api.Abstractions.Models.Transports.Requests;

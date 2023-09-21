@@ -1,5 +1,5 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Helpers;
-using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
+using Elyspio.OpenTelemetry.Tracing.Elements;
 using BackupMaker.Api.Abstractions.Models.Base.Deploy.Ftp;
 using FluentFTP;
 using Microsoft.Extensions.Logging;

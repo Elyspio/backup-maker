@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using Adapters.Authentication;
 using BackupMaker.Api.Abstractions.Common.Helpers;
-using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
+using Elyspio.OpenTelemetry.Tracing.Elements;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -58,8 +58,6 @@ public sealed class CustomAuthorizeFilter(BackupMakerRole role, ILogger<CustomAu
 			{
 				StatusCode = StatusCodes.Status401Unauthorized
 			};
-			logger.Activity?.SetStatus(ActivityStatusCode.Error);
-			logger.Activity?.SetCustomProperty("result", context.Result);
 			return;
 		}
 
@@ -80,6 +78,7 @@ public sealed class CustomAuthorizeFilter(BackupMakerRole role, ILogger<CustomAu
 		{
 			StatusCode = StatusCodes.Status403Forbidden
 		};
+
 		logger.Activity?.SetStatus(ActivityStatusCode.Error);
 		logger.Activity?.SetCustomProperty("result", context.Result);
 	}

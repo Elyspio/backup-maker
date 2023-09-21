@@ -1,5 +1,5 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Helpers;
-using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
+using Elyspio.OpenTelemetry.Tracing.Elements;
 using BackupMaker.Api.Abstractions.Interfaces.Compressor;
 using ICSharpCode.SharpZipLib.Zip;
 using Microsoft.Extensions.Logging;

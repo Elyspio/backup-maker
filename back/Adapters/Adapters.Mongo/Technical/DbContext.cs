@@ -33,6 +33,9 @@ public sealed class MongoContext
 		};
 		ConventionRegistry.Register("EnumStringConvention", pack, _ => true);
 		BsonSerializer.RegisterSerializationProvider(new EnumAsStringSerializationProvider());
+
+
+
 	}
 
 	/// <summary>

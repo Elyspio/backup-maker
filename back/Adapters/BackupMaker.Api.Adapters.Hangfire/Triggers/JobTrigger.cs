@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using BackupMaker.Api.Abstractions.Common.Helpers;
-using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
+using Elyspio.OpenTelemetry.Tracing.Elements;
 using BackupMaker.Api.Abstractions.Exceptions;
 using BackupMaker.Api.Abstractions.Interfaces.Triggers;
 using Hangfire;

@@ -2,7 +2,7 @@
 using System.Text;
 using BackupMaker.Api.Abstractions.Common.Extensions;
 using BackupMaker.Api.Abstractions.Common.Helpers;
-using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
+using Elyspio.OpenTelemetry.Tracing.Elements;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Models.Base.Database.Mongo.Info;
 using BackupMaker.Api.Adapters.Mongo.Technical;

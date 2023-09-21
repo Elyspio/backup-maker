@@ -1,4 +1,4 @@
-﻿using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
+﻿using Elyspio.OpenTelemetry.Tracing.Elements;
 using BackupMaker.Api.Adapters.Mongo.Technical;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -68,9 +68,9 @@ public abstract class BaseRepository<T> : TracingAdapter
 
 
 		if (foundIndex) return;
-		
-		Logger.LogWarning($"Property {_collectionName}.{indexName} is not indexed, creating one");
+
+		_logger.LogWarning($"Property {_collectionName}.{indexName} is not indexed, creating one");
 		EntityCollection.Indexes.CreateOne(indexModel);
-		Logger.LogWarning($"Property {_collectionName}.{indexName} is now indexed");
+		_logger.LogWarning($"Property {_collectionName}.{indexName} is now indexed");
 	}
 }

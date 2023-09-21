@@ -39,6 +39,9 @@ public static class AppRuntime
 		});
 
 
+		app.UseOpenTelemetryPrometheusScrapingEndpoint();
+
+
 		if (!app.Environment.IsProduction()) return app;
 
 		// Start SPA serving

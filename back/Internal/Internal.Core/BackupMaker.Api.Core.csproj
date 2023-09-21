@@ -9,9 +9,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Mapster" Version="7.3.0"/>
+        <PackageReference Include="Mapster" Version="7.4.0" />
         <PackageReference Include="Scrutor" Version="4.2.2"/>
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.2.0-dev-00918" />
     </ItemGroup>
 
     <ItemGroup>

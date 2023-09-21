@@ -10,16 +10,15 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="FluentFTP" Version="46.0.2"/>
+        <PackageReference Include="FluentFTP" Version="48.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0"/>
-        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0"/>
-        <PackageReference Include="MongoDB.Bson" Version="2.19.2"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0-rc.1.23419.4" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0-rc.1.23419.4" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0-rc.1.23419.4" />
+        <PackageReference Include="MongoDB.Bson" Version="2.21.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
-        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0"/>
-
-
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.0-preview" />
+        <PackageReference Include="Elyspio.OpenTelemetry" Version="1.2.1" />
     </ItemGroup>
 
 

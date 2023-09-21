@@ -1,11 +1,11 @@
 ﻿using BackupMaker.Api.Abstractions.Common.Assemblers;
 using BackupMaker.Api.Abstractions.Common.Extensions;
 using BackupMaker.Api.Abstractions.Common.Helpers;
-using BackupMaker.Api.Abstractions.Common.Technical.Tracing;
 using BackupMaker.Api.Abstractions.Exceptions;
 using BackupMaker.Api.Abstractions.Interfaces.Business;
 using BackupMaker.Api.Abstractions.Interfaces.Repositories;
 using BackupMaker.Api.Abstractions.Interfaces.Services;
+using Elyspio.OpenTelemetry.Tracing.Elements;
 using Microsoft.Extensions.Logging;
 
 namespace BackupMaker.Api.Core.Services;
